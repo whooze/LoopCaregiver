@@ -25,7 +25,7 @@ class RemoteDataServiceManager: ObservableObject, RemoteDataServiceProvider {
     @Published var currentIOB: IOBStatus? = nil
     @Published var currentCOB: COBStatus? = nil
     @Published var currentProfile: ProfileSet?
-    @Published var recentCommands: [NSRemoteCommandPayload] = []
+    @Published var recentCommands: [RemoteCommand] = []
     @Published var updating: Bool = false
     
     private let remoteDataProvider: RemoteDataServiceProvider
@@ -33,21 +33,24 @@ class RemoteDataServiceManager: ObservableObject, RemoteDataServiceProvider {
     
     init(remoteDataProvider: RemoteDataServiceProvider){
         self.remoteDataProvider = remoteDataProvider
-        monitorForUpdates(updateInterval: 30)
-    }
-    
-    func monitorForUpdates(updateInterval: TimeInterval) {
-        self.dateUpdateTimer = Timer.scheduledTimer(withTimeInterval: updateInterval, repeats: true, block: { timer in
-            Task {
-                await self.updateData()
-            }
-        })
         
         Task {
             await self.updateData()
         }
         
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
+        monitorForUpdates(updateInterval: 30)
+    }
+    
+    func monitorForUpdates(updateInterval: TimeInterval) {
+        self.dateUpdateTimer = Timer.scheduledTimer(withTimeInterval: updateInterval, repeats: true, block: { [weak self] timer in
+            guard let self else { return }
+            Task {
+                await self.updateData()
+            }
+        })
+        
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
+            guard let self else { return }
             Task {
                 await self.updateData()
             }
@@ -315,7 +318,7 @@ class RemoteDataServiceManager: ObservableObject, RemoteDataServiceProvider {
         return override
     }
     
-    func fetchRecentCommands() async throws -> [NSRemoteCommandPayload] {
+    func fetchRecentCommands() async throws -> [RemoteCommand] {
         return try await remoteDataProvider.fetchRecentCommands()
     }
     
@@ -340,6 +343,6 @@ protocol RemoteDataServiceProvider {
     func activateAutobolus(activate: Bool) async throws
     func activateClosedLoop(activate: Bool) async throws
     func fetchCurrentProfile() async throws -> ProfileSet
-    func fetchRecentCommands() async throws -> [NSRemoteCommandPayload]
+    func fetchRecentCommands() async throws -> [RemoteCommand]
     func deleteAllCommands() async throws
 }
