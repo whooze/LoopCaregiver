@@ -86,6 +86,10 @@ extension UserDefaults {
         return "timelinePredictionEnabled"
     }
     
+    var timelineVisibleLookbackHoursKey: String {
+        return "timelineVisibleLookbackHours"
+    }
+    
     var remoteCommands2EnabledKey: String {
         return "remoteCommands2Enabled"
     }
