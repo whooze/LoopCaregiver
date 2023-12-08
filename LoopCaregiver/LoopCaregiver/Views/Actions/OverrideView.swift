@@ -51,16 +51,19 @@ struct OverrideView: View {
             case .loadingComplete(let overrideState):
                 Form {
                     Section (){
-                        HStack {
-                            Picker("Overrides", selection: $viewModel.pickerSelectedOverride) {
-                                ForEach(overrideState.availableOverrides, id: \.self) { overrideValue in
-                                    Text(overrideValue.presentableDescription()).tag(overrideValue as TemporaryScheduleOverride?)
-                                        .fontWeight(overrideValue == viewModel.activeOverride ? .heavy : .regular)
-                                }
-                            }.pickerStyle(.wheel)
-                                .labelsHidden()
+                        if viewModel.pickerSelectedOverride != nil {
+                            HStack {
+                                //Loading Pickers when there is a nil selection causes consolve warnings
+                                Picker("Overrides", selection: $viewModel.pickerSelectedOverride) {
+                                    ForEach(overrideState.availableOverrides, id: \.self) { overrideValue in
+                                        Text(overrideValue.presentableDescription()).tag(overrideValue as TemporaryScheduleOverride?)
+                                            .fontWeight(overrideValue == viewModel.activeOverride ? .heavy : .regular)
+                                    }
+                                }.pickerStyle(.wheel)
+                                    .labelsHidden()
+                            }
+                            durationContainerView
                         }
-                        durationContainerView
                     }
                 }
             }
@@ -290,9 +293,22 @@ class OverrideViewModel: ObservableObject, Identifiable {
         return TimeInterval(durationHourSelection * 3600) + TimeInterval(durationMinuteSelection * 60)
     }
     
+    var selectedDefaultDuration: TimeInterval? {
+        guard let pickerSelectedOverride else {return nil}
+        if case .loadingComplete(let overrideState) = overrideListState {
+            if let availOverride = overrideState.availableOverrides.first(where: {$0.id == pickerSelectedOverride.id}) {
+                return availOverride.duration
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
+    }
+    
     var indefiniteOverridesAllowed: Bool {
-        guard let pickerSelectedOverride else {return false}
-        if pickerSelectedOverride.duration > 0 {
+        guard let selectedDefaultDuration else {return false}
+        if selectedDefaultDuration > 0 {
             return false //Remote APIs don't support flagging overrides as indefinite yet
         } else {
             return true
@@ -379,8 +395,6 @@ class OverrideViewModel: ObservableObject, Identifiable {
                 self.pickerSelectedOverride = activeOverride
                 self.activeOverride = activeOverride
             } else if let firstOverride = overrideState.availableOverrides.first {
-                //The picker would set this automatically but we set it intentionally
-                //to make sure our pickerSelectedOverride triggers Publish notifications.
                 self.pickerSelectedOverride = firstOverride
             }
         } catch {
