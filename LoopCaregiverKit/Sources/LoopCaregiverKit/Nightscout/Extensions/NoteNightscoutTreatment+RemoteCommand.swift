@@ -10,7 +10,6 @@ import NightscoutKit
 
 public extension NoteNightscoutTreatment {
     func toRemoteCommand() -> RemoteCommand? {
-        
         guard let noteText = notes else {
             return nil
         }
@@ -22,28 +21,27 @@ public extension NoteNightscoutTreatment {
         guard let remotePayload = try? extractResult.dictionary.toRemoteNotification() else {
             return nil
         }
-        
+
         guard let sentAtDate = remotePayload.sentAt else {
             return nil
         }
-        
-        let error = RemoteCommandStatus.RemoteCommandStatusError(message: extractResult.leadingText)
-        
-        return RemoteCommand(id: remotePayload.id, action: remotePayload.toRemoteAction(), status: RemoteCommandStatus(state: .Error(error), message: extractResult.leadingText), createdDate: sentAtDate)
-    }
-    
-    private func extractAndParseErrorTextAndJSON(from text: String) -> (leadingText: String, dictionary: [String: AnyObject])? {
 
+        let error = RemoteCommandStatus.RemoteCommandStatusError(message: extractResult.leadingText)
+
+        return RemoteCommand(id: remotePayload.id, action: remotePayload.toRemoteAction(), status: RemoteCommandStatus(state: .error(error), message: extractResult.leadingText), createdDate: sentAtDate)
+    }
+
+    private func extractAndParseErrorTextAndJSON(from text: String) -> (leadingText: String, dictionary: [String: AnyObject])? {
         guard let rangeOfLastOpeningBrace = text.range(of: "{") else {
             return nil
         }
-        
+
         var leadingText = String(text[text.startIndex..<rangeOfLastOpeningBrace.lowerBound])
         leadingText = removeErrorLeadingText(input: leadingText)
 
         // Extract the JSON string
         let jsonSubstring = text[rangeOfLastOpeningBrace.lowerBound..<text.endIndex]
-        
+
         // Parse the JSON string
         let jsonData = Data(jsonSubstring.utf8)
         do {
@@ -56,12 +54,11 @@ public extension NoteNightscoutTreatment {
 
         return nil
     }
-    
+
     private func removeErrorLeadingText(input: String) -> String {
         var toRet = input
         toRet = toRet.replacingOccurrences(of: "^\\s*Error:\\s*", with: "", options: .regularExpression)
         toRet = toRet.replacingOccurrences(of: "^\\s*Error\\s*", with: "", options: .regularExpression)
         return toRet
     }
-
 }

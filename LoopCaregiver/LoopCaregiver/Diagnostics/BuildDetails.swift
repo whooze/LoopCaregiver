@@ -3,13 +3,11 @@
 //  Loop
 //
 //  Created by Pete Schwamb on 6/13/23.
-//  Copyright © 2023 LoopKit Authors. All rights reserved.
 //
 
 import Foundation
 
 class BuildDetails {
-
     static var `default` = BuildDetails()
 
     let dict: [String: Any]
@@ -17,8 +15,7 @@ class BuildDetails {
     init() {
         guard let url = Bundle.main.url(forResource: "BuildDetails", withExtension: ".plist"),
            let data = try? Data(contentsOf: url),
-           let parsed = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any] else
-        {
+           let parsed = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any] else {
             dict = [:]
             return
         }
@@ -50,7 +47,7 @@ class BuildDetails {
     }
 
     var profileExpirationString: String {
-        if let profileExpiration = profileExpiration {
+        if let profileExpiration {
             return "\(profileExpiration)"
         } else {
             return "N/A"
@@ -66,4 +63,3 @@ class BuildDetails {
        return dict["com-app-workspace-git-branch"] as? String
    }
 }
-

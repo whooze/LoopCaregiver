@@ -10,12 +10,12 @@ import SwiftUI
 struct CustomDatePicker: View {
     @Binding var hourSelection: Int
     @Binding var minuteSelection: Int
-    
-    static private let maxHours = 24
-    static private let maxMinutes = 60
+
+    private static let maxHours = 24
+    private static let maxMinutes = 60
     private let hours = [Int](0...Self.maxHours)
     private let minutes = [0, 15, 30, 45]
-    
+
     var body: some View {
             HStack(spacing: .zero) {
                 Picker(selection: $hourSelection, label: Text("")) {
@@ -25,7 +25,7 @@ struct CustomDatePicker: View {
                     }
                 }
                 .pickerStyle(.wheel)
-                
+
                 Picker(selection: $minuteSelection, label: Text("")) {
                     ForEach(minutes, id: \.self) { value in
                         Text("\(value) min")

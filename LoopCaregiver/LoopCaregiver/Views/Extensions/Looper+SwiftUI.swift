@@ -10,5 +10,4 @@ import LoopCaregiverKit
 import SwiftUI
 
 extension Looper: Identifiable {
-
 }

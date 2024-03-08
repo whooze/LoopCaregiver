@@ -9,14 +9,21 @@ import Foundation
 import SwiftUI
 
 struct TreatmentAnnotationView: View {
-    @State var graphItem: GraphItem
-    @Environment(\.colorScheme) var colorScheme
+    let graphItem: GraphItem
+    @Environment(\.colorScheme)
+    var colorScheme
     
     @ViewBuilder var body: some View {
         VStack {
             ZStack {
-                HalfFilledAnnotationView(fillColorStyle: graphItem.annotationFillColor(), fillStyle: graphItem.annotationFillStyle())
-                    .frame(width: graphItem.annotationWidth(), height: graphItem.annotationHeight())
+                HalfFilledAnnotationView(
+                    fillColorStyle: graphItem.annotationFillColor(),
+                    fillStyle: graphItem.annotationFillStyle()
+                )
+                .frame(
+                    width: graphItem.annotationWidth(),
+                    height: graphItem.annotationHeight()
+                )
                 if graphItem.shouldShowLabel() {
                     Text(graphItem.formattedValue())
                         .frame(width: 30.0)
@@ -66,44 +73,47 @@ struct TreatmentAnnotationView: View {
             return -offset
         }
     }
+}
+
+struct HalfFilledAnnotationView: View {
+    let fillColorStyle: AnnotationColorStyle
+    let fillStyle: FillStyle
+    @Environment(\.colorScheme)
+    var colorScheme
     
-    struct HalfFilledAnnotationView: View {
-        let fillColorStyle: AnnotationColorStyle
-        let fillStyle: FillStyle
-        @Environment(\.colorScheme) var colorScheme
-        
-        @ViewBuilder var body: some View {
-            switch fillStyle {
-            case .noFill:
-                Circle()
-                    .strokeBorder(strokeColor, lineWidth: strokeWidth)
-            case .bottomFill:
-                Circle()
-                    .strokeBorder(strokeColor, lineWidth: strokeWidth)
-                    .background(Circle().trim(from: 0.0, to: 0.5).fill(fillColorStyle.color(scheme: colorScheme)))
-            case .topFill:
-                Circle()
-                    .strokeBorder(strokeColor, lineWidth: strokeWidth)
-                    .background(Circle().trim(from: 0.5, to: 1.0).fill(fillColorStyle.color(scheme: colorScheme)))
-            case .fullFill:
-                Circle()
-                    .strokeBorder(strokeColor, lineWidth: strokeWidth)
-            }
+    @ViewBuilder var body: some View {
+        switch fillStyle {
+        case .noFill:
+            Circle()
+                .strokeBorder(strokeColor, lineWidth: strokeWidth)
+        case .bottomFill:
+            Circle()
+                .strokeBorder(strokeColor, lineWidth: strokeWidth)
+                .background(Circle().trim(from: 0.0, to: 0.5)
+                    .fill(fillColorStyle.color(scheme: colorScheme)))
+        case .topFill:
+            Circle()
+                .strokeBorder(strokeColor, lineWidth: strokeWidth)
+                .background(Circle().trim(from: 0.5, to: 1.0)
+                    .fill(fillColorStyle.color(scheme: colorScheme)))
+        case .fullFill:
+            Circle()
+                .strokeBorder(strokeColor, lineWidth: strokeWidth)
         }
-        
-        var strokeWidth: CGFloat {
-            return 0.5
-        }
-        
-        var strokeColor: Color {
-            return .gray
-        }
-        
-        enum FillStyle {
-            case noFill
-            case topFill
-            case bottomFill
-            case fullFill
-        }
+    }
+    
+    var strokeWidth: CGFloat {
+        return 0.5
+    }
+    
+    var strokeColor: Color {
+        return .gray
+    }
+    
+    enum FillStyle {
+        case noFill
+        case topFill
+        case bottomFill
+        case fullFill
     }
 }

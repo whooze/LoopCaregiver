@@ -11,14 +11,14 @@ import LoopKit
 import SwiftUI
 
 public struct LatestGlucoseCircularView: View {
-    
     public let viewModel: WidgetViewModel
-    @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.colorScheme)
+    var colorScheme
+
     public init(viewModel: WidgetViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         VStack {
             Text(viewModel.currentGlucoseDateText)
@@ -36,17 +36,17 @@ public struct LatestGlucoseCircularView: View {
                     .foregroundStyle(egvColor)
                     .frame(maxWidth: 15)
                     .offset(.init(width: 0.0, height: -7.0))
+                    .accessibilityLabel(Text(currentTrendImageName))
             }
         }
     }
-    
+
     var egvColor: Color {
         colorScheme == .dark ? viewModel.egvValueColor : .primary
     }
-    
 }
 
-// TODO: fails to render and breaks other previes afer failure
+// TODO: fails to render and breaks other previews afer failure
 /*
 struct CurrentBGView_Previews: PreviewProvider {
     static var previews: some View {

@@ -72,12 +72,16 @@
 		A9CFDD3A2AEC02D700FA701B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9CFDD392AEC02D700FA701B /* Assets.xcassets */; };
 		A9CFDD3E2AEC02D700FA701B /* LoopCaregiverWatchAppExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A9CFDD312AEC02D600FA701B /* LoopCaregiverWatchAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A9D3FF222A6C3B99000C891D /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D3FF212A6C3B99000C891D /* Color.swift */; };
+		A9DCD2EB2BC9373100AA258A /* GraphItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2EA2BC9373100AA258A /* GraphItem.swift */; };
+		A9DCD2ED2BC9375600AA258A /* FilledCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2EC2BC9375600AA258A /* FilledCircle.swift */; };
+		A9DCD2EF2BC9378000AA258A /* AnnotationColorStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2EE2BC9378000AA258A /* AnnotationColorStyle.swift */; };
+		A9DCD2F12BCD2C2C00AA258A /* OverrideViewDelegateMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2F02BCD2C2C00AA258A /* OverrideViewDelegateMock.swift */; };
 		A9E14D3A2A2BA5A600BDB93D /* LoopCaregiverWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A99F2F362A29350C00F7DE2D /* LoopCaregiverWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A9EC197C291FEF940022D39F /* LoopCaregiverApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC197B291FEF940022D39F /* LoopCaregiverApp.swift */; };
 		A9EC197E291FEF940022D39F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC197D291FEF940022D39F /* ContentView.swift */; };
 		A9EC1980291FEF950022D39F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9EC197F291FEF950022D39F /* Assets.xcassets */; };
 		A9EC1983291FEF950022D39F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9EC1982291FEF950022D39F /* Preview Assets.xcassets */; };
-		A9EC199E292101550022D39F /* NightscoutChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC199D292101550022D39F /* NightscoutChartView.swift */; };
+		A9EC199E292101550022D39F /* NightscoutChartScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC199D292101550022D39F /* NightscoutChartScrollView.swift */; };
 		A9EC19A1292128D60022D39F /* TreatmentAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC19A0292128D60022D39F /* TreatmentAnnotationView.swift */; };
 		A9EC19A9292144040022D39F /* OverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC19A8292144040022D39F /* OverrideView.swift */; };
 		A9EC19AB292156D80022D39F /* CarbInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC19AA292156D80022D39F /* CarbInputView.swift */; };
@@ -264,12 +268,16 @@
 		A9CFDD442AEC043300FA701B /* LoopCaregiverWatchAppExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LoopCaregiverWatchAppExtension.entitlements; sourceTree = "<group>"; };
 		A9CFDD452AEC055500FA701B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A9D3FF212A6C3B99000C891D /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		A9DCD2EA2BC9373100AA258A /* GraphItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphItem.swift; sourceTree = "<group>"; };
+		A9DCD2EC2BC9375600AA258A /* FilledCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilledCircle.swift; sourceTree = "<group>"; };
+		A9DCD2EE2BC9378000AA258A /* AnnotationColorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationColorStyle.swift; sourceTree = "<group>"; };
+		A9DCD2F02BCD2C2C00AA258A /* OverrideViewDelegateMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideViewDelegateMock.swift; sourceTree = "<group>"; };
 		A9EC1978291FEF940022D39F /* LoopCaregiver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LoopCaregiver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9EC197B291FEF940022D39F /* LoopCaregiverApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopCaregiverApp.swift; sourceTree = "<group>"; };
 		A9EC197D291FEF940022D39F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A9EC197F291FEF950022D39F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A9EC1982291FEF950022D39F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		A9EC199D292101550022D39F /* NightscoutChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightscoutChartView.swift; sourceTree = "<group>"; };
+		A9EC199D292101550022D39F /* NightscoutChartScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightscoutChartScrollView.swift; sourceTree = "<group>"; };
 		A9EC19A0292128D60022D39F /* TreatmentAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreatmentAnnotationView.swift; sourceTree = "<group>"; };
 		A9EC19A8292144040022D39F /* OverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideView.swift; sourceTree = "<group>"; };
 		A9EC19AA292156D80022D39F /* CarbInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbInputView.swift; sourceTree = "<group>"; };
@@ -374,6 +382,7 @@
 			isa = PBXGroup;
 			children = (
 				A9346F852AC9820500C15F70 /* OverrideViewModelTests.swift */,
+				A9DCD2F02BCD2C2C00AA258A /* OverrideViewDelegateMock.swift */,
 			);
 			path = LoopCaregiverTests;
 			sourceTree = "<group>";
@@ -381,7 +390,10 @@
 		A947025A2932286200FB3E59 /* NightscoutChart */ = {
 			isa = PBXGroup;
 			children = (
-				A9EC199D292101550022D39F /* NightscoutChartView.swift */,
+				A9EC199D292101550022D39F /* NightscoutChartScrollView.swift */,
+				A9DCD2EE2BC9378000AA258A /* AnnotationColorStyle.swift */,
+				A9DCD2EC2BC9375600AA258A /* FilledCircle.swift */,
+				A9DCD2EA2BC9373100AA258A /* GraphItem.swift */,
 				A9744DEB293405A4000A3D6A /* PinchZoom.swift */,
 				A9EC19A0292128D60022D39F /* TreatmentAnnotationView.swift */,
 				A930C6C32A922127004BB459 /* ZommableScrollView */,
@@ -763,6 +775,7 @@
 				A9E14D3D2A2BA5A600BDB93D /* Embed Foundation Extensions */,
 				A9CFDD282AEBFF1400FA701B /* Embed Watch Content */,
 				B63A43DC2B254B4E004CFEAA /* Capture Build Details */,
+				A9DBE0092BDF11B3001DF5C7 /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -915,6 +928,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		A9DBE0092BDF11B3001DF5C7 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"${SRCROOT}\"/..\npwd\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
 		B63A43DC2B254B4E004CFEAA /* Capture Build Details */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -942,6 +974,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9346F862AC9820500C15F70 /* OverrideViewModelTests.swift in Sources */,
+				A9DCD2F12BCD2C2C00AA258A /* OverrideViewDelegateMock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -989,6 +1022,7 @@
 			files = (
 				A970838F2B4D54CC0053D633 /* CustomDatePicker.swift in Sources */,
 				A9BAEE6E2B5C555F002C7C46 /* FirstRunView.swift in Sources */,
+				A9DCD2ED2BC9375600AA258A /* FilledCircle.swift in Sources */,
 				A9BD0DE02A89515700988E2C /* ZoomableScrollView.swift in Sources */,
 				A9A62C7F2AD1BD4C004CD316 /* TimeInterval.swift in Sources */,
 				A97083912B4D55130053D633 /* OverrideViewModel.swift in Sources */,
@@ -998,7 +1032,9 @@
 				A9EC19A9292144040022D39F /* OverrideView.swift in Sources */,
 				A97083932B4D55A00053D633 /* OverridePickerRowModel.swift in Sources */,
 				A94702692932429F00FB3E59 /* DoseChartView.swift in Sources */,
+				A9DCD2EB2BC9373100AA258A /* GraphItem.swift in Sources */,
 				A9ECCB2A2B286DB50057DEDF /* UserDefaults+Extensions.swift in Sources */,
+				A9DCD2EF2BC9378000AA258A /* AnnotationColorStyle.swift in Sources */,
 				A95223792A7FA0890070FE13 /* RemoteCommand+Charts.swift in Sources */,
 				A98348912AD206CD0034ABB2 /* PresetRowView.swift in Sources */,
 				A96929412926EFEC00B8BF43 /* LooperSetupView.swift in Sources */,
@@ -1009,7 +1045,7 @@
 				A9D3FF222A6C3B99000C891D /* Color.swift in Sources */,
 				A9BD7B552AD17AAD00E73973 /* PresetEditView.swift in Sources */,
 				A930C6C22A8F99AA004BB459 /* CGRect.swift in Sources */,
-				A9EC199E292101550022D39F /* NightscoutChartView.swift in Sources */,
+				A9EC199E292101550022D39F /* NightscoutChartScrollView.swift in Sources */,
 				A969293B2926ECF500B8BF43 /* BottomBarView.swift in Sources */,
 				A9EC19AB292156D80022D39F /* CarbInputView.swift in Sources */,
 				A9ECCB2C2B29C5270057DEDF /* AppExpirationAlerterRepresentable.swift in Sources */,

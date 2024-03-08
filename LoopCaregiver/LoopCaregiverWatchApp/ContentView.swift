@@ -11,25 +11,24 @@ import SwiftUI
 import WidgetKit
 
 struct ContentView: View {
-    
     @EnvironmentObject var accountService: AccountServiceManager
     var deepLinkHandler: DeepLinkHandler
     @EnvironmentObject var settings: CaregiverSettings
     @EnvironmentObject var watchService: WatchService
-    
-    @State var deepLinkErrorShowing = false
-    @State var deepLinkErrorText: String = ""
-    
-    @State var path: NavigationPath = NavigationPath()
-    
+
+    @State private var deepLinkErrorShowing = false
+    @State private var deepLinkErrorText: String = ""
+
+    @State private var path = NavigationPath()
+
     var body: some View {
-        NavigationStack (path: $path) {
+        NavigationStack(path: $path) {
             VStack {
                 if let looper = accountService.selectedLooper {
                     HomeView(connectivityManager: watchService, looperService: accountService.createLooperService(looper: looper, settings: settings))
                 } else {
                     Text("The Caregiver Watch app feature is not complete. Stay tuned.")
-                    //Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
+                    // Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
                 }
             }
             .navigationDestination(for: String.self, destination: { _ in
@@ -39,6 +38,7 @@ struct ContentView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     NavigationLink(value: "SettingsView") {
                         Image(systemName: "gear")
+                            .accessibilityLabel(Text("Settings"))
                     }
                 }
             }
@@ -56,7 +56,7 @@ struct ContentView: View {
                 }
             }
         })
-        .onOpenURL(perform: { (url) in
+        .onOpenURL(perform: { url in
             Task {
                 do {
                     try await deepLinkHandler.handleDeepLinkURL(url)
@@ -78,36 +78,31 @@ struct ContentView: View {
             }
         }
     }
-    
-    @MainActor func updateWatchConfiguration(watchConfiguration: WatchConfiguration) async {
-        
+
+    @MainActor
+    func updateWatchConfiguration(watchConfiguration: WatchConfiguration) async {
         let existingLoopers = accountService.loopers
-        
-        var removedLoopers = [Looper]()
-        for existingLooper in existingLoopers {
-            if !watchConfiguration.loopers.contains(where: { $0.id == existingLooper.id }) {
-                removedLoopers.append(existingLooper)
-            }
+
+        let removedLoopers = existingLoopers.filter { existingLooper in
+            return !watchConfiguration.loopers.contains(where: { $0.id == existingLooper.id })
         }
+        
         for looper in removedLoopers {
             try? accountService.removeLooper(looper)
         }
-        
-        var addedLoopers = [Looper]()
-        for configurationLooper in watchConfiguration.loopers {
-            if !existingLoopers.contains(where: { $0.id == configurationLooper.id }) {
-                addedLoopers.append(configurationLooper)
-            }
+
+        let addedLoopers = watchConfiguration.loopers.filter { configurationLooper in
+            return !existingLoopers.contains(where: { $0.id == configurationLooper.id })
         }
-        
+
         for looper in addedLoopers {
             try? accountService.addLooper(looper)
         }
-        
-        //To ensure new Loopers show in widget recommended configurations.
+
+        // To ensure new Loopers show in widget recommended configurations.
         WidgetCenter.shared.invalidateConfigurationRecommendations()
     }
-    
+
     func reloadWidget() {
         WidgetCenter.shared.reloadAllTimelines()
     }

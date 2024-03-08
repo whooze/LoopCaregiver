@@ -7,16 +7,17 @@
 
 import Foundation
 
-extension UserDefaults {
-    @objc public dynamic var lastPhoneDebugMessage: String? {
+public extension UserDefaults {
+    @objc dynamic var lastPhoneDebugMessage: String? {
         guard let message = object(forKey: "lastPhoneDebugMessage") as? String else {
             return nil
         }
 
         return message
     }
-    
-    @objc public func updateLastPhoneDebugMessage(_ message: String) {
+
+    @objc
+    func updateLastPhoneDebugMessage(_ message: String) {
         setValue(message, forKey: "lastPhoneDebugMessage")
     }
 }

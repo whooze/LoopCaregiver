@@ -10,13 +10,11 @@ import LoopKit
 
 public extension NewGlucoseSample {
     func arrowImageName() -> String {
-        
         guard let trend = self.trend else {
             return "questionmark"
         }
-        
+
         switch trend {
-            
         case .up:
             return "arrow.up.forward"
         case .upUp:
@@ -34,4 +32,3 @@ public extension NewGlucoseSample {
         }
     }
 }
-

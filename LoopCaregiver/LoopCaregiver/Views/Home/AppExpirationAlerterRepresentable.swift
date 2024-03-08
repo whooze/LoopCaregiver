@@ -3,7 +3,6 @@ import SwiftUI
 import UIKit
 
 struct AppExpirationAlerterRepresentable: UIViewControllerRepresentable {
-
     func makeUIViewController(context: Context) -> UIViewController {
         AppExpirationAlerterViewController()
     }
@@ -13,13 +12,18 @@ struct AppExpirationAlerterRepresentable: UIViewControllerRepresentable {
 }
 
 class AppExpirationAlerterViewController: UIViewController {
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appMovedToForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
     }
-    
-    @objc func appMovedToForeground() {
+
+    @objc
+    func appMovedToForeground() {
         AppExpirationAlerter.alertIfNeeded(viewControllerToPresentFrom: self)
     }
 }
