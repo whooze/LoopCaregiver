@@ -38,7 +38,7 @@ public struct LatestGlucoseRectangularView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: 12)
-                            .offset(.init(width: 0.0, height: 1.0))
+                            .offset(.init(width: 0.0, height: 1.5))
                     }
                     //BG delta
                     Text(viewModel.lastGlucoseChangeFormatted!)
