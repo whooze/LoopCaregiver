@@ -54,6 +54,14 @@ public struct WidgetViewModel {
         return toRet
     }
     
+    public var currentGlucoseNumberText: String {
+        var toRet = ""
+        let latestGlucoseValue = latestGlucose.presentableStringValue(displayUnits: glucoseDisplayUnits)
+        toRet += "\(latestGlucoseValue)"
+        
+        return toRet
+    }
+    
     public var lastGlucoseChangeFormatted: String? {
         
         guard let lastGlucoseChange = lastGlucoseChange else {return nil}
