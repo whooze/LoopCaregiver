@@ -46,7 +46,7 @@ public struct LatestGlucoseRectangularView: View {
                         .font(.system(size: 20.0))
                 }
                 //Minutes since update
-                Text("~" + viewModel.currentGlucoseDateText)
+                Text(viewModel.currentGlucoseDateText)
                     .strikethrough(viewModel.isGlucoseStale)
                     .font(.system(size: 20.0))
             }
