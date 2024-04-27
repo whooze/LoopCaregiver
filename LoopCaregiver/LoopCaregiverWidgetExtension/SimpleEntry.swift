@@ -6,8 +6,9 @@
 //
 
 import Foundation
-import WidgetKit
+import LoopCaregiverKit
 import LoopKit
+import WidgetKit
 
 struct SimpleEntry: TimelineEntry {
     let looper: Looper?
@@ -16,7 +17,6 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
     let entryIndex: Int
     let isLastEntry: Bool
-    let configuration: ConfigurationIntent
     
     func nextExpectedGlucoseDate() -> Date? {
         let secondsBetweenSamples: TimeInterval = 60 * 5

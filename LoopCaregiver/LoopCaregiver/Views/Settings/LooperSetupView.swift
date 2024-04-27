@@ -5,9 +5,10 @@
 //  Created by Bill Gestrich on 5/11/22.
 //
 
-import Foundation
-import SwiftUI
 import CodeScanner
+import Foundation
+import LoopCaregiverKit
+import SwiftUI
 
 struct LooperSetupView: View {
     

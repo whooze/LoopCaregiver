@@ -5,8 +5,10 @@
 //  Created by Bill Gestrich on 11/13/22.
 //
 
-import SwiftUI
 import Combine
+import LoopCaregiverKit
+import LoopKitUI
+import SwiftUI
 
 struct SettingsView: View {
 
@@ -15,18 +17,24 @@ struct SettingsView: View {
     @ObservedObject var nightscoutCredentialService: NightscoutCredentialService
     @ObservedObject var accountService: AccountServiceManager
     @ObservedObject var settings: CaregiverSettings
+    @ObservedObject var watchService: WatchService
     @Binding var showSheetView: Bool
     @State private var isPresentingConfirm: Bool = false
     @State private var path = NavigationPath()
     @State private var deleteAllCommandsShowing: Bool = false
     @State private var glucosePreference: GlucoseUnitPrefererence = .milligramsPerDeciliter
+    @State var maxCarbAmountPickerShowing = false
+    private let maxCarbAmountIncrements = Array(stride(from: 0, through: 100, by: 5))
+    @State var maxBolusAmountPickerShowing = false
+    private let maxBolusIncrements = Array(stride(from: 0, through: 10, by: 1))
     
-    init(looperService: LooperService, accountService: AccountServiceManager, settings: CaregiverSettings, showSheetView: Binding<Bool>) {
+    init(looperService: LooperService, accountService: AccountServiceManager, settings: CaregiverSettings, watchService: WatchService, showSheetView: Binding<Bool>) {
         self.settingsViewModel = SettingsViewModel(selectedLooper: looperService.looper, accountService: looperService.accountService, settings: settings)
         self.looperService = looperService
         self.nightscoutCredentialService = NightscoutCredentialService(credentials: looperService.looper.nightscoutCredentials)
         self.accountService = accountService
         self.settings = settings
+        self.watchService = watchService
         self._showSheetView = showSheetView
     }
     
@@ -36,8 +44,12 @@ struct SettingsView: View {
                 looperSection
                 addNewLooperSection
                 commandsSection
+                deliveryLimitsSection
                 unitsSection
                 timelineSection
+                if let profileExpiration = BuildDetails.default.profileExpiration {
+                    appExpirationSection(profileExpiration: profileExpiration)
+                }
                 experimentalSection
             }
             .navigationBarTitle(Text("Settings"), displayMode: .inline)
@@ -119,50 +131,124 @@ struct SettingsView: View {
         }
     }
     
+    var deliveryLimitsSection: some View {
+        Section {
+            LabeledContent("Max Carbs", value: String(settings.maxCarbAmount) + " g")
+                .background(Color.white.opacity(0.0000001)) //support tap
+                .onTapGesture {
+                    withAnimation(.linear) {
+                        maxCarbAmountPickerShowing.toggle()
+                    }
+                }
+            if maxCarbAmountPickerShowing {
+                Picker(selection: $settings.maxCarbAmount, label: Text("")) {
+                    ForEach(maxCarbAmountIncrements, id: \.self) { value in
+                        Text("\(value)")
+                            .tag(value)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .pickerStyle(.wheel)
+            }
+            LabeledContent("Max Bolus", value: String(settings.maxBolusAmount) + " U")
+                .background(Color.white.opacity(0.0000001)) //support tap
+                .onTapGesture {
+                    withAnimation(.linear) {
+                        maxBolusAmountPickerShowing.toggle()
+                    }
+                }
+            if maxBolusAmountPickerShowing {
+                Picker(selection: $settings.maxBolusAmount, label: Text("")) {
+                    ForEach(maxBolusIncrements, id: \.self) { value in
+                        Text("\(value)")
+                            .tag(value)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .pickerStyle(.wheel)
+            }
+            Text("Delivery limits only apply to this app. These do not change Loop or Nightscout settings.")
+                .font(.footnote)
+        } header: {
+            SectionHeader(label: "Delivery Limits")
+        }
+    }
+    
     var unitsSection: some View {
-        Section("Units") {
+        Section {
             Picker("Glucose", selection: $glucosePreference, content: {
                 ForEach(GlucoseUnitPrefererence.allCases, id: \.self, content: { item in
                     Text(item.presentableDescription).tag(item)
                 })
             })
+        } header: {
+            SectionHeader(label: "Units")
         }
     }
     
     var timelineSection: some View {
-        Section("Timeline") {
+        Section {
             Toggle("Show Prediction", isOn: $settings.timelinePredictionEnabled)
+        }  header: {
+            SectionHeader(label: "Timeline")
         }
     }
     
+    @ViewBuilder
     var experimentalSection: some View {
-        Section("Experimental Features") {
-            if settings.experimentalFeaturesUnlocked || settings.remoteCommands2Enabled {
+        
+        if settings.experimentalFeaturesUnlocked || settings.remoteCommands2Enabled {
+            Section {
+                Button("Setup Watch") {
+                    do {
+                        try activateLoopersOnWatch()
+                    } catch {
+                        print("Error activating Loopers on watch: \(error)")
+                    }
+                }
+                
+                Text("Setup will transfer all Loopers to Caregiver on your Apple Watch.")
+                    .font(.footnote)
+                LabeledContent("Watch App Open", value: watchService.isReachable() ? "YES" : "NO")
+            } header: {
+                SectionHeader(label: "Apple Watch")
+            }
+            Section {
                 Toggle("Remote Commands 2", isOn: $settings.remoteCommands2Enabled)
                 Text("Remote commands 2 requires a special Nightscout deploy and Loop version. This will enable command status and other features. See Zulip #caregiver for details")
                     .font(.footnote)
-                LabeledContent("App Groups", value: settings.appGroupsSupported ? "Enabled" : "Disabled")
-                Text("App Groups are required for Widgets to function.")
-                    .font(.footnote)
+            } header: {
+                SectionHeader(label: "Remote Commands")
+            }
+            Section {
                 Toggle("Demo Mode", isOn: $settings.demoModeEnabled)
                 Text("Demo mode hides sensitive data for Caregiver presentations.")
                     .font(.footnote)
-                Button("Send Watch Message") {
-                    let formatter = DateFormatter()
-                    formatter.dateStyle = .none
-                    formatter.timeStyle = .short
-                    WatchConnectivityManager.shared.send(formatter.string(from: Date()))
+                Button("Copy Deep Link") {
+                    UIPasteboard.general.string = addLooperDeepLink
                 }
-                if !settings.demoModeEnabled {
-                    Text(addLooperDeepLink)
-                        .textSelection(.enabled)
-                }
-            } else {
+                Text("WARNING: A deep link should NEVER be shared as it holds your Looper's secrets which will allow remote bolusing/carbs. Tapping the above row will copy the deep link to your clipboard. You can paste the link to the Safari URL field on another phone. It will open Caregiver, if installed, and add your Looper like you went through the setup process. This is useful if you have a phone without a camera for scanning the QR code.")
+                    .font(.footnote)
+            } header: {
+                SectionHeader(label: "Diagnostics")
+            }
+        } else {
+            Section {
                 Text("Disabled                             ")
                     .simultaneousGesture(LongPressGesture(minimumDuration: 5.0).onEnded { _ in
                         settings.experimentalFeaturesUnlocked = true
                     })
+            } header: {
+                SectionHeader(label: "Diagnostics")
             }
+        }
+    }
+    
+    func activateLoopersOnWatch() throws {
+        do {
+            try watchService.sendLoopersToWatch()
+        } catch {
+            print("Error activating Loopers \(error)")
         }
     }
     
@@ -176,7 +262,7 @@ struct SettingsView: View {
         let secretKey = selectedLooper.nightscoutCredentials.secretKey
         let deepLink = CreateLooperDeepLink(name: selectedLooper.name, nsURL: selectedLooper.nightscoutCredentials.url, secretKey: secretKey, otpURL: otpURL)
         do {
-            return try deepLink.toURL()
+            return try deepLink.toURL().absoluteString
         } catch {
             return ""
         }
@@ -185,10 +271,14 @@ struct SettingsView: View {
     
     var commandsSection: some View {
         Group {
-            Section(remoteCommandSectionText) {
-                ForEach(looperService.remoteDataSource.recentCommands, id: \.id, content: { command in
-                    CommandStatusView(command: command)
-                })
+            if looperService.remoteDataSource.recentCommands.count > 0 {
+                Section {
+                    ForEach(looperService.remoteDataSource.recentCommands, id: \.id, content: { command in
+                        CommandStatusView(command: command)
+                    })
+                }  header: {
+                    SectionHeader(label: "Recent Remote Commands")
+                }
             }
             if looperService.settings.remoteCommands2Enabled {
                 Section("Remote Special Actions") {
@@ -259,14 +349,78 @@ struct SettingsView: View {
         }
     }
     
-    var remoteCommandSectionText: String {
-        if looperService.settings.remoteCommands2Enabled {
-            return "Remote Commands"
+    /*
+     DIY loop specific component to show users the amount of time remaining on their build before a rebuild is necessary.
+     */
+    private func appExpirationSection(profileExpiration: Date) -> some View {
+        let expirationDate = AppExpirationAlerter.calculateExpirationDate(profileExpiration: profileExpiration)
+        let isTestFlight = AppExpirationAlerter.isTestFlightBuild()
+        let nearExpiration = AppExpirationAlerter.isNearExpiration(expirationDate: expirationDate)
+        let profileExpirationMsg = AppExpirationAlerter.createProfileExpirationSettingsMessage(expirationDate: expirationDate)
+        let readableExpirationTime = Self.dateFormatter.string(from: expirationDate)
+        
+        if isTestFlight {
+            return createAppExpirationSection(
+                headerLabel: NSLocalizedString("TestFlight", comment: "Settings app TestFlight section"),
+                footerLabel: NSLocalizedString("TestFlight expires ", comment: "Time that build expires") + readableExpirationTime,
+                expirationLabel: NSLocalizedString("TestFlight Expiration", comment: "Settings TestFlight expiration view"),
+                updateURL: "https://loopkit.github.io/loopdocs/gh-actions/gh-update/",
+                nearExpiration: nearExpiration,
+                expirationMessage: profileExpirationMsg
+            )
         } else {
-            return "Remote Command Errors"
+            return createAppExpirationSection(
+                headerLabel: NSLocalizedString("App Profile", comment: "Settings app profile section"),
+                footerLabel: NSLocalizedString("Profile expires ", comment: "Time that profile expires") + readableExpirationTime,
+                expirationLabel: NSLocalizedString("Profile Expiration", comment: "Settings App Profile expiration view"),
+                updateURL: "https://loopkit.github.io/loopdocs/build/updating/",
+                nearExpiration: nearExpiration,
+                expirationMessage: profileExpirationMsg
+            )
         }
     }
+    
+    private func createAppExpirationSection(headerLabel: String, footerLabel: String, expirationLabel: String, updateURL: String, nearExpiration: Bool, expirationMessage: String) -> some View {
+        return Section(
+            header: SectionHeader(label: headerLabel),
+            footer: Text(footerLabel)
+        ) {
+            if nearExpiration {
+                Text(expirationMessage).foregroundColor(.red)
+            } else {
+                HStack {
+                    Text(expirationLabel)
+                    Spacer()
+                    Text(expirationMessage).foregroundColor(Color.secondary)
+                }
+            }
+            Button(action: {
+                UIApplication.shared.open(URL(string: updateURL)!)
+            }) {
+                Text(NSLocalizedString("How to update (LoopDocs)", comment: "The title text for how to update"))
+            }
+        }
+    }
+
+    private static var dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .long
+        dateFormatter.timeStyle = .short
+        return dateFormatter // formats date like "February 4, 2023 at 2:35 PM"
+    }()
+
 }
+
+#Preview {
+    let composer = ServiceComposerPreviews()
+    let looper = composer.accountServiceManager.selectedLooper!
+    var showSheetView = true
+    let showSheetBinding = Binding<Bool>(get: {showSheetView}, set: {showSheetView = $0})
+    let looperService = composer.accountServiceManager.createLooperService(looper: looper, settings: composer.settings)
+    let remoteDataSerivceManager = RemoteDataServiceManager(remoteDataProvider: RemoteDataServiceProviderSimulator())
+    return SettingsView(looperService: looperService, accountService: composer.accountServiceManager, settings: composer.settings, watchService: composer.watchService, showSheetView: showSheetBinding)
+}
+
 
 class SettingsViewModel: ObservableObject {
     

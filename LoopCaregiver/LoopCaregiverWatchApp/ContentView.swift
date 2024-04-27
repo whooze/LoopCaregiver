@@ -5,45 +5,118 @@
 //  Created by Bill Gestrich on 10/27/23.
 //
 
+import Foundation
+import LoopCaregiverKit
 import SwiftUI
 import WidgetKit
 
 struct ContentView: View {
     
-    @ObservedObject private var connectivityManager = WatchConnectivityManager.shared
-    var userDefaults = UserDefaults(suiteName: Bundle.main.appGroupSuiteName)!
-    @State var lastPhoneDebugMessage: String? = nil
+    @EnvironmentObject var accountService: AccountServiceManager
+    var deepLinkHandler: DeepLinkHandler
+    @EnvironmentObject var settings: CaregiverSettings
+    @EnvironmentObject var watchService: WatchService
+    
+    @State var deepLinkErrorShowing = false
+    @State var deepLinkErrorText: String = ""
+    
+    @State var path: NavigationPath = NavigationPath()
     
     var body: some View {
-        VStack {
-            if let lastMessage = lastPhoneDebugMessage {
-                Button(action: {
-                    reloadWidget()
-                }, label: {
-                    Text("Reload Widget")
-                })
-                Text(lastMessage)
-            } else {
-                Text("The Caregiver Watch app feature is not complete. Stay tuned.")
+        NavigationStack (path: $path) {
+            VStack {
+                if let looper = accountService.selectedLooper {
+                    HomeView(connectivityManager: watchService, looperService: accountService.createLooperService(looper: looper, settings: settings))
+                } else {
+                    Text("The Caregiver Watch app feature is not complete. Stay tuned.")
+                    //Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
+                }
+            }
+            .navigationDestination(for: String.self, destination: { _ in
+                SettingsView(connectivityManager: watchService, accountService: accountService, settings: settings)
+            })
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink(value: "SettingsView") {
+                        Image(systemName: "gear")
+                    }
+                }
+            }
+            .alert(deepLinkErrorText, isPresented: $deepLinkErrorShowing) {
+                Button(role: .cancel) {
+                } label: {
+                    Text("OK")
+                }
             }
         }
-        .padding()
-        .onChange(of: connectivityManager.notificationMessage, {
-            if let message = connectivityManager.notificationMessage?.text {
-                userDefaults.updateLastPhoneDebugMessage(message)
-                lastPhoneDebugMessage = message
+        .onChange(of: watchService.receivedWatchConfiguration, {
+            if let receivedWatchConfiguration = watchService.receivedWatchConfiguration {
+                Task {
+                    await updateWatchConfiguration(watchConfiguration: receivedWatchConfiguration)
+                }
+            }
+        })
+        .onOpenURL(perform: { (url) in
+            Task {
+                do {
+                    try await deepLinkHandler.handleDeepLinkURL(url)
+                    reloadWidget()
+                } catch {
+                    print("Error handling deep link: \(error)")
+                    deepLinkErrorText = error.localizedDescription
+                    deepLinkErrorShowing = true
+                }
             }
         })
         .onAppear {
-            self.lastPhoneDebugMessage = userDefaults.lastPhoneDebugMessage
+            if accountService.selectedLooper == nil {
+                do {
+                    try watchService.requestWatchConfiguration()
+                } catch {
+                    print(error)
+                }
+            }
         }
     }
     
+    @MainActor func updateWatchConfiguration(watchConfiguration: WatchConfiguration) async {
+        
+        let existingLoopers = accountService.loopers
+        
+        var removedLoopers = [Looper]()
+        for existingLooper in existingLoopers {
+            if !watchConfiguration.loopers.contains(where: { $0.id == existingLooper.id }) {
+                removedLoopers.append(existingLooper)
+            }
+        }
+        for looper in removedLoopers {
+            try? accountService.removeLooper(looper)
+        }
+        
+        var addedLoopers = [Looper]()
+        for configurationLooper in watchConfiguration.loopers {
+            if !existingLoopers.contains(where: { $0.id == configurationLooper.id }) {
+                addedLoopers.append(configurationLooper)
+            }
+        }
+        
+        for looper in addedLoopers {
+            try? accountService.addLooper(looper)
+        }
+        
+        //To ensure new Loopers show in widget recommended configurations.
+        WidgetCenter.shared.invalidateConfigurationRecommendations()
+    }
+    
     func reloadWidget() {
-        WidgetCenter.shared.reloadTimelines(ofKind: "LoopCaregiverWatchAppExtension")
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
 
 #Preview {
-    ContentView()
+    let composer = ServiceComposerPreviews()
+    return ContentView(deepLinkHandler: composer.deepLinkHandler)
+        .environmentObject(composer.accountServiceManager)
+        .environmentObject(composer.settings)
+        .environmentObject(composer.watchService)
 }

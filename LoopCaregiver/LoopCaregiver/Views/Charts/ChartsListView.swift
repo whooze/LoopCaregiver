@@ -5,9 +5,10 @@
 //  Created by Bill Gestrich on 11/26/22.
 //
 
-import SwiftUI
-import SwiftCharts
+import LoopCaregiverKit
 import LoopKitUI
+import SwiftCharts
+import SwiftUI
 
 struct ChartsListView: View {
     
@@ -48,6 +49,7 @@ struct ChartsListView: View {
                               dateInterval: loopGraphInterval,
                               isInteractingWithChart: $isInteractingWithInsulinDeliveryChart)
             }
+            .frame(maxHeight: 150.0)
             ChartWrapperView(title:"Active Carbohydrates", subtitle: formattedCOB(), hideLabels: $isInteractingWithActiveCarbsChart) {
                 /*
                  if remoteDataSource.glucoseSamples.count > 0, remoteDataSource.predictedGlucose.count > 0 {

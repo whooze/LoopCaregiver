@@ -5,10 +5,10 @@
 //  Created by Bill Gestrich on 10/1/23.
 //
 
-import XCTest
 import Combine
-import NightscoutKit
 @testable import LoopCaregiver
+import NightscoutKit
+import XCTest
 
 final class OverrideViewModelTests: XCTestCase {
 
@@ -24,12 +24,12 @@ final class OverrideViewModelTests: XCTestCase {
         
         //Arrange
 
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let activeOverride = availableOverrides.last!
-        let overrideState = OverrideState(activeOverride: activeOverride, availableOverrides: availableOverrides)
+        let activeOverride = presets.last!
+        let overrideState = OverrideState(activeOverride: activeOverride, presets: presets)
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState))
         let viewModel = OverrideViewModel()
         
@@ -39,18 +39,18 @@ final class OverrideViewModelTests: XCTestCase {
         
         //Assert
         
-        XCTAssertEqual(viewModel.pickerSelectedOverride, activeOverride)
+        XCTAssertEqual(viewModel.pickerSelectedRow?.name, activeOverride.name)
     }
     
     func testLoading_OverridesInactive_SelectsNoOverride() async throws {
         
         //Arrange
 
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let overrideState = OverrideState(activeOverride: nil, availableOverrides: availableOverrides)
+        let overrideState = OverrideState(activeOverride: nil, presets: presets)
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState))
         let viewModel = OverrideViewModel()
         
@@ -60,18 +60,18 @@ final class OverrideViewModelTests: XCTestCase {
         
         //Assert
         
-        XCTAssertNil(viewModel.pickerSelectedOverride)
+        XCTAssertNil(viewModel.activeOverride)
     }
     
     func testLoading_WhenSuccessful_HasCompleteState() async throws {
         
         //Arrange
         
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let overrideState = OverrideState(activeOverride: nil, availableOverrides: availableOverrides)
+        let overrideState = OverrideState(activeOverride: nil, presets: presets)
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState))
         let viewModel = OverrideViewModel()
         
@@ -87,7 +87,6 @@ final class OverrideViewModelTests: XCTestCase {
         default:
             XCTFail("Wrong case")
         }
-        XCTAssertTrue(viewModel.pickerSelectedOverride == viewModel.activeOverride)
     }
     
     func testLoading_WhenErrorOccurs_HasErrorState() async throws {
@@ -110,18 +109,18 @@ final class OverrideViewModelTests: XCTestCase {
         default:
             XCTFail("Wrong case")
         }
-        XCTAssertNil(viewModel.pickerSelectedOverride)
+        XCTAssertNil(viewModel.pickerSelectedRow)
     }
     
     func testLoading_WhileLoading_HasLoadingState() async throws {
         
         //Arrange
         
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let overrideState = OverrideState(activeOverride: nil, availableOverrides: availableOverrides)
+        let overrideState = OverrideState(activeOverride: nil, presets: presets)
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState))
         let viewModel = OverrideViewModel()
         
@@ -152,19 +151,20 @@ final class OverrideViewModelTests: XCTestCase {
         
         //Arrange
 
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let activeOverride = availableOverrides[1]
-        let overrideState = OverrideState(activeOverride: activeOverride, availableOverrides: availableOverrides)
+        let activeOverride = presets[1]
+        let overrideState = OverrideState(activeOverride: activeOverride, presets: presets)
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState))
         let viewModel = OverrideViewModel()
+        let selectedRow = OverridePickerRowModel(preset: presets[1], activeOverride: activeOverride)
         
         //Act
         
         await viewModel.setup(delegate: delegate, deliveryCompleted: nil)
-        viewModel.pickerSelectedOverride = availableOverrides[0]
+        viewModel.pickerSelectedRow = selectedRow
         
         //Assert
         
@@ -174,7 +174,7 @@ final class OverrideViewModelTests: XCTestCase {
         default:
             XCTFail("Wrong case")
         }
-        XCTAssertTrue(viewModel.pickerSelectedOverride == availableOverrides[0])
+        XCTAssertTrue(viewModel.pickerSelectedRow == selectedRow)
 
     }
 
@@ -182,12 +182,12 @@ final class OverrideViewModelTests: XCTestCase {
         
         //Arrange
 
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let activeOverride = availableOverrides[0]
-        let overrideState = OverrideState(activeOverride: activeOverride, availableOverrides: availableOverrides)
+        let activeOverride = presets[0]
+        let overrideState = OverrideState(activeOverride: activeOverride, presets: presets)
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState))
         let viewModel = OverrideViewModel()
         
@@ -203,7 +203,7 @@ final class OverrideViewModelTests: XCTestCase {
         default:
             XCTFail("Wrong case")
         }
-        XCTAssertTrue(viewModel.pickerSelectedOverride == viewModel.activeOverride)
+        XCTAssertTrue(viewModel.pickerSelectedRow?.name == viewModel.activeOverride?.name)
 
     }
 
@@ -215,12 +215,12 @@ final class OverrideViewModelTests: XCTestCase {
         
         //Arrange
         
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let initialActiveOverride = availableOverrides[0]
-        let overrideState = OverrideState(activeOverride: initialActiveOverride, availableOverrides: availableOverrides)
+        let initialActiveOverride = presets[0]
+        let overrideState = OverrideState(activeOverride: initialActiveOverride, presets: presets)
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState))
         let viewModel = OverrideViewModel()
         
@@ -228,8 +228,8 @@ final class OverrideViewModelTests: XCTestCase {
         
         var deliveryCompletionCalled = false
         await viewModel.setup(delegate: delegate, deliveryCompleted: {deliveryCompletionCalled = true})
-        let updatedActiveOverride = availableOverrides[1]
-        viewModel.pickerSelectedOverride = updatedActiveOverride
+        let updatedActiveOverride = presets[1]
+        viewModel.pickerSelectedRow = OverridePickerRowModel(preset: presets[1], activeOverride: updatedActiveOverride)
         await viewModel.updateButtonTapped()
         
         //Assert
@@ -244,12 +244,12 @@ final class OverrideViewModelTests: XCTestCase {
         
         //Arrange
         
-        let availableOverrides = [
+        let presets = [
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0, targetRange: nil, insulinNeedsScaleFactor: nil, symbol: "🏊", name: "Swimming")
         ]
-        let initialActiveOverride = availableOverrides[0]
-        let overrideState = OverrideState(activeOverride: initialActiveOverride, availableOverrides: availableOverrides)
+        let initialActiveOverride = presets[0]
+        let overrideState = OverrideState(activeOverride: initialActiveOverride, presets: presets)
         let deliveryError = OverrideViewDelegateMock.MockError.NetworkError
         let delegate = OverrideViewDelegateMock(mockState: .overrideState(overrideState), mockDeliveryError: deliveryError)
         let viewModel = OverrideViewModel()
@@ -258,8 +258,8 @@ final class OverrideViewModelTests: XCTestCase {
         
         var deliveryCompletionCalled = false
         await viewModel.setup(delegate: delegate, deliveryCompleted: {deliveryCompletionCalled = true})
-        let updatedActiveOverride = availableOverrides[1]
-        viewModel.pickerSelectedOverride = updatedActiveOverride
+        let updatedActiveOverride = presets[1]
+        viewModel.pickerSelectedRow = OverridePickerRowModel(preset: presets[1], activeOverride: updatedActiveOverride)
         await viewModel.updateButtonTapped()
         
         //Assert

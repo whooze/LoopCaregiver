@@ -5,9 +5,10 @@
 //  Created by Bill Gestrich on 11/13/22.
 //
 
-import SwiftUI
-import LoopKitUI
 import LocalAuthentication
+import LoopCaregiverKit
+import LoopKitUI
+import SwiftUI
 
 struct CarbInputView: View {
     
@@ -41,6 +42,7 @@ struct CarbInputView: View {
                     if let errorText {
                         Text(errorText)
                             .foregroundColor(.critical)
+                            .padding()
                     }
                     Text("Carbs will be stored without accepting any recommended bolus. Storing carbs may increase automatic insulin delivery per your Loop Settings.")
                         .padding()
@@ -253,10 +255,18 @@ struct CarbInputView: View {
         let _ = try getCarbFieldValues()
     }
     
+    private func maxCarbAmount() -> Int {
+        return looperService.settings.maxCarbAmount
+    }
+    
     private func getCarbFieldValues() throws -> CarbInputViewFormValues {
         
-        guard let carbAmountInGrams = LocalizationUtils.doubleFromUserInput(carbInput), carbAmountInGrams > 0, carbAmountInGrams <= 250 else { //TODO: Check Looper's max carb amount
+        guard let carbAmountInGrams = LocalizationUtils.doubleFromUserInput(carbInput), carbAmountInGrams > 0 else {
             throw CarbInputViewError.invalidCarbAmount
+        }
+        
+        guard carbAmountInGrams <= Double(maxCarbAmount()) else {
+            throw CarbInputViewError.exceedsMaxAllowed(maxAllowed: maxCarbAmount())
         }
         
         guard let absorptionInHours = LocalizationUtils.doubleFromUserInput(absorption), absorptionInHours >= minAbsorptionTimeInHours, absorptionInHours <= maxAbsorptionTimeInHours else {
@@ -264,7 +274,9 @@ struct CarbInputView: View {
         }
         
         let now = Date()
-        let consumedDate = pickerConsumedDate
+        //We "randomize" the milliseconds to avoid issue with NS which
+        //doesn't allow entries at the same second.
+        let consumedDate = pickerConsumedDate.dateUsingCurrentSeconds()
         
         let oldestAcceptedDate = now.addingTimeInterval(-60 * 60 * Double(maxPastCarbEntryHours))
         let latestAcceptedDate = now.addingTimeInterval(60 * 60 * Double(maxFutureCarbEntryHours))
@@ -318,6 +330,7 @@ struct CarbInputViewFormValues {
 
 enum CarbInputViewError: LocalizedError {
     case invalidCarbAmount
+    case exceedsMaxAllowed(maxAllowed: Int)
     case invalidAbsorptionTime(minAbsorptionTimeInHours: Double, maxAbsorptionTimeInHours: Double)
     case exceedsMaxPastHours(maxPastHours: Int)
     case exceedsMaxFutureHours(maxFutureHours: Int)
@@ -325,7 +338,9 @@ enum CarbInputViewError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidCarbAmount:
-            return "Enter a carb amount between 1 and the max allowed in Loop Settings"
+            return "Enter a valid carb amount in grams."
+        case .exceedsMaxAllowed(let maxAllowed):
+            return "Enter a carb amount up to \(maxAllowed) g. The maximum can be increased in Caregiver Settings."
         case .invalidAbsorptionTime(let minAbsorptionTimeInHours, let maxAbsorptionTimeInHours):
             let presentableMinAbsorptionInHours = LocalizationUtils.presentableStringFromHoursAmount(minAbsorptionTimeInHours)
             let presentableMaxAbsorptionInHours = LocalizationUtils.presentableStringFromHoursAmount(maxAbsorptionTimeInHours)
@@ -344,4 +359,35 @@ enum CarbInputViewError: LocalizedError {
             return "hour"
         }
     }
+}
+
+#Preview {
+    let composer = ServiceComposerPreviews()
+    let looper = composer.accountServiceManager.selectedLooper!
+    var showSheetView = true
+    let showSheetBinding = Binding<Bool>(get: {showSheetView}, set: {showSheetView = $0})
+    let looperService = composer.accountServiceManager.createLooperService(looper: looper, settings: composer.settings)
+    return CarbInputView(looperService: looperService, showSheetView: showSheetBinding)
+}
+
+extension Date {
+    func dateUsingCurrentSeconds() -> Date {
+        let calendar = Calendar.current
+
+         // Extracting components from the original date
+         var components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: self)
+
+         // Getting the current seconds and milliseconds
+         let now = Date()
+         let nowSeconds = calendar.component(.second, from: now)
+         let nowMillisecond = calendar.component(.nanosecond, from: now) / 1_000_000
+
+         // Setting the seconds and millisecond components
+         components.second = nowSeconds
+         components.nanosecond = nowMillisecond * 1_000_000
+
+         // Creating a new date with these components
+         return calendar.date(from: components) ?? self
+    }
+
 }

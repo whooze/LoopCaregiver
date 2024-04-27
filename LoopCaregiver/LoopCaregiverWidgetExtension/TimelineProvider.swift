@@ -6,16 +6,17 @@
 //  Copyright © 2023 Bill Gestrich. All rights reserved.
 //
 
-import WidgetKit
 import CoreData
-import LoopKit
 import Intents
+import LoopCaregiverKit
+import LoopKit
+import WidgetKit
 
 struct TimelineProvider: IntentTimelineProvider {
     
     //MARK: Caregiver Services
     
-    let composer = ServiceComposer()
+    let composer = ServiceComposerProduction()
     
     var accountServiceManager: AccountServiceManager {
         return AccountServiceManager(accountService: composer.accountServiceManager)
@@ -34,16 +35,16 @@ struct TimelineProvider: IntentTimelineProvider {
             } else if let selectedLooper = accountServiceManager.selectedLooper {
                 looper = selectedLooper
             } else {
-                completion(SimpleEntry(looper: nil, currentGlucoseSample: nil, lastGlucoseChange: nil, date: Date(), entryIndex: 0, isLastEntry: true, configuration: configuration))
+                completion(SimpleEntry(looper: nil, currentGlucoseSample: nil, lastGlucoseChange: nil, date: Date(), entryIndex: 0, isLastEntry: true))
                 return
             }
             
             let nightscoutDataSource = remoteDataSource(looper: looper)
-            let sortedSamples = try await nightscoutDataSource.fetchGlucoseSamples().sorted(by: {$0.date < $1.date})
+            let sortedSamples = try await nightscoutDataSource.fetchRecentGlucoseSamples().sorted(by: {$0.date < $1.date})
             let latestGlucoseSample = sortedSamples.last
             let glucoseChange = getLastGlucoseChange(samples: sortedSamples)
             
-            completion(SimpleEntry(looper: looper, currentGlucoseSample: latestGlucoseSample, lastGlucoseChange: glucoseChange, date: Date(), entryIndex: 0, isLastEntry: true, configuration: configuration))
+            completion(SimpleEntry(looper: looper, currentGlucoseSample: latestGlucoseSample, lastGlucoseChange: glucoseChange, date: Date(), entryIndex: 0, isLastEntry: true))
         }
     }
     
@@ -73,7 +74,7 @@ struct TimelineProvider: IntentTimelineProvider {
     //MARK: IntentTimelineProvider
     
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(looper: accountServiceManager.selectedLooper, currentGlucoseSample: nil, lastGlucoseChange: nil, date: Date(), entryIndex: 0, isLastEntry: true, configuration: ConfigurationIntent())
+        SimpleEntry(looper: accountServiceManager.selectedLooper, currentGlucoseSample: nil, lastGlucoseChange: nil, date: Date(), entryIndex: 0, isLastEntry: true)
     }
 
     func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
@@ -101,19 +102,11 @@ struct TimelineProvider: IntentTimelineProvider {
                                               lastGlucoseChange: entry.lastGlucoseChange,
                                               date: nowDate.addingTimeInterval(60 * TimeInterval(index)),
                                               entryIndex: index,
-                                              isLastEntry: isLastEntry,
-                                              configuration: configuration)
+                                              isLastEntry: isLastEntry)
                 entries.append(futureEntry)
             }
             let timeline = Timeline(entries: entries, policy: .after(nextRequestDate))
             completion(timeline)
         }
-    }
-
-    func recommendations() -> [IntentRecommendation<ConfigurationIntent>] {
-        //The docs suggest this is inactive on iOS but check for WatchOS when supported
-        return [
-            IntentRecommendation(intent: ConfigurationIntent(), description: "Caregiver")
-        ]
     }
 }

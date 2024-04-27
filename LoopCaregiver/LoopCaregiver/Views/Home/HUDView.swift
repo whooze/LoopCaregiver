@@ -5,10 +5,12 @@
 //  Created by Bill Gestrich on 11/17/22.
 //
 
-import SwiftUI
 import Combine
-import LoopKit
+import LoopCaregiverKit
+import LoopCaregiverKitUI
 import HealthKit
+import LoopKit
+import SwiftUI
 
 struct HUDView: View {
     
@@ -32,7 +34,7 @@ struct HUDView: View {
                         .font(.largeTitle)
                         .foregroundColor(egvValueColor())
                     if let egv = nightscoutDataSource.currentGlucoseSample {
-                        Image(systemName: arrowImageName(egv: egv))
+                        Image(systemName: egv.arrowImageName())
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 15.0)
@@ -59,8 +61,22 @@ struct HUDView: View {
             }.onChange(of: hudViewModel.selectedLooper) { newValue in
                 looperPopoverShowing = false
             }
+            if let (activeOverride, status) = nightscoutDataSource.activeOverrideAndStatus() {
+                HStack {
+                    Text(activeOverride.presentableDescription())
+                        .bold()
+                        .font(.subheadline)
+                    Spacer()
+                    if let endTimeDescription = status.endTimeDescription() {
+                        Text(endTimeDescription)
+                            .foregroundColor(.gray)
+                            .bold()
+                            .font(.subheadline)
+                    }
+                }
+
+            }
         }
-        
     }
     
    var pickerButton: some View {
@@ -93,31 +109,6 @@ struct HUDView: View {
                 })
             }
             .presentationDetents([.medium])
-        }
-    }
-    
-    func arrowImageName(egv: NewGlucoseSample) -> String {
-        
-        guard let trend = egv.trend else {
-            return "questionmark"
-        }
-        
-        switch trend {
-            
-        case .up:
-            return "arrow.up.forward"
-        case .upUp:
-            return "arrow.up"
-        case .upUpUp:
-            return "arrow.up"
-        case .flat:
-            return "arrow.right"
-        case .down:
-            return "arrow.down.forward"
-        case .downDown:
-            return "arrow.down"
-        case .downDownDown:
-            return "arrow.down"
         }
     }
     
@@ -195,7 +186,8 @@ class HUDViewModel: ObservableObject {
      the selectedLooper account to the AccountServiceManager
      and the selection state of the HUD view. This may be a problem
      as it can lead to recursive updates since updating the active
-     loop user, updates the lastSelectedDate.
+     loop user, updates the lastSelectedDate, which sends a new
+     selectedLooper to the initializer of this view.
      See note == method of Looper.
      See also the refresh() method of AccountServiceManager which
      may be working around some of this.

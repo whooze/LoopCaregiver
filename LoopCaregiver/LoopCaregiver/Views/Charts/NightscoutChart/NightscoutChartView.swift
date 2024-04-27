@@ -5,12 +5,13 @@
 //  Created by Bill Gestrich on 11/13/22.
 //
 
-import SwiftUI
 import Charts
-import LoopKit
-import HealthKit
-import LoopKitUI
 import Combine
+import HealthKit
+import LoopCaregiverKit
+import LoopCaregiverKitUI
+import LoopKit
+import SwiftUI
 
 struct NightscoutChartScrollView: View {
     
@@ -636,65 +637,16 @@ enum AnnotationColorStyle {
 }
 
 
-enum ColorType: Int, Plottable, CaseIterable, Comparable {
+extension ColorType: Plottable {
     
-    var primitivePlottable: Int {
+    public var primitivePlottable: Int {
         return self.rawValue
     }
     
-    typealias PrimitivePlottable = Int
+    public typealias PrimitivePlottable = Int
     
-    case gray
-    case green
-    case yellow
-    case red
-    case clear
-    
-    init?(primitivePlottable: Int){
+    public init?(primitivePlottable: Int){
         self.init(rawValue: primitivePlottable)
-    }
-    
-    init(quantity: HKQuantity) {
-        let glucose = quantity.doubleValue(for:.milligramsPerDeciliter)
-        switch glucose {
-        case 0..<55:
-            self = ColorType.red
-        case 55..<70:
-            self = ColorType.yellow
-        case 70..<180:
-            self = ColorType.green
-        case 180..<250:
-            self = ColorType.yellow
-        case 250...:
-            self = ColorType.red
-        default:
-            assertionFailure("Unexpected quantity: \(quantity)")
-            self = ColorType.gray
-        }
-    }
-    
-    var color: Color {
-        switch self {
-        case .gray:
-            return Color.gray
-        case .green:
-            return Color.green
-        case .yellow:
-            return Color.yellow
-        case .red:
-            return Color.red
-        case .clear:
-            return Color.clear
-        }
-    }
-    
-    static func membersAsRange() -> ClosedRange<ColorType> {
-        return ColorType.allCases.first!...ColorType.allCases.last!
-    }
-    
-    //Comparable
-    static func < (lhs: ColorType, rhs: ColorType) -> Bool {
-        return lhs.rawValue < rhs.rawValue
     }
     
 }
