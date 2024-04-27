@@ -38,6 +38,12 @@ struct LoopCaregiverWidgetView : View {
         Group {
             if settings.appGroupsSupported {
                 switch family {
+                case .accessoryRectangular:
+                    if let latestGlucoseSample = entry.currentGlucoseSample {
+                        LatestGlucoseRectangularView(viewModel: WidgetViewModel(timelineEntryDate: entry.date, latestGlucose: latestGlucoseSample, lastGlucoseChange: entry.lastGlucoseChange, isLastEntry: entry.isLastEntry, glucoseDisplayUnits: settings.glucoseDisplayUnits, looper: entry.looper))
+                    } else {
+                        emptyLatestGlucoseView
+                    }
                 case .accessoryCircular:
                     if let latestGlucoseSample = entry.currentGlucoseSample {
                         LatestGlucoseCircularView(viewModel: WidgetViewModel(timelineEntryDate: entry.date, latestGlucose: latestGlucoseSample, lastGlucoseChange: entry.lastGlucoseChange, isLastEntry: entry.isLastEntry, glucoseDisplayUnits: settings.glucoseDisplayUnits, looper: entry.looper))
@@ -49,6 +55,8 @@ struct LoopCaregiverWidgetView : View {
                 }
             } else {
                 switch family {
+                case .accessoryRectangular:
+                   Text("AppGroups?")
                 case .accessoryCircular:
                    Text("AppGroups?")
                 default:

@@ -66,6 +66,8 @@ struct WidgetView: View {
     @ViewBuilder
     var body: some View {
         switch family {
+        case .accessoryRectangular:
+            LatestGlucoseRectangularView(viewModel: viewModel)
         case .accessoryInline:
             LatestGlucoseInlineView(viewModel: viewModel)
         default:
