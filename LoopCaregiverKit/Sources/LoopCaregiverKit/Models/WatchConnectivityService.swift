@@ -18,7 +18,11 @@ public final class WatchConnectivityService: NSObject, ObservableObject {
     
     private var pendingMessages = [String]()
     private let watchSession: WCSession
-    private var activated: Bool = false
+    private var activated: Bool = false {
+        didSet {
+            delegate?.activatedStateChanged(activated)
+        }
+    }
     public weak var delegate: (WatchConnectivityServiceDelegate)?
      
     public override init() {
