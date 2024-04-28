@@ -73,11 +73,7 @@ class TimelineProvider: AppIntentTimelineProvider {
     func getEntry(composer: ServiceComposer, configuration: ConfigurationAppIntent) async -> SimpleEntry {
         return await withCheckedContinuation { continuation in
             Task {
-                
-                var looper: Looper
-                if let configurationLooper = try composer.accountServiceManager.getLoopers().first(where: {$0.id == configuration.looperID}) {
-                    looper = configurationLooper
-                } else {
+                guard let looper = try composer.accountServiceManager.getLoopers().first(where: {$0.id == configuration.looperID}) else {
                     continuation.resume(returning: SimpleEntry(looper: nil, currentGlucoseSample: nil, lastGlucoseChange: nil, date: Date(), entryIndex: 0, isLastEntry: true, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits))
                     return
                 }
