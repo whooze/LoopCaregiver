@@ -10,23 +10,23 @@ import HealthKit
 import LoopKit
 
 public extension NewGlucoseSample {
-    
     func presentableUserValue(displayUnits: HKUnit) -> Double {
         return quantity.doubleValue(for: displayUnits)
     }
-    
+
     func presentableStringValue(displayUnits: HKUnit) -> String {
         let unitInUserUnits = quantity.doubleValue(for: displayUnits)
         return LocalizationUtils.presentableStringFromGlucoseAmount(unitInUserUnits, displayUnits: displayUnits)
     }
-    
-    func presentableStringValueWithUnits(displayUnits: HKUnit) -> String {
-        if displayUnits == .milligramsPerDeciliter {
-            return "\(presentableStringValue(displayUnits: displayUnits)) mg/dL"
-        } else if displayUnits == .millimolesPerLiter {
-            return "\(presentableStringValue(displayUnits: displayUnits)) mmol/L"
-        } else {
-            return "Error: Missing units"
+}
+
+public extension [NewGlucoseSample] {
+    func getLastGlucoseChange(displayUnits: HKUnit) -> Double? {
+        guard count > 1 else {
+            return nil
         }
+        let lastGlucoseValue = self[count - 1].presentableUserValue(displayUnits: displayUnits)
+        let priorGlucoseValue = self[count - 2].presentableUserValue(displayUnits: displayUnits)
+        return lastGlucoseValue - priorGlucoseValue
     }
 }

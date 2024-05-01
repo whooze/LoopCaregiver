@@ -10,20 +10,18 @@ import NightscoutKit
 import SwiftUI
 
 struct OverrideView: View {
-    
     var delegate: OverrideViewDelegate
     @StateObject private var viewModel = OverrideViewModel()
-    var deliveryCompleted: (() -> Void)? = nil
-    
+    var deliveryCompleted: (() -> Void)?
+
     private var experimentalMode = false
-    
-    init(delegate: OverrideViewDelegate, deliveryCompleted: (() -> Void)? = nil){
+
+    init(delegate: OverrideViewDelegate, deliveryCompleted: (() -> Void)? = nil) {
         self.delegate = delegate
         self.deliveryCompleted = deliveryCompleted
     }
-    
-    @ViewBuilder
-    var body: some View {
+
+    @ViewBuilder var body: some View {
         if experimentalMode {
             experimentalBodyView
         } else {
@@ -39,9 +37,8 @@ struct OverrideView: View {
             })
         }
     }
-    
-    @ViewBuilder
-    var pickerContainerView: some View {
+
+    @ViewBuilder var pickerContainerView: some View {
         HStack {
             switch viewModel.overrideListState {
             case .loading:
@@ -50,9 +47,9 @@ struct OverrideView: View {
                 reloadButtonView(error: error)
             case .loadingComplete(let overrideState):
                 Form {
-                    Section (){
+                    Section {
                         HStack {
-                            //Loading Pickers when there is a nil selection causes console warnings
+                            // Loading Pickers when there is a nil selection causes console warnings
                             Picker("Overrides", selection: $viewModel.pickerSelectedRow) {
                                 Text("None").tag(nil as OverridePickerRowModel?)
                                 ForEach(overrideState.pickerRows(), id: \.self) { row in
@@ -70,15 +67,15 @@ struct OverrideView: View {
             }
         }
     }
-    
-    @ViewBuilder
-    var durationContainerView: some View {
+
+    @ViewBuilder var durationContainerView: some View {
         Group {
             Toggle("Enable Indefinitely", isOn: $viewModel.enableIndefinitely)
                 .disabled(!viewModel.indefiniteOverridesAllowed)
             if !viewModel.enableIndefinitely {
                 LabeledContent("Duration", value: viewModel.selectedHoursAndMinutesDescription)
-                    .background(Color.white.opacity(0.0000001)) //support tap
+                    .accessibilityAddTraits(.isButton)
+                    .background(Color.white.opacity(0.0000001)) // support tap
                     .onTapGesture {
                         withAnimation(.linear) {
                             viewModel.durationExpanded.toggle()
@@ -96,9 +93,8 @@ struct OverrideView: View {
             }
         }
     }
-    
-    @ViewBuilder
-    var deliveryStatusContainerView: some View {
+
+    @ViewBuilder var deliveryStatusContainerView: some View {
         Group {
             if let error = viewModel.lastDeliveryError {
                 Text(error.localizedDescription)
@@ -109,7 +105,7 @@ struct OverrideView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func reloadButtonView(error: Error) -> some View {
         VStack {
@@ -122,13 +118,13 @@ struct OverrideView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 25.0, height: 25.0)
+                    .accessibilityLabel(Text("Settings"))
             })
             Text(error.localizedDescription)
         }
     }
-    
-    @ViewBuilder
-    var actionButton: some View {
+
+    @ViewBuilder var actionButton: some View {
         Group {
             switch viewModel.actionButtonType {
             case .cancel:
@@ -152,11 +148,10 @@ struct OverrideView: View {
             }
         }
     }
-    
-    //MARK: Experimental Presets View
-    
-    @ViewBuilder
-    var experimentalBodyView: some View {
+
+    // MARK: Experimental Presets View
+
+    @ViewBuilder var experimentalBodyView: some View {
         VStack {
             experimentalPresetsView
             deliveryStatusContainerView
@@ -166,18 +161,24 @@ struct OverrideView: View {
             if let editingPreset = viewModel.experimentalSelectedOverride {
                 PresetEditView( preset: editingPreset, viewModel: viewModel)
                     .navigationBarBackButtonHidden()
-                    .navigationBarItems(leading: Button(action: {
-                        viewModel.experimentalEditPresetShowing = false
-                        viewModel.experimentalSelectedOverride = nil
-                    }) {
-                        Text("Back")
-                    })
-                    .navigationBarItems(trailing: Button(action: {
-                        viewModel.experimentalEditPresetShowing = false
-                        viewModel.experimentalSelectedOverride = nil
-                    }) {
-                        Text("Enable")
-                    })
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button(action: {
+                                viewModel.experimentalEditPresetShowing = false
+                                viewModel.experimentalSelectedOverride = nil
+                            }, label: {
+                                Text("Back")
+                            })
+                        }
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(action: {
+                                viewModel.experimentalEditPresetShowing = false
+                                viewModel.experimentalSelectedOverride = nil
+                            }, label: {
+                                Text("Enable")
+                            })
+                        }
+                    }
             }
         })
         .onAppear(perform: {
@@ -186,8 +187,8 @@ struct OverrideView: View {
             }
         })
     }
-    @ViewBuilder
-    var experimentalPresetsView: some View {
+    
+    @ViewBuilder var experimentalPresetsView: some View {
         Form {
             switch viewModel.overrideListState {
             case .loading:
@@ -208,8 +209,8 @@ struct OverrideView: View {
                         experimentalPresetButtonRow(preset: activeOverride)
                     }
                 }
-                
-                Section ("Presets") {
+
+                Section("Presets") {
                     VStack(spacing: 10) {
                         ForEach(overrideState.presets) { preset in
                             experimentalPresetButtonRow(preset: preset)
@@ -219,7 +220,7 @@ struct OverrideView: View {
             }
         }
     }
-    
+
     func experimentalPresetButtonRow(preset: TemporaryScheduleOverride) -> some View {
         Button(action: {
             viewModel.experimentalSelectedOverride = preset
@@ -228,7 +229,7 @@ struct OverrideView: View {
             PresetRowView(preset: preset) {
                 viewModel.experimentalSelectedOverride = preset
             }
-            .background(Color.white.opacity(0.000001)) //To get taps to work
+            .background(Color.white.opacity(0.000001)) // To get taps to work
         })
         .buttonStyle(.plain)
     }
@@ -237,10 +238,10 @@ struct OverrideView: View {
 struct OverrideState: Equatable {
     let activeOverride: TemporaryScheduleOverride?
     let presets: [TemporaryScheduleOverride]
-    
+
     func pickerRows() -> [OverridePickerRowModel] {
         return presets.map { preset in
-            if let activeOverride = activeOverride, activeOverride.name == preset.name {
+            if let activeOverride, activeOverride.name == preset.name {
                 return OverridePickerRowModel(preset: preset, activeOverride: activeOverride)
             } else {
                 return OverridePickerRowModel(preset: preset, activeOverride: nil)
@@ -257,7 +258,7 @@ struct OverrideView_Previews: PreviewProvider {
     }
 }
 
-protocol OverrideViewDelegate {
+protocol OverrideViewDelegate: AnyObject {
     func startOverride(overrideName: String, durationTime: TimeInterval) async throws
     func overrideState() async throws -> OverrideState
     func cancelOverride() async throws
@@ -269,70 +270,70 @@ extension RemoteDataServiceManager: OverrideViewDelegate {
     }
 }
 
-struct OverrideViewPreviewMock: OverrideViewDelegate {
-    
+class OverrideViewPreviewMock: OverrideViewDelegate {
     var currentOverride: TemporaryScheduleOverride?
-    
     var presets: [NightscoutKit.TemporaryScheduleOverride]
     
+    init(currentOverride: TemporaryScheduleOverride? = nil, presets: [NightscoutKit.TemporaryScheduleOverride]) {
+        self.currentOverride = currentOverride
+        self.presets = presets
+    }
+
     func overrideState() async throws -> OverrideState {
-        //throw OverrideViewPreviewMockError.NetworkError //For testing
+        // throw OverrideViewPreviewMockError.NetworkError //For testing
         return OverrideState(activeOverride: currentOverride, presets: presets)
     }
-    
+
     func startOverride(overrideName: String, durationTime: TimeInterval) async throws {
-        //throw OverrideViewPreviewMockError.NetworkError //Testing
-        //guard let preset = presets.first(where: {$0.name == overrideName}) else {return}
-        try! await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+        // throw OverrideViewPreviewMockError.NetworkError //Testing
+        // guard let preset = presets.first(where: {$0.name == overrideName}) else {return}
+        try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
     }
-    
+
     func cancelOverride() async throws {
-        
     }
-    
+
     static var mockOverrides: [NightscoutKit.TemporaryScheduleOverride] {
         return [
             TemporaryScheduleOverride(duration: 60.0 * 60.0, targetRange: ClosedRange(uncheckedBounds: (110, 130)), insulinNeedsScaleFactor: 0.3, symbol: "🏃", name: "Running"),
             TemporaryScheduleOverride(duration: 60.0 * 90.0, targetRange: ClosedRange(uncheckedBounds: (110, 130)), insulinNeedsScaleFactor: 1.3, symbol: "🏊", name: "Swimming")
         ]
     }
-    
+
     enum OverrideViewPreviewMockError: LocalizedError {
-        case NetworkError
-        
+        case networkError
+
         var errorDescription: String? {
             switch self {
-            case .NetworkError:
+            case .networkError:
                 return "Connect to the network"
             }
         }
     }
-    
 }
 
 extension TemporaryScheduleOverride: Identifiable {
     public var id: String {
         return name ?? ""
     }
-    
+
     var presentedHourAndMinutes: String {
         guard durationInMinutes() > 0 else {
             return "∞"
         }
-        
+
         let (hours, minutes) = duration.hoursAndMinutes()
-        
-        var hoursPart: String? = nil
+
+        var hoursPart: String?
         if hours > 0 {
             hoursPart = "\(hours)h"
         }
-        
-        var minutesPart: String? = nil
+
+        var minutesPart: String?
         if minutes > 0 {
             minutesPart = "\(minutes)m"
         }
 
-        return [hoursPart, minutesPart].compactMap({$0}).joined(separator: " ")
+        return [hoursPart, minutesPart].compactMap({ $0 }).joined(separator: " ")
     }
 }
-

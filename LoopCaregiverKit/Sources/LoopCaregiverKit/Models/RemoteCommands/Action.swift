@@ -3,7 +3,6 @@
 //  LoopCaregiver
 //
 //  Created by Bill Gestrich on 12/25/22.
-//  Copyright © 2022 LoopKit Authors. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +14,7 @@ public enum Action: Codable, Equatable {
     case carbsEntry(CarbAction)
     case autobolus(AutobolusAction)
     case closedLoop(ClosedLoopAction)
-    
+
     public var actionName: String {
         switch self {
         case .carbsEntry:
@@ -32,7 +31,7 @@ public enum Action: Codable, Equatable {
             return "Autobolus"
         }
     }
-    
+
     public var actionDetails: String {
         switch self {
         case .carbsEntry(let carbAction):

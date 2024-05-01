@@ -9,6 +9,7 @@ import Foundation
 
 public protocol AccountService: AnyObject {
     var delegate: AccountServiceDelegate? {get set}
+    
     func getLoopers() throws -> [Looper]
     func updateActiveLoopUser(_ looper: Looper) throws
     func addLooper(_ looper: Looper) throws
@@ -16,5 +17,5 @@ public protocol AccountService: AnyObject {
 }
 
 public protocol AccountServiceDelegate: AnyObject {
-    func accountServiceDataUpdated(_ service:AccountService)
+    func accountServiceDataUpdated(_ service: AccountService)
 }

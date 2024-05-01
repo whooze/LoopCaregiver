@@ -9,23 +9,25 @@ import LoopCaregiverKit
 import SwiftUI
 
 struct ContentView: View {
-    
     @EnvironmentObject var accountService: AccountServiceManager
     var deepLinkHandler: DeepLinkHandler
     @EnvironmentObject var settings: CaregiverSettings
     @EnvironmentObject var watchService: WatchService
-    
-    @State var deepLinkErrorShowing = false
-    @State var deepLinkErrorText: String = ""
-    
+
+    @State private var deepLinkErrorShowing = false
+    @State private var deepLinkErrorText: String = ""
+
     var body: some View {
         return Group {
             if let looper = accountService.selectedLooper {
-                HomeView(looperService: accountService.createLooperService(looper: looper, settings: settings), watchService: watchService)
+                HomeView(
+                    looperService: accountService.createLooperService(looper: looper, settings: settings),
+                    watchService: watchService
+                )
             } else {
-                FirstRunView(accountService: accountService, settings: settings, showSheetView: true)
+                FirstRunView(accountService: accountService, settings: settings)
             }
-        }.onOpenURL(perform: { (url) in
+        }.onOpenURL(perform: { url in
             Task {
                 do {
                     try await deepLinkHandler.handleDeepLinkURL(url)

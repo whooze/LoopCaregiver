@@ -1,6 +1,6 @@
 //
 //  WatchConnectivityService.swift
-//  
+//
 //
 //  Created by Bill Gestrich on 2/13/24.
 //
@@ -15,30 +15,28 @@ public struct NotificationMessage: Identifiable, Equatable {
 }
 
 public final class WatchConnectivityService: NSObject, ObservableObject {
-    
     private var pendingMessages = [String]()
     private let watchSession: WCSession
-    private var activated: Bool = false {
+    private var activated = false {
         didSet {
             delegate?.activatedStateChanged(activated)
         }
     }
     public weak var delegate: (WatchConnectivityServiceDelegate)?
-     
-    public override init() {
+
+    override public init() {
         self.watchSession = WCSession.default
         super.init()
-        
+
         if WCSession.isSupported() {
             watchSession.delegate = self
             watchSession.activate()
         }
     }
-    
-    private let kMessageKey = "message"
-    
-    public func send(_ message: String) {
 
+    private let kMessageKey = "message"
+
+    public func send(_ message: String) {
         guard watchSession.activationState == .activated else {
             pendingMessages.append(message)
             return
@@ -49,21 +47,21 @@ public final class WatchConnectivityService: NSObject, ObservableObject {
         }
 
         do {
-            try watchSession.updateApplicationContext([kMessageKey : message])
+            try watchSession.updateApplicationContext([kMessageKey: message])
             delegate?.lastMessageSentDateChanged(Date())
         } catch {
             print("Cannot send message: \(String(describing: error))")
         }
     }
-    
+
     public func isReachable() -> Bool {
         return watchSession.isReachable && activated
     }
-    
+
     public func sessionsSupported() -> Bool {
         return WCSession.isSupported()
     }
-    
+
     public func isCounterpartAppInstalled() -> Bool {
 #if os(iOS)
         return watchSession.isWatchAppInstalled
@@ -74,9 +72,8 @@ public final class WatchConnectivityService: NSObject, ObservableObject {
 }
 
 extension WatchConnectivityService: WCSessionDelegate {
-    
-    //Each context message must be unique or it will be dropped. https://stackoverflow.com/a/47915741
-    public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+    // Each context message must be unique or it will be dropped. https://stackoverflow.com/a/47915741
+    public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         if let notificationText = applicationContext[kMessageKey] as? String {
             DispatchQueue.main.async { [weak self] in
                 guard let self else {return}
@@ -84,7 +81,7 @@ extension WatchConnectivityService: WCSessionDelegate {
             }
         }
     }
-    public func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+    public func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         if let notificationText = message[kMessageKey] as? String {
             DispatchQueue.main.async { [weak self] in
                 guard let self else {return}
@@ -92,26 +89,27 @@ extension WatchConnectivityService: WCSessionDelegate {
             }
         }
     }
-    
-    public func session(_ session: WCSession,
-                 activationDidCompleteWith activationState: WCSessionActivationState,
-                 error: Error?) {
+
+    public func session(
+        _ session: WCSession,
+        activationDidCompleteWith activationState: WCSessionActivationState,
+        error: Error?
+    ) {
         if let error {
             print("WCSession activation error: \(error)")
         } else {
             DispatchQueue.main.async {
-                
                 if activationState == .activated {
                     self.activated = true
                 }
-                
+
                 for message in self.pendingMessages {
                     self.send(message)
                 }
             }
         }
     }
-    
+
     #if os(iOS)
     public func sessionDidBecomeInactive(_ session: WCSession) {}
     public func sessionDidDeactivate(_ session: WCSession) {

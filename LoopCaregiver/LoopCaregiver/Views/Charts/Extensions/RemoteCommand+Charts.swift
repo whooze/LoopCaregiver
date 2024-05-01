@@ -11,40 +11,53 @@ import LoopCaregiverKit
 
 extension RemoteCommand {
     func graphItem(egvValues: [GraphItem], displayUnit: HKUnit) -> GraphItem? {
-        
         let treatmentDate = treatmentDate()
         let relativeEgvValue = interpolateEGVValue(egvs: egvValues, atDate: treatmentDate)
-        
+
         switch status.state {
-        case .Error:
+        case .error:
             switch self.action {
             case .bolusEntry(let bolusEntry):
-                return GraphItem(type: .bolus(bolusEntry.amountInUnits), displayTime: treatmentDate, quantity: HKQuantity(unit: displayUnit, doubleValue: relativeEgvValue), displayUnit: displayUnit, graphItemState: toGraphItemState())
+                return GraphItem(
+                    type: .bolus(
+                        bolusEntry.amountInUnits
+                    ),
+                    displayTime: treatmentDate,
+                    quantity: HKQuantity(unit: displayUnit, doubleValue: relativeEgvValue),
+                    displayUnit: displayUnit,
+                    graphItemState: toGraphItemState()
+                )
             case .carbsEntry(let carbEntry):
-                return GraphItem(type: .carb(Int(carbEntry.amountInGrams)), displayTime: treatmentDate, quantity: HKQuantity(unit: displayUnit, doubleValue: relativeEgvValue), displayUnit: displayUnit, graphItemState: toGraphItemState())
+                return GraphItem(
+                    type: .carb(Int(carbEntry.amountInGrams)),
+                    displayTime: treatmentDate,
+                    quantity: HKQuantity(unit: displayUnit, doubleValue: relativeEgvValue),
+                    displayUnit: displayUnit,
+                    graphItemState: toGraphItemState()
+                )
             default:
-                return nil //Not graphing other types yet.
-                //return GraphItem(type: .command(self), displayTime: createdDate, quantity: HKQuantity(unit: displayUnit, doubleValue: relativeEgvValue), displayUnit: displayUnit, graphItemState: toGraphItemState())
+                return nil // Not graphing other types yet.
+                // return GraphItem(type: .command(self), displayTime: createdDate, quantity: HKQuantity(unit: displayUnit, doubleValue: relativeEgvValue), displayUnit: displayUnit, graphItemState: toGraphItemState())
             }
         default:
             return nil
         }
     }
-    
+
     func toGraphItemState() -> GraphItemState {
         switch self.status.state {
-        case .Success:
+        case .success:
             return .success
-        case .Pending:
+        case .pending:
             return .pending
-        case .Error(let error):
+        case .error(let error):
             return .error(error)
-        case .InProgress:
-            //TODO: Add a pending state?
+        case .inProgress:
+            // TODO: Add a pending state?
             return .pending
         }
     }
-    
+
     func treatmentDate() -> Date {
         switch action {
         case .carbsEntry(let carbAction):

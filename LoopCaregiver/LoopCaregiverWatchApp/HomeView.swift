@@ -9,24 +9,24 @@ import LoopCaregiverKit
 import LoopCaregiverKitUI
 import SwiftUI
 import WidgetKit
-    
+
 struct HomeView: View {
-    
     @ObservedObject var connectivityManager: WatchService
     @ObservedObject var accountService: AccountServiceManager
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @ObservedObject var settings: CaregiverSettings
     @ObservedObject var looperService: LooperService
-    @Environment(\.scenePhase) var scenePhase
-    
-    init(connectivityManager: WatchService, looperService: LooperService){
+    @Environment(\.scenePhase)
+    var scenePhase
+
+    init(connectivityManager: WatchService, looperService: LooperService) {
         self.connectivityManager = connectivityManager
         self.looperService = looperService
         self.settings = looperService.settings
         self.accountService = looperService.accountService
         self.remoteDataSource = looperService.remoteDataSource
     }
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -40,6 +40,7 @@ struct HomeView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 15.0)
                         .foregroundColor(egvValueColor())
+                        .accessibilityLabel(Text(egv.arrowImageName()))
                 }
                 VStack {
                     Text(lastEGVTimeFormatted())
@@ -53,13 +54,19 @@ struct HomeView: View {
             }
         }
         .navigationTitle(accountService.selectedLooper?.name ?? "Name?")
-        .navigationDestination(for: String.self, destination: { _ in
-            SettingsView(connectivityManager: connectivityManager, accountService: accountService, settings: settings)
+        .navigationDestination(for: String.self,
+                               destination: { _ in
+            SettingsView(
+                connectivityManager: connectivityManager,
+                accountService: accountService,
+                settings: settings
+            )
         })
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 NavigationLink(value: "SettingsView") {
                     Image(systemName: "gear")
+                        .accessibilityLabel(Text("Settings"))
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -70,84 +77,72 @@ struct HomeView: View {
                     }
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
+                        .accessibilityLabel(Text("Refresh"))
                 }
             }
         }
-        .onChange(of: scenePhase, { oldValue, newValue in
+        .onChange(of: scenePhase, { _, _ in
             Task {
                 await remoteDataSource.updateData()
             }
         })
     }
-    
+
     func glucoseText() -> String {
-        remoteDataSource.currentGlucoseSample?.presentableStringValue(displayUnits: settings.glucoseDisplayUnits) ?? " "
+        return remoteDataSource.currentGlucoseSample?.presentableStringValue(
+            displayUnits: settings.glucoseDisplayUnits
+        ) ?? " "
     }
-    
-    func lastGlucoseChange() -> Double? {
-        let egvs = remoteDataSource.glucoseSamples
-        guard egvs.count > 1 else {
-            return nil
-        }
-        let lastGlucoseValue = egvs[egvs.count - 1].presentableUserValue(displayUnits: settings.glucoseDisplayUnits)
-        let priorGlucoseValue = egvs[egvs.count - 2].presentableUserValue(displayUnits: settings.glucoseDisplayUnits)
-        return lastGlucoseValue - priorGlucoseValue
-    }
-    
+
     func lastEGVTimeFormatted() -> String {
         guard let currentEGV = remoteDataSource.currentGlucoseSample else {
             return ""
         }
-        
+
         return currentEGV.date.formatted(.dateTime.hour().minute())
     }
-    
+
     func egvIsOutdated() -> Bool {
         guard let currentEGV = remoteDataSource.currentGlucoseSample else {
             return true
         }
         return Date().timeIntervalSince(currentEGV.date) > 60 * 10
     }
-    
+
     func egvValueColor() -> Color {
-        if let currentEGV = remoteDataSource.currentGlucoseSample {
-            return ColorType(quantity: currentEGV.quantity).color
-        } else {
+        guard let currentEGV = remoteDataSource.currentGlucoseSample else {
             return .white
         }
+        return ColorType(quantity: currentEGV.quantity).color
     }
-    
+
     func lastEGVDeltaFormatted() -> String {
-        
-        guard let lastEGVChange = self.lastGlucoseChange() else {
+        let samples = remoteDataSource.glucoseSamples
+        let displayUnits = settings.glucoseDisplayUnits
+        guard let lastEGVChange = samples.getLastGlucoseChange(displayUnits: displayUnits) else {
             return ""
         }
         
-        let formatter = NumberFormatter()
-        formatter.positivePrefix = "+"
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 1
-        formatter.numberStyle = .decimal
-        
-        guard let formattedEGV = formatter.string(from: lastEGVChange as NSNumber) else {
-            return ""
-        }
-        
-        return formattedEGV
-        
+        return lastEGVChange.formatted(
+            .number
+                .sign(strategy: .always(includingZero: false))
+            .precision(.fractionLength(0...1))
+        )
     }
-    
+
     func reloadWidget() {
         WidgetCenter.shared.reloadAllTimelines()
     }
-
 }
 
 #Preview {
     let composer = ServiceComposerPreviews()
     return NavigationStack {
         let looper = composer.accountServiceManager.selectedLooper!
-        let looperService = composer.accountServiceManager.createLooperService(looper: looper, settings: composer.settings)
+        let looperService = composer.accountServiceManager.createLooperService(
+            looper: looper,
+            settings: composer.settings
+        )
         HomeView(connectivityManager: composer.watchService, looperService: looperService)
     }
 }

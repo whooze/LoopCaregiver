@@ -13,7 +13,7 @@ extension TimeInterval {
         let minutes = (Int(self) - (hours * 3600)) / 60
         return (hours, minutes)
     }
-    
+
     static func seconds(_ seconds: Double) -> TimeInterval {
         return seconds
     }

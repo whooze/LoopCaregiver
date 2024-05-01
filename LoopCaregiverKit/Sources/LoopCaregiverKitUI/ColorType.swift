@@ -10,15 +10,14 @@ import NightscoutKit
 import SwiftUI
 
 public enum ColorType: Int, CaseIterable, Comparable {
-    
     case gray
     case green
     case yellow
     case red
     case clear
-    
+
     public init(quantity: HKQuantity) {
-        let glucose = quantity.doubleValue(for:.milligramsPerDeciliter)
+        let glucose = quantity.doubleValue(for: .milligramsPerDeciliter)
         switch glucose {
         case -Double.infinity..<55:
             self = ColorType.red
@@ -35,7 +34,7 @@ public enum ColorType: Int, CaseIterable, Comparable {
             self = ColorType.gray
         }
     }
-    
+
     public var color: Color {
         switch self {
         case .gray:
@@ -50,14 +49,13 @@ public enum ColorType: Int, CaseIterable, Comparable {
             return Color.clear
         }
     }
-    
+
     public static func membersAsRange() -> ClosedRange<ColorType> {
         return ColorType.allCases.first!...ColorType.allCases.last!
     }
-    
-    //Comparable
+
+    // Comparable
     public static func < (lhs: ColorType, rhs: ColorType) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
-    
 }

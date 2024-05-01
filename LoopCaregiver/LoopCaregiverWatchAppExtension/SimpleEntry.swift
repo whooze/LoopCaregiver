@@ -19,14 +19,26 @@ struct SimpleEntry: TimelineEntry {
     let entryIndex: Int
     let isLastEntry: Bool
     let glucoseDisplayUnits: HKUnit
-    
+
     func nextExpectedGlucoseDate() -> Date? {
         let secondsBetweenSamples: TimeInterval = 60 * 5
-        
+
         guard let glucoseDate = currentGlucoseSample?.date else {
             return nil
         }
-            
+
         return glucoseDate.addingTimeInterval(secondsBetweenSamples)
+    }
+
+    static func placeHolderEntry(looper: Looper?, glucoseDisplayUnits: HKUnit) -> SimpleEntry {
+        SimpleEntry(
+            looper: looper,
+            currentGlucoseSample: nil,
+            lastGlucoseChange: 0,
+            date: Date(),
+            entryIndex: 0,
+            isLastEntry: true,
+            glucoseDisplayUnits: glucoseDisplayUnits
+        )
     }
 }

@@ -10,14 +10,13 @@ import LoopCaregiverKit
 import SwiftUI
 
 struct FirstRunView: View {
-    
     @ObservedObject var accountService: AccountServiceManager
     let settings: CaregiverSettings
-    @State var showSheetView: Bool = false
+    @State private var showSheetView = true
     @State private var path = NavigationPath()
-    
+
     var body: some View {
-        NavigationStack (path: $path) {
+        NavigationStack(path: $path) {
             LooperSetupView(accountService: accountService, settings: settings, path: $path)
         }
     }

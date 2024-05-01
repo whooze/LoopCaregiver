@@ -11,7 +11,7 @@ extension Date: RawRepresentable {
     public var rawValue: String {
         self.timeIntervalSinceReferenceDate.description
     }
-    
+
     public init?(rawValue: String) {
         guard let doubleValue = Double(rawValue) else {
             return nil
