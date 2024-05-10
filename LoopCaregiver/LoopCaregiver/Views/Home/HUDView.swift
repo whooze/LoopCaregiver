@@ -34,7 +34,8 @@ struct HUDView: View {
                 HStack {
                     Text(
                         nightscoutDataSource.currentGlucoseSample?.presentableStringValue(
-                            displayUnits: settings.glucoseDisplayUnits
+                            displayUnits: settings.glucoseDisplayUnits,
+                            includeShortUnits: false
                         ) ?? " "
                     )
                         .strikethrough(egvIsOutdated())

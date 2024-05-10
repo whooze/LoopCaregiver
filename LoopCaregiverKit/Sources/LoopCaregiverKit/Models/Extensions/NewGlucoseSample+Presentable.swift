@@ -14,9 +14,13 @@ public extension NewGlucoseSample {
         return quantity.doubleValue(for: displayUnits)
     }
 
-    func presentableStringValue(displayUnits: HKUnit) -> String {
+    func presentableStringValue(displayUnits: HKUnit, includeShortUnits: Bool) -> String {
         let unitInUserUnits = quantity.doubleValue(for: displayUnits)
-        return LocalizationUtils.presentableStringFromGlucoseAmount(unitInUserUnits, displayUnits: displayUnits)
+        var result = LocalizationUtils.presentableStringFromGlucoseAmount(unitInUserUnits, displayUnits: displayUnits)
+        if includeShortUnits {
+            result += " " + displayUnits.shortLocalizedUnitString(avoidLineBreaking: true)
+        }
+        return result
     }
 }
 

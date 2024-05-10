@@ -98,11 +98,11 @@ struct ChartsListView: View {
     }
     
     func eventualGlucose() -> String {
-        guard remoteDataSource.predictedGlucose.last != nil else {
+        guard let eventualGlucose = remoteDataSource.predictedGlucose.last else {
             return ""
         }
         
-        return "Eventually \(settings.glucoseDisplayUnits.shortLocalizedUnitString(avoidLineBreaking: true))"
+        return "Eventually \(eventualGlucose.presentableStringValue(displayUnits: settings.glucoseDisplayUnits, includeShortUnits: true))"
     }
     
     func formattedCOB() -> String {

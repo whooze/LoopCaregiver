@@ -30,7 +30,7 @@ struct HomeView: View {
     var body: some View {
         VStack {
             HStack {
-                Text(remoteDataSource.currentGlucoseSample?.presentableStringValue(displayUnits: settings.glucoseDisplayUnits) ?? " ")
+                Text(remoteDataSource.currentGlucoseSample?.presentableStringValue(displayUnits: settings.glucoseDisplayUnits, includeShortUnits: false) ?? " ")
                     .strikethrough(egvIsOutdated())
                     .font(.largeTitle)
                     .foregroundColor(egvValueColor())
@@ -90,7 +90,8 @@ struct HomeView: View {
 
     func glucoseText() -> String {
         return remoteDataSource.currentGlucoseSample?.presentableStringValue(
-            displayUnits: settings.glucoseDisplayUnits
+            displayUnits: settings.glucoseDisplayUnits,
+            includeShortUnits: false
         ) ?? " "
     }
 

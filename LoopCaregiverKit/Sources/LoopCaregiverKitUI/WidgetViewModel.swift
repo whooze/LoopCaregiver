@@ -43,7 +43,7 @@ public struct WidgetViewModel {
 
     public var currentGlucoseText: String {
         var toRet = ""
-        let latestGlucoseValue = latestGlucose.presentableStringValue(displayUnits: glucoseDisplayUnits)
+        let latestGlucoseValue = latestGlucose.presentableStringValue(displayUnits: glucoseDisplayUnits, includeShortUnits: false)
         toRet += "\(latestGlucoseValue)"
 
         if let lastGlucoseChangeFormatted {
@@ -55,7 +55,7 @@ public struct WidgetViewModel {
     
     public var currentGlucoseNumberText: String {
         var toRet = ""
-        let latestGlucoseValue = latestGlucose.presentableStringValue(displayUnits: glucoseDisplayUnits)
+        let latestGlucoseValue = latestGlucose.presentableStringValue(displayUnits: glucoseDisplayUnits, includeShortUnits: false)
         toRet += "\(latestGlucoseValue)"
         
         return toRet
