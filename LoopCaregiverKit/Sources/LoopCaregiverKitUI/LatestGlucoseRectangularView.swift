@@ -14,9 +14,9 @@ public struct LatestGlucoseRectangularView: View {
     public let viewModel: WidgetViewModel
     @Environment(\.colorScheme)
     var colorScheme
-    
-    public init(viewModel: WidgetViewModel) {
-        self.viewModel = viewModel
+
+    public init(glucoseValue: GlucoseTimelineValue) {
+        self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
     }
     
     public var body: some View {
@@ -59,8 +59,6 @@ public struct LatestGlucoseRectangularView: View {
 
 struct LatestGlucoseRectangularView_Previews: PreviewProvider {
     static var previews: some View {
-        let latestGlucose = NewGlucoseSample(date: Date().addingTimeInterval(-60 * 5 * 60), quantity: .init(unit: .milligramsPerDeciliter, doubleValue: 100), condition: .aboveRange, trend: .flat, trendRate: .none, isDisplayOnly: false, wasUserEntered: false, syncIdentifier: "12345")
-        let viewModel = WidgetViewModel(timelineEntryDate: Date(), latestGlucose: latestGlucose, lastGlucoseChange: 1, isLastEntry: true, glucoseDisplayUnits: .milligramsPerDeciliter, looper: nil)
-        LatestGlucoseRectangularView(viewModel: viewModel)
+        LatestGlucoseRectangularView(glucoseValue: .previewsValue())
     }
 }

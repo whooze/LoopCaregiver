@@ -12,105 +12,41 @@ import SwiftUI
 
 struct LoopCaregiverWidgetView: View {
     @ObservedObject var settings: CaregiverSettings
-    var entry: SimpleEntry
+    var entry: GlucoseTimeLineEntry
     @Environment(\.widgetFamily)
     var family
     
-    init(entry: SimpleEntry, settings: CaregiverSettings) {
+    init(entry: GlucoseTimeLineEntry, settings: CaregiverSettings) {
         self.entry = entry
-        // TODO: Settings changes from the app don't seem to propogate here
-        // requiring a device reboot after changing the active Looper, for instance.
         self.settings = settings
     }
     
-    var widgetURL: URL {
-        guard let looper = entry.looper else {
-            let deepLink = SelectLooperDeepLink(looperUUID: "")
-            return deepLink.toURL()
-        }
-        
-        let deepLink = SelectLooperDeepLink(looperUUID: looper.id)
-        return deepLink.toURL()
-    }
-    
     var body: some View {
-        Group {
-            if settings.appGroupsSupported {
+        VStack {
+            switch entry {
+            case .success(let glucoseValue):
                 switch family {
                 case .accessoryRectangular:
-                    if let latestGlucoseSample = entry.currentGlucoseSample {
-                        LatestGlucoseRectangularView(viewModel: WidgetViewModel(timelineEntryDate: entry.date, latestGlucose: latestGlucoseSample, lastGlucoseChange: entry.lastGlucoseChange, isLastEntry: entry.isLastEntry, glucoseDisplayUnits: settings.glucoseDisplayUnits, looper: entry.looper))
-                    } else {
-                        emptyLatestGlucoseView
-                    }
+                    LatestGlucoseRectangularView(glucoseValue: glucoseValue)
                 case .accessoryCircular:
-                    if let latestGlucoseSample = entry.currentGlucoseSample {
-                        LatestGlucoseCircularView(
-                            viewModel: WidgetViewModel(
-                                timelineEntryDate: entry.date,
-                                latestGlucose: latestGlucoseSample,
-                                lastGlucoseChange: entry.lastGlucoseChange,
-                                isLastEntry: entry.isLastEntry,
-                                glucoseDisplayUnits: settings.glucoseDisplayUnits,
-                                looper: entry.looper
-                            )
-                        )
-                    } else {
-                        emptyLatestGlucoseView
-                    }
+                    LatestGlucoseCircularView(glucoseValue: glucoseValue)
                 default:
-                    defaultView
+                    Text(glucoseValue.looper.name)
+                        .font(.headline)
+                    LatestGlucoseCircularView(glucoseValue: glucoseValue)
                 }
-            } else {
-                switch family {
-                case .accessoryRectangular:
-                   Text("AppGroups?")
-                case .accessoryCircular:
-                    Text("AppGroups?")
-                default:
-                    Text("Widgets require App Groups via Xcode Builds.")
-                }
+            case .failure:
+                emptyLatestGlucoseView
             }
         }
         .widgetBackground(backgroundView: backgroundView)
-        .widgetURL(widgetURL)
+        .widgetURL(entry.selectLooperDeepLink().url)
     }
     
     var emptyLatestGlucoseView: some View {
         VStack {
             Text("---")
             Text("---")
-        }
-    }
-    
-    var defaultView: some View {
-        VStack {
-            if let looper = entry.looper {
-                Text(looper.name)
-                    .font(.headline)
-            }
-            if let latestGlucoseSample = entry.currentGlucoseSample {
-                LatestGlucoseCircularView(
-                    viewModel: WidgetViewModel(
-                        timelineEntryDate: entry.date,
-                        latestGlucose: latestGlucoseSample,
-                        lastGlucoseChange: entry.lastGlucoseChange,
-                        isLastEntry: entry.isLastEntry,
-                        glucoseDisplayUnits: settings.glucoseDisplayUnits,
-                        looper: entry.looper
-                    )
-                )
-            } else {
-                emptyLatestGlucoseView
-            }
-            //            if experimentalFeaturesUnlocked {
-            //                if let lastGlucoseDate = entry.currentGlucoseSample?.date {
-            //                    Text(timeFormat.string(from: lastGlucoseDate))
-            //                        .font(.footnote)
-            //                }
-            //                Text("\(timeFormat.string(from: entry.date)) (\(entry.entryIndex))")
-            //                    .font(.footnote)
-            //            }
         }
     }
     

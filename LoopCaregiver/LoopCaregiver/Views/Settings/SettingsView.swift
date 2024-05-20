@@ -9,6 +9,7 @@ import Combine
 import LoopCaregiverKit
 import LoopKitUI
 import SwiftUI
+import WidgetKit
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
@@ -247,6 +248,12 @@ struct SettingsView: View {
                 SectionHeader(label: "Remote Commands")
             }
             Section {
+                LabeledContent("User ID", value: accountService.selectedLooper?.id ?? "")
+                Button(action: {
+                    WidgetCenter.shared.reloadAllTimelines()
+                }, label: {
+                    Text("Reload Timeline")
+                })
                 Toggle("Demo Mode", isOn: $settings.demoModeEnabled)
                 Text("Demo mode hides sensitive data for Caregiver presentations.")
                     .font(.footnote)
@@ -282,19 +289,11 @@ struct SettingsView: View {
         guard let selectedLooper = accountService.selectedLooper else {
             return ""
         }
-        guard let otpURL = URL(string: selectedLooper.nightscoutCredentials.otpURL) else {
-            return ""
-        }
-        let secretKey = selectedLooper.nightscoutCredentials.secretKey
-        let deepLink = CreateLooperDeepLink(
-            name: selectedLooper.name,
-            nsURL: selectedLooper.nightscoutCredentials.url,
-            secretKey: secretKey,
-            otpURL: otpURL
-        )
         do {
-            return try deepLink.toURL().absoluteString
+            let deepLink = try CreateLooperDeepLink.deepLinkWithLooper(selectedLooper)
+            return deepLink.url.absoluteString
         } catch {
+            print(error.localizedDescription)
             return ""
         }
     }

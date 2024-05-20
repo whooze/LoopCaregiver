@@ -30,6 +30,8 @@ public class DeepLinkHandlerPhone: DeepLinkHandler {
             try await handleAddLooperDeepLink(createLooperDeepLink)
         case .selectLooper(let selectLooperDeepLink):
             try await handleSelectLooperDeepLink(selectLooperDeepLink)
+        case .selectLooperError(let selectLooperErrorDeepLink):
+            try await handleSelectLooperErrorDeepLink(selectLooperErrorDeepLink)
         case .requestWatchConfigurationDeepLink(let requestWatchConfigurationDeepLink):
             try await handleRequestWatchConfigurationDeepLink(requestWatchConfigurationDeepLink)
         }
@@ -44,6 +46,11 @@ public class DeepLinkHandlerPhone: DeepLinkHandler {
         if accountService.selectedLooper != looper {
             accountService.selectedLooper = looper
         }
+    }
+    
+    @MainActor
+    func handleSelectLooperErrorDeepLink(_ deepLink: SelectLooperErrorDeepLink) async throws {
+        throw deepLink.error
     }
 
     @MainActor
@@ -88,6 +95,8 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
             try await handleAddLooperDeepLink(createLooperDeepLink)
         case .selectLooper(let selectLooperDeepLink):
             try await handleSelectLooperDeepLink(selectLooperDeepLink)
+        case .selectLooperError(let selectLooperErrorDeepLink):
+            try await handleSelectLooperErrorDeepLink(selectLooperErrorDeepLink)
         case .requestWatchConfigurationDeepLink:
             preconditionFailure("Should not be received from iPhone")
         }
@@ -126,6 +135,11 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
         if accountService.selectedLooper != looper {
             accountService.selectedLooper = looper
         }
+    }
+    
+    @MainActor
+    func handleSelectLooperErrorDeepLink(_ deepLink: SelectLooperErrorDeepLink) async throws {
+        throw deepLink.error
     }
 
     enum DeepLinkSelectLooperError: LocalizedError {

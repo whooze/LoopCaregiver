@@ -12,26 +12,21 @@ import LoopKit
 import SwiftUI
 
 public struct WidgetViewModel {
+    public let glucoseValue: GlucoseTimelineValue
     public let timelineEntryDate: Date
     public let latestGlucose: NewGlucoseSample
     public let lastGlucoseChange: Double?
-    public let isLastEntry: Bool
     public let glucoseDisplayUnits: HKUnit
-    public let looper: Looper?
 
-    public init(timelineEntryDate: Date, latestGlucose: NewGlucoseSample, lastGlucoseChange: Double? = nil, isLastEntry: Bool, glucoseDisplayUnits: HKUnit, looper: Looper?) {
-        self.timelineEntryDate = timelineEntryDate
-        self.latestGlucose = latestGlucose
-        self.lastGlucoseChange = lastGlucoseChange
-        self.isLastEntry = isLastEntry
-        self.glucoseDisplayUnits = glucoseDisplayUnits
-        self.looper = looper
+    public init(glucoseValue: GlucoseTimelineValue) {
+        self.glucoseValue = glucoseValue
+        self.timelineEntryDate = glucoseValue.date
+        self.latestGlucose = glucoseValue.glucoseSample
+        self.lastGlucoseChange = glucoseValue.lastGlucoseChange
+        self.glucoseDisplayUnits = glucoseValue.glucoseDisplayUnits
     }
 
     public var currentGlucoseDateText: String {
-        if isLastEntry {
-            return ""
-        }
         let elapsedMinutes: Double = timelineEntryDate.timeIntervalSince(latestGlucose.date) / 60.0
         let roundedMinutes = Int(exactly: elapsedMinutes.rounded(.up)) ?? 0
         return "\(roundedMinutes)m"

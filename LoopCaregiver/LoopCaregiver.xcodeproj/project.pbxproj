@@ -12,8 +12,7 @@
 		A930C6C22A8F99AA004BB459 /* CGRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = A930C6C12A8F99AA004BB459 /* CGRect.swift */; };
 		A930C6C52A9364BD004BB459 /* DemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A930C6C42A9364BC004BB459 /* DemoView.swift */; };
 		A933EFA22B30FF460094C32C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA12B30FF460094C32C /* HomeView.swift */; };
-		A933EFA42B3106970094C32C /* TimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA32B3106970094C32C /* TimelineProvider.swift */; };
-		A933EFA92B3116F20094C32C /* SimpleEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA82B3116F20094C32C /* SimpleEntry.swift */; };
+		A933EFA42B3106970094C32C /* TimelineWatchProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA32B3106970094C32C /* TimelineWatchProvider.swift */; };
 		A9346F862AC9820500C15F70 /* OverrideViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9346F852AC9820500C15F70 /* OverrideViewModelTests.swift */; };
 		A947025D2932299600FB3E59 /* ChartsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A947025C2932299600FB3E59 /* ChartsListView.swift */; };
 		A94702692932429F00FB3E59 /* DoseChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94702682932429F00FB3E59 /* DoseChartView.swift */; };
@@ -44,9 +43,8 @@
 		A99F2F472A29350F00F7DE2D /* LoopCaregiverWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F422A29350D00F7DE2D /* LoopCaregiverWidget.intentdefinition */; };
 		A99F2F742A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F732A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift */; };
 		A99F2F772A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F762A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift */; };
-		A99F2F7B2A2AA0E100F7DE2D /* SimpleEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F792A2AA0DD00F7DE2D /* SimpleEntry.swift */; };
 		A99F2F7D2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F7C2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift */; };
-		A99F2F7F2A2AA19E00F7DE2D /* TimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F7E2A2AA19E00F7DE2D /* TimelineProvider.swift */; };
+		A99F2F7F2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F7E2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift */; };
 		A9A62C7F2AD1BD4C004CD316 /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A62C7E2AD1BD4C004CD316 /* TimeInterval.swift */; };
 		A9B033E4292306A90052AA9E /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A9B033E3292306A90052AA9E /* CodeScanner */; };
 		A9B033E829231DCE0052AA9E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B033E729231DCE0052AA9E /* SettingsView.swift */; };
@@ -198,8 +196,7 @@
 		A930C6C42A9364BC004BB459 /* DemoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoView.swift; sourceTree = "<group>"; };
 		A933181B2969FC17006CC3A2 /* Crypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crypto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A933EFA12B30FF460094C32C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		A933EFA32B3106970094C32C /* TimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineProvider.swift; sourceTree = "<group>"; };
-		A933EFA82B3116F20094C32C /* SimpleEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleEntry.swift; sourceTree = "<group>"; };
+		A933EFA32B3106970094C32C /* TimelineWatchProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineWatchProvider.swift; sourceTree = "<group>"; };
 		A9346F832AC9820500C15F70 /* LoopCaregiverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LoopCaregiverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9346F852AC9820500C15F70 /* OverrideViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideViewModelTests.swift; sourceTree = "<group>"; };
 		A947025C2932299600FB3E59 /* ChartsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsListView.swift; sourceTree = "<group>"; };
@@ -240,9 +237,8 @@
 		A99F2F502A29398F00F7DE2D /* LoopCaregiver.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LoopCaregiver.entitlements; sourceTree = "<group>"; };
 		A99F2F732A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CarbCorrectionNightscoutTreatment+Charts.swift"; sourceTree = "<group>"; };
 		A99F2F762A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BolusNightscoutTreatment+Charts.swift"; sourceTree = "<group>"; };
-		A99F2F792A2AA0DD00F7DE2D /* SimpleEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleEntry.swift; sourceTree = "<group>"; };
 		A99F2F7C2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopCaregiverWidgetView.swift; sourceTree = "<group>"; };
-		A99F2F7E2A2AA19E00F7DE2D /* TimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineProvider.swift; sourceTree = "<group>"; };
+		A99F2F7E2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineWidgetProvider.swift; sourceTree = "<group>"; };
 		A9A62C7E2AD1BD4C004CD316 /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
 		A9B033E729231DCE0052AA9E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A9BAEE6B2B5C552D002C7C46 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -563,8 +559,7 @@
 				A99F2F4F2A29396900F7DE2D /* LoopCaregiverWidgetExtension.entitlements */,
 				A99F2F3C2A29350D00F7DE2D /* LoopCaregiverWidgetBundle.swift */,
 				A99F2F7C2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift */,
-				A99F2F792A2AA0DD00F7DE2D /* SimpleEntry.swift */,
-				A99F2F7E2A2AA19E00F7DE2D /* TimelineProvider.swift */,
+				A99F2F7E2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift */,
 				A99F2F402A29350D00F7DE2D /* LoopCaregiverWidget.swift */,
 				A99F2F422A29350D00F7DE2D /* LoopCaregiverWidget.intentdefinition */,
 				A99F2F432A29350F00F7DE2D /* Assets.xcassets */,
@@ -602,8 +597,7 @@
 			children = (
 				A9CFDD442AEC043300FA701B /* LoopCaregiverWatchAppExtension.entitlements */,
 				A9CFDD352AEC02D600FA701B /* LoopCaregiverWatchAppExtension.swift */,
-				A933EFA32B3106970094C32C /* TimelineProvider.swift */,
-				A933EFA82B3116F20094C32C /* SimpleEntry.swift */,
+				A933EFA32B3106970094C32C /* TimelineWatchProvider.swift */,
 				A9CFDD372AEC02D600FA701B /* ConfigurationAppIntent.swift */,
 				A9CFDD392AEC02D700FA701B /* Assets.xcassets */,
 				A9CFDD3B2AEC02D700FA701B /* Info.plist */,
@@ -982,11 +976,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A99F2F7B2A2AA0E100F7DE2D /* SimpleEntry.swift in Sources */,
 				A99F2F3D2A29350D00F7DE2D /* LoopCaregiverWidgetBundle.swift in Sources */,
 				A99F2F7D2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift in Sources */,
 				A99F2F412A29350D00F7DE2D /* LoopCaregiverWidget.swift in Sources */,
-				A99F2F7F2A2AA19E00F7DE2D /* TimelineProvider.swift in Sources */,
+				A99F2F7F2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift in Sources */,
 				A99F2F462A29350F00F7DE2D /* LoopCaregiverWidget.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1008,8 +1001,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A933EFA92B3116F20094C32C /* SimpleEntry.swift in Sources */,
-				A933EFA42B3106970094C32C /* TimelineProvider.swift in Sources */,
+				A933EFA42B3106970094C32C /* TimelineWatchProvider.swift in Sources */,
 				A9EC5C7F2B10E9FC00AA32EF /* UserDefaults+Watch.swift in Sources */,
 				A9CFDD362AEC02D600FA701B /* LoopCaregiverWatchAppExtension.swift in Sources */,
 				A9CFDD382AEC02D600FA701B /* ConfigurationAppIntent.swift in Sources */,
