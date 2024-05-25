@@ -9,7 +9,6 @@ import OneTimePassword
 import SwiftUI
 
 public class OTPManager: ObservableObject {
-    
     public weak var delegate: OTPManagerDelegate?
     public let otpURL: String
     @Published public var otpCode: String = "" {
@@ -17,8 +16,8 @@ public class OTPManager: ObservableObject {
             self.delegate?.otpDidUpdate(manager: self, otpCode: otpCode)
         }
     }
-    
-    private var timer: Timer? = nil
+
+    private var timer: Timer?
 
     public init(optURL: String) {
         self.otpURL = optURL
@@ -27,7 +26,7 @@ public class OTPManager: ObservableObject {
         }
         refreshCurrentOTP()
     }
-    
+
     private func getOTPCode() throws -> String? {
         let token = try Token(url: URL(string: otpURL)!)
         return token.currentPassword
@@ -40,7 +39,6 @@ public class OTPManager: ObservableObject {
             print(error)
         }
     }
-
 }
 
 public protocol OTPManagerDelegate: AnyObject {

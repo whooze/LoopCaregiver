@@ -9,15 +9,14 @@ import Foundation
 import NightscoutKit
 
 public extension TemporaryScheduleOverride {
-    
     func durationInMinutes() -> Int {
         return Int(duration / 60)
     }
-    
+
     func presentableDescription() -> String {
         return "\(symbol ?? "") \(name ?? "")"
     }
-    
+
     func targetRangePresentableDescription() -> String? {
         guard let targetRange else { return nil }
         return "\(Int(targetRange.lowerBound)) - \(Int(targetRange.upperBound))"
@@ -29,17 +28,15 @@ public extension OverrideStatus {
         guard let duration, duration < 60 * 60 * 24 else { return nil }
         let endDate = timestamp.addingTimeInterval(duration)
         let endTimeText = DateFormatter.localizedString(from: endDate, dateStyle: .none, timeStyle: .short)
-        return String(format: NSLocalizedString("until %@", comment: "The format for the description of a custom preset end date"), endTimeText)
+        return String(format: NSLocalizedString("until %@", bundle: .module, comment: "The format for the description of a custom preset end date"), endTimeText)
     }
 }
 
 extension TemporaryScheduleOverride: Hashable {
-
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
     }
-    
-    
+
      public static func == (lhs: TemporaryScheduleOverride, rhs: TemporaryScheduleOverride) -> Bool {
          /*
           TODO:
@@ -59,5 +56,4 @@ extension TemporaryScheduleOverride: Hashable {
 //         lhs.targetRange == rhs.targetRange &&
 //         lhs.insulinNeedsScaleFactor == rhs.insulinNeedsScaleFactor
      }
-     
 }

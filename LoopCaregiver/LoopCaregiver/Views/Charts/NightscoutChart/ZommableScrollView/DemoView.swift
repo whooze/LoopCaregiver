@@ -10,12 +10,11 @@ import Combine
 import SwiftUI
 
 struct DemoView: View {
-    
-    @State var visibleFrameValues = 6
-    @State var totalGraphValues = 100
+    @State private var visibleFrameValues = 6
+    @State private var totalGraphValues = 100
 
-    @State var actionSubject = PassthroughSubject<Action, Never>()
-    
+    @State private var actionSubject = PassthroughSubject<Action, Never>()
+
     enum Action: Equatable {
         case chartDoubleTap(CGPoint)
         case zoomInTapped
@@ -24,16 +23,15 @@ struct DemoView: View {
         case scrollCenter
         case scrollRight
     }
-    
+
     var body: some View {
         VStack {
-
-            ZStack{
+            ZStack {
                 HStack {
                     Spacer(minLength: 1)
                     Spacer(minLength: 10)
                     chartView
-                    
+
                     Spacer(minLength: 10)
                 }
             }
@@ -62,43 +60,62 @@ struct DemoView: View {
                 .buttonStyle(.borderedProminent)
             }
             Spacer()
-        }//.padding(.all)
+        }// .padding(.all)
     }
-    
+
     var chartView: some View {
         GeometryReader { scrollViewGeometry in
-            ZoomableScrollView() { proxy in
+            ZoomableScrollView { proxy in
                 Chart {
                     ForEach(allShapes()) { shape in
                         PointMark(
-                            x: .value("X", shape.x),
-                            y: .value("Y", shape.y)
+                            x: .value("X", shape.xPos),
+                            y: .value("Y", shape.yPos)
                         )
                     }
                 }
-                .chartXAxis{
+                .chartXAxis {
                     AxisMarks(values: .automatic(desiredCount: totalGraphValues))
                 }
-                //.chartYAxis(.hidden)
+                // .chartYAxis(.hidden)
                 .chartOverlay { chartProxy in
                     GeometryReader { chartGeometry in
                         ZStack(alignment: .top) {
                             Rectangle().fill(.clear).contentShape(Rectangle())
+                                .accessibilityAddTraits(.isButton)
                                 .onTapGesture(count: 2) { tapLocation in
                                     actionSubject.send(.chartDoubleTap(tapLocation))
                                 }
-                                .onTapGesture(count: 1) { tapLocation in
+                                .onTapGesture(count: 1) { _ in
                                 }
                                 .onReceive(actionSubject) { action in
                                     switch action {
                                     case .chartDoubleTap(let tapLocation):
-                                        let zoomRequest = ContentViewZoomRequest(zoomType: .zoomIn, tapLocation: tapLocation, scrollViewSize: scrollViewGeometry.size, chartSize: chartGeometry.size, plotAreaSize: chartProxy.plotAreaSize)
+                                        let zoomRequest = ContentViewZoomRequest(
+                                            zoomType: .zoomIn,
+                                            tapLocation: tapLocation,
+                                            scrollViewSize: scrollViewGeometry.size,
+                                            chartSize: chartGeometry.size,
+                                            plotAreaSize: chartProxy.plotAreaSize
+                                        )
                                         zoom(zoomRequest: zoomRequest, viewProxy: proxy)
                                     case .zoomInTapped:
-                                        let zoomRequest = ContentViewZoomRequest(zoomType: .zoomIn, tapLocation: nil, scrollViewSize: scrollViewGeometry.size, chartSize: chartGeometry.size, plotAreaSize: chartProxy.plotAreaSize)
+                                        let zoomRequest = ContentViewZoomRequest(
+                                            zoomType: .zoomIn,
+                                            tapLocation: nil,
+                                            scrollViewSize: scrollViewGeometry.size,
+                                            chartSize: chartGeometry.size,
+                                            plotAreaSize: chartProxy.plotAreaSize
+                                        )
                                         zoom(zoomRequest: zoomRequest, viewProxy: proxy)
                                     case .zoomOutTapped:
-                                        let zoomRequest = ContentViewZoomRequest(zoomType: .zoomOut, tapLocation: nil, scrollViewSize: scrollViewGeometry.size, chartSize: chartGeometry.size, plotAreaSize: chartProxy.plotAreaSize)
+                                        let zoomRequest = ContentViewZoomRequest(
+                                            zoomType: .zoomOut,
+                                            tapLocation: nil,
+                                            scrollViewSize: scrollViewGeometry.size,
+                                            chartSize: chartGeometry.size,
+                                            plotAreaSize: chartProxy.plotAreaSize
+                                        )
                                         zoom(zoomRequest: zoomRequest, viewProxy: proxy)
                                     case .scrollLeft:
                                         proxy.scrollLeading()
@@ -109,7 +126,13 @@ struct DemoView: View {
                                     }
                                 }
                                 .onAppear {
-                                    let zoomRequest = ContentViewZoomRequest(zoomType: .none, tapLocation: nil, scrollViewSize: scrollViewGeometry.size, chartSize: chartGeometry.size, plotAreaSize: chartProxy.plotAreaSize)
+                                    let zoomRequest = ContentViewZoomRequest(
+                                        zoomType: .zoomNone,
+                                        tapLocation: nil,
+                                        scrollViewSize: scrollViewGeometry.size,
+                                        chartSize: chartGeometry.size,
+                                        plotAreaSize: chartProxy.plotAreaSize
+                                    )
                                     zoom(zoomRequest: zoomRequest, viewProxy: proxy)
                                 }
                         }
@@ -118,70 +141,80 @@ struct DemoView: View {
             }
         }
     }
-    
+
     func allShapes() -> [Shape] {
         var toRet = [Shape]()
         for val in 1...totalGraphValues {
-            toRet.append(Shape(x: Double(val), y: Double(totalGraphValues / 2)))
+            toRet.append(Shape(xPos: Double(val), yPos: Double(totalGraphValues / 2)))
         }
-        
+
         return toRet
     }
-    
+
     var zoomLevel: Double {
-        let result = CGFloat(totalGraphValues) / CGFloat(visibleFrameValues)
-        return result
+        return CGFloat(totalGraphValues) / CGFloat(visibleFrameValues)
     }
-    
+
     func zoom(zoomRequest: ContentViewZoomRequest, viewProxy: CustomViewProxy) {
-        
         let frameAddition: Int
         switch zoomRequest.zoomType {
         case .zoomIn:
             frameAddition = -1
         case .zoomOut:
             frameAddition = 1
-        case .none:
+        case .zoomNone:
             frameAddition = 0
         }
         let updatedFrames = visibleFrameValues + frameAddition
         guard updatedFrames >= 1 else {
             return
         }
-        
+
         visibleFrameValues = updatedFrames
-        
+
         let chartAxisWidth = zoomRequest.chartSize.width - zoomRequest.plotAreaSize.width
         let updatedFocusedContentFrameWidth = (zoomRequest.scrollViewSize.width * zoomLevel) - chartAxisWidth
-        let updatedFocusedContentFrame = CGRect(x: 0, y: 0, width: updatedFocusedContentFrameWidth, height: zoomRequest.scrollViewSize.height)
-        
+        let updatedFocusedContentFrame = CGRect(
+            x: 0,
+            y: 0,
+            width: updatedFocusedContentFrameWidth,
+            height: zoomRequest.scrollViewSize.height
+        )
+
         if let tapLocation = zoomRequest.tapLocation {
-            let request = ZoomScrollRequest(scrollType: .contentPoint(tapLocation), updatedFocusedContentFrame: updatedFocusedContentFrame, zoomAmount: zoomLevel)
+            let request = ZoomScrollRequest(
+                scrollType: .contentPoint(tapLocation),
+                updatedFocusedContentFrame: updatedFocusedContentFrame,
+                zoomAmount: zoomLevel
+            )
             viewProxy.handleZoomScrollRequest(request)
         } else {
-            let request = ZoomScrollRequest(scrollType: .scrollViewCenter, updatedFocusedContentFrame: updatedFocusedContentFrame, zoomAmount: zoomLevel)
+            let request = ZoomScrollRequest(
+                scrollType: .scrollViewCenter,
+                updatedFocusedContentFrame: updatedFocusedContentFrame,
+                zoomAmount: zoomLevel
+            )
             viewProxy.handleZoomScrollRequest(request)
         }
     }
-    
+
     struct Shape: Identifiable {
-        var x: Double
-        var y: Double
+        var xPos: Double
+        var yPos: Double
         var id = UUID()
     }
 }
 
 struct ContentViewZoomRequest {
-    
     let zoomType: ZoomType
     let tapLocation: CGPoint?
     let scrollViewSize: CGSize
     let chartSize: CGSize
     let plotAreaSize: CGSize
-    
+
     enum ZoomType {
         case zoomIn
         case zoomOut
-        case none
+        case zoomNone
     }
 }

@@ -9,14 +9,14 @@ import Foundation
 import NightscoutKit
 
 struct OverridePickerRowModel: Hashable {
-    public let targetRange: ClosedRange<Double>?
-    public let insulinNeedsScaleFactor: Double?
-    public let symbol: String?
-    public let duration: TimeInterval
-    public let name: String?
-    public let isActive: Bool
-    public let indefiniteDurationAllowed: Bool
-    
+    let targetRange: ClosedRange<Double>?
+    let insulinNeedsScaleFactor: Double?
+    let symbol: String?
+    let duration: TimeInterval
+    let name: String?
+    let isActive: Bool
+    let indefiniteDurationAllowed: Bool
+
     init(preset: TemporaryScheduleOverride, activeOverride: TemporaryScheduleOverride?) {
         let indefiniteDurationAllowed = preset.duration == 0
         if let activeOverride {
@@ -37,16 +37,16 @@ struct OverridePickerRowModel: Hashable {
             self.indefiniteDurationAllowed = indefiniteDurationAllowed
         }
     }
-    
+
     func presentableDescription() -> String {
         return "\(symbol ?? "") \(name ?? "")"
     }
-    
-    public func hash(into hasher: inout Hasher) {
+
+    func hash(into hasher: inout Hasher) {
         hasher.combine(name)
     }
-    
-    public static func == (lhs: OverridePickerRowModel, rhs: OverridePickerRowModel) -> Bool {
+
+    static func == (lhs: OverridePickerRowModel, rhs: OverridePickerRowModel) -> Bool {
         return lhs.name == rhs.name &&
         lhs.symbol == rhs.symbol &&
         lhs.duration == rhs.duration &&

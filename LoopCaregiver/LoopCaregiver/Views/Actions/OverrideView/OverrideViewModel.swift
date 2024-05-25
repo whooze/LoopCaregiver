@@ -10,18 +10,17 @@ import Foundation
 import NightscoutKit
 
 class OverrideViewModel: ObservableObject, Identifiable {
-    
-    var delegate: OverrideViewDelegate? = nil
-    var deliveryCompleted: (() -> Void)? = nil
+    weak var delegate: OverrideViewDelegate?
+    var deliveryCompleted: (() -> Void)?
     var cancellables = [AnyCancellable]()
     
     @Published var overrideListState: OverrideListState = .loading
     @Published var pickerSelectedRow: OverridePickerRowModel?
     @Published var experimentalSelectedOverride: TemporaryScheduleOverride?
     @Published var activeOverride: TemporaryScheduleOverride?
-    @Published var lastDeliveryError: Error? = nil
-    @Published var deliveryInProgress: Bool = false
-    @Published var enableIndefinitely: Bool = false
+    @Published var lastDeliveryError: Error?
+    @Published var deliveryInProgress = false
+    @Published var enableIndefinitely = false
     @Published var durationHourSelection = 0
     @Published var durationMinuteSelection = 0
     @Published var durationExpanded = false
@@ -34,7 +33,7 @@ class OverrideViewModel: ObservableObject, Identifiable {
     
     func bindPickerSelection() {
         $pickerSelectedRow.sink { val in
-            if let duration = val?.duration, duration > 0  {
+            if let duration = val?.duration, duration > 0 {
                 self.enableIndefinitely = false
                 let (hours, minutes) = duration.hoursAndMinutes()
                 self.durationHourSelection = hours
@@ -80,23 +79,23 @@ class OverrideViewModel: ObservableObject, Identifiable {
     }
     
     var actionButtonType: ActionButtonType {
-        if let pickerSelectedRow = pickerSelectedRow{
-            if pickerSelectedRow.isActive, activeOverride?.duration == pickerSelectedDuration {
-                return .cancel
-            } else {
-                return .update
-            }
-        } else {
+        guard let pickerSelectedRow else {
             return .cancel
         }
+        
+        let selectedRowAndDurationAndActive = pickerSelectedRow.isActive && activeOverride?.duration == pickerSelectedDuration
+        if selectedRowAndDurationAndActive {
+            return .cancel
+        }
+
+        return .update
     }
     
     var activeOverrideDescription: String {
-        if let activeOverride = activeOverride {
-            return activeOverride.presentableDescription()
-        } else {
+        guard let activeOverride else {
             return "-"
         }
+        return activeOverride.presentableDescription()
     }
     
     var activeOverrideDuration: Double? {
@@ -105,20 +104,19 @@ class OverrideViewModel: ObservableObject, Identifiable {
     }
     
     var selectedHoursAndMinutesDescription: String {
-        
         let (hours, minutes) = (durationHourSelection, durationMinuteSelection)
         
-        var hoursPart: String? = nil
+        var hoursPart: String?
         if hours > 0 {
             hoursPart = "\(hours)h"
         }
         
-        var minutesPart: String? = nil
+        var minutesPart: String?
         if minutes > 0 {
             minutesPart = "\(minutes)m"
         }
         
-        return [hoursPart, minutesPart].compactMap({$0}).joined(separator: " ")
+        return [hoursPart, minutesPart].compactMap({ $0 }).joined(separator: " ")
     }
     
     private var readyForDelivery: Bool {
@@ -130,31 +128,34 @@ class OverrideViewModel: ObservableObject, Identifiable {
     }
     
     private var overrideIsSelectedForUpdate: Bool {
-        if case .loadingComplete(let overrideState) = overrideListState {
-            return overrideState.presets.count > 0
-        } else {
+        switch overrideListState {
+        case .loadingComplete(let overrideState):
+            return !overrideState.presets.isEmpty
+        default:
             return false
         }
     }
     
     @MainActor
     private func loadOverrides() async {
-        
         guard let delegate else {return}
         
         overrideListState = .loading
         
         do {
             let overrideState = try await delegate.overrideState()
-            guard overrideState.presets.count > 0 else {
+            guard !overrideState.presets.isEmpty else {
                 enum OverrideViewLoadError: LocalizedError {
                     case emptyOverrides
-                    var errorDescription: String? { return "No Overrides Available"}
+                    
+                    var errorDescription: String? {
+                        return "No Overrides Available"
+                    }
                 }
                 throw OverrideViewLoadError.emptyOverrides
             }
             overrideListState = .loadingComplete(overrideState: overrideState)
-            if let activeOverride = overrideState.activeOverride, let preset = overrideState.presets.first(where: {$0.name == activeOverride.name}) {
+            if let activeOverride = overrideState.activeOverride, let preset = overrideState.presets.first(where: { $0.name == activeOverride.name }) {
                 self.pickerSelectedRow = OverridePickerRowModel(preset: preset, activeOverride: activeOverride)
                 self.activeOverride = activeOverride
             } else {
@@ -171,9 +172,8 @@ class OverrideViewModel: ObservableObject, Identifiable {
         self.deliveryCompleted = deliveryCompleted
         await loadOverrides()
     }
-
     
-    //MARK: Actions
+    // MARK: Actions
     
     @MainActor
     func cancelActiveOverrideButtonTapped() async {
@@ -193,7 +193,6 @@ class OverrideViewModel: ObservableObject, Identifiable {
     
     @MainActor
     func updateButtonTapped() async {
-        
         guard let delegate else {return}
         
         deliveryInProgress = true
@@ -201,9 +200,9 @@ class OverrideViewModel: ObservableObject, Identifiable {
         do {
             if let selectedOverride = pickerSelectedRow {
                 try await delegate.startOverride(overrideName: selectedOverride.name ?? "",
-                                                                       durationTime: pickerSelectedDuration)
+                                                 durationTime: pickerSelectedDuration)
             } else {
-                //TODO: Throw error
+                // TODO: Throw error
             }
             deliveryCompleted?()
         } catch {
@@ -217,11 +216,9 @@ class OverrideViewModel: ObservableObject, Identifiable {
         await self.loadOverrides()
     }
     
-    
-    //MARK: Models
+    // MARK: Models
     
     enum OverrideListState: Equatable {
-        
         case loading
         case loadingError(_ error: Error)
         case loadingComplete(overrideState: OverrideState)
@@ -230,9 +227,9 @@ class OverrideViewModel: ObservableObject, Identifiable {
             switch (lhs, rhs) {
             case (.loading, .loading):
                 return true
-            case (.loadingError(let lhsError), .loadingError(let rhsError)):
+            case let (.loadingError(lhsError), .loadingError(rhsError)):
                 return lhsError.localizedDescription == rhsError.localizedDescription
-            case (.loadingComplete(let lhsState), .loadingComplete(let rhsState)):
+            case let (.loadingComplete(lhsState), .loadingComplete(rhsState)):
                 return lhsState == rhsState
             default:
                 return false

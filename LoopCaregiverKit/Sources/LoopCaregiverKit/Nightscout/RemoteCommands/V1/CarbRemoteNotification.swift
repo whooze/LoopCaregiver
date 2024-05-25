@@ -1,15 +1,13 @@
 //
 //  CarbRemoteNotification.swift
-//  NightscoutUploadKit
+//  LoopCaregiverKit
 //
 //  Created by Bill Gestrich on 2/25/23.
-//  Copyright © 2023 Pete Schwamb. All rights reserved.
 //
 
 import Foundation
 
 public struct CarbRemoteNotification: RemoteNotification, Codable {
-    
     public let amount: Double
     public let absorptionInHours: Double?
     public let foodType: String?
@@ -31,19 +29,19 @@ public struct CarbRemoteNotification: RemoteNotification, Codable {
         case otp = "otp"
         case enteredBy = "entered-by"
     }
-    
+
     public func absorptionTime() -> TimeInterval? {
-        guard let absorptionInHours = absorptionInHours else {
+        guard let absorptionInHours else {
             return nil
         }
         return TimeInterval(rawValue: absorptionInHours * 60 * 60)
     }
-    
+
     public func toRemoteAction() -> Action {
         let action = CarbAction(amountInGrams: amount, absorptionTime: absorptionTime(), foodType: foodType, startDate: startDate)
         return .carbsEntry(action)
     }
-    
+
     public static func includedInNotification(_ notification: [String: Any]) -> Bool {
         return notification["carbs-entry"] != nil
     }

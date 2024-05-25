@@ -10,13 +10,13 @@ import SwiftUI
 import WidgetKit
 
 struct SettingsView: View {
-    
     @ObservedObject var connectivityManager: WatchService
     @ObservedObject var accountService: AccountServiceManager
     @ObservedObject var settings: CaregiverSettings
-    @StateObject var settingsViewModel = SettingsViewModel()
+    @StateObject private var settingsViewModel = SettingsViewModel()
     
-    @AppStorage("lastPhoneDebugMessage", store: UserDefaults(suiteName: Bundle.main.appGroupSuiteName)) var lastPhoneDebugMessage: String = ""
+    @AppStorage("lastPhoneDebugMessage", store: UserDefaults(suiteName: Bundle.main.appGroupSuiteName))
+    var lastPhoneDebugMessage: String = ""
     @State private var glucosePreference: GlucoseUnitPrefererence = .milligramsPerDeciliter
     
     var body: some View {
@@ -49,7 +49,6 @@ struct SettingsView: View {
                         Text("Invalidate Recommendations")
                     })
                     Button(action: {
-                        
                         WidgetCenter.shared.reloadAllTimelines()
                     }, label: {
                         Text("Reload Timeline")
@@ -69,7 +68,6 @@ struct SettingsView: View {
         })
     }
     
-    
     func delete(at offsets: IndexSet) {
         for index in offsets {
             let looper = accountService.loopers[index]
@@ -78,9 +76,7 @@ struct SettingsView: View {
             } catch {
                 print("Could not delete looper. \(looper), Error: \(error)")
             }
-
         }
-
     }
     
     func reloadWidget() {

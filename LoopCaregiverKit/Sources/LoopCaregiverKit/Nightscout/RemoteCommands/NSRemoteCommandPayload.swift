@@ -3,37 +3,34 @@
 //  LoopCaregiver
 //
 //  Created by Bill Gestrich on 12/27/22.
-//  Copyright © 2022 LoopKit Authors. All rights reserved.
 //
 
 import Foundation
 import LoopKit
 import NightscoutKit
 
-extension NSRemoteCommandPayload {
-    
-    public func toRemoteCommand() throws -> RemoteCommand {
-        
+public extension NSRemoteCommandPayload {
+    func toRemoteCommand() throws -> RemoteCommand {
         guard let id = _id else {
             throw RemoteCommandPayloadError.missingID
         }
-        
+
         return RemoteCommand(id: id, action: toRemoteAction(), status: status.toStatus(), createdDate: createdDate)
     }
-    
-    public func toRemoteAction() -> Action {
+
+    func toRemoteAction() -> Action {
         switch action {
-        case .bolus(let amountInUnits):
+        case let .bolus(amountInUnits):
             return .bolusEntry(BolusAction(amountInUnits: amountInUnits))
-        case .carbs(let amountInGrams, let absorptionTime, let startDate):
+        case let .carbs(amountInGrams, absorptionTime, startDate):
             return .carbsEntry(CarbAction(amountInGrams: amountInGrams, absorptionTime: absorptionTime, startDate: startDate))
-        case .override(let name, let durationTime, let remoteAddress):
+        case let .override(name, durationTime, remoteAddress):
             return .temporaryScheduleOverride(OverrideAction(name: name, durationTime: durationTime, remoteAddress: remoteAddress))
-        case .cancelOverride(let remoteAddress):
+        case let .cancelOverride(remoteAddress):
             return .cancelTemporaryOverride(OverrideCancelAction(remoteAddress: remoteAddress))
-        case .autobolus(let active):
+        case let .autobolus(active):
             return .autobolus(AutobolusAction(active: active))
-        case .closedLoop(let active):
+        case let .closedLoop(active):
             return .closedLoop(ClosedLoopAction(active: active))
         }
     }
@@ -44,14 +41,14 @@ extension NSRemoteCommandStatus {
         let commandState: RemoteCommandStatus.RemoteComandState
         switch self.state {
         case .Pending:
-            commandState = RemoteCommandStatus.RemoteComandState.Pending
+            commandState = RemoteCommandStatus.RemoteComandState.pending
         case .InProgress:
-            commandState = RemoteCommandStatus.RemoteComandState.InProgress
+            commandState = RemoteCommandStatus.RemoteComandState.inProgress
         case .Success:
-            commandState = RemoteCommandStatus.RemoteComandState.Success
+            commandState = RemoteCommandStatus.RemoteComandState.success
         case .Error:
             let error = RemoteCommandStatus.RemoteCommandStatusError(message: message)
-            commandState = RemoteCommandStatus.RemoteComandState.Error(error)
+            commandState = RemoteCommandStatus.RemoteComandState.error(error)
         }
         return RemoteCommandStatus(state: commandState, message: message)
     }
@@ -59,7 +56,7 @@ extension NSRemoteCommandStatus {
 
 enum RemoteCommandPayloadError: LocalizedError {
     case missingID
-    
+
     var errorDescription: String? {
         switch self {
         case .missingID:

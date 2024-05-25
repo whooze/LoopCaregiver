@@ -11,22 +11,21 @@ import LoopKitUI
 import SwiftUI
 
 struct BolusInputView: View {
-
     let looperService: LooperService
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @Binding var showSheetView: Bool
-    
+
     @State private var bolusAmount: String = ""
     @State private var duration: String = ""
     @State private var submissionInProgress = false
-    @State private var isPresentingConfirm: Bool = false
-    @State private var errorText: String? = nil
-    @State private var nowDate: Date = Date()
+    @State private var isPresentingConfirm = false
+    @State private var errorText: String?
+    @State private var nowDate = Date()
     @FocusState private var bolusInputViewIsFocused: Bool
-    
+
     private let unitFrameWidth: CGFloat = 20.0
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -61,22 +60,26 @@ struct BolusInputView: View {
                     }
                 }
                 .disabled(submissionInProgress)
-                .onReceive(timer) { input in
+                .onReceive(timer) { _ in
                     nowDate = Date()
                 }
                 if submissionInProgress {
                     ProgressView()
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        self.showSheetView = false
+                    }, label: {
+                        Text("Cancel")
+                    })
+                }
+            }
             .navigationBarTitle(Text("Bolus"), displayMode: .inline)
-            .navigationBarItems(leading: Button(action: {
-                self.showSheetView = false
-            }) {
-                Text("Cancel")
-            })
         }
     }
-    
+
     var bolusEntryForm: some View {
         Form {
             if let recommendedBolus = remoteDataSource.recommendedBolus {
@@ -109,10 +112,9 @@ struct BolusInputView: View {
             }
         }
     }
-    
+
     @MainActor
-    private func deliverButtonTapped(){
-        
+    private func deliverButtonTapped() {
         bolusInputViewIsFocused = false
         do {
             errorText = nil
@@ -121,21 +123,18 @@ struct BolusInputView: View {
         } catch {
             errorText = error.localizedDescription
         }
-        
     }
-    
+
     @MainActor
     private func deliverConfirmationButtonTapped() {
-
         Task {
+            let message = String(format: NSLocalizedString("Authenticate to Bolus", bundle: .main, comment: "The message displayed during a device authentication prompt for bolus specification"))
 
-            let message = String(format: NSLocalizedString("Authenticate to Bolus", comment: "The message displayed during a device authentication prompt for bolus specification"))
-            
-            guard (await authenticationHandler(message)) else {
+            guard await authenticationHandler(message) else {
                 errorText = "Authentication required"
                 return
             }
-            
+
             submissionInProgress = true
             do {
                 try await deliverBolus()
@@ -143,42 +142,41 @@ struct BolusInputView: View {
             } catch {
                 errorText = error.localizedDescription
             }
-            
+
             submissionInProgress = false
         }
     }
-    
+
     private func deliverBolus() async throws {
         let fieldValues = try getBolusFieldValues()
-        let _ = try await remoteDataSource.deliverBolus(amountInUnits: fieldValues.bolusAmount)
+        _ = try await remoteDataSource.deliverBolus(amountInUnits: fieldValues.bolusAmount)
     }
-    
+
     private func validateForm() throws {
-        let _ = try getBolusFieldValues()
+        _ = try getBolusFieldValues()
     }
-    
+
     private func maxBolusAmount() -> Int {
         return looperService.settings.maxBolusAmount
     }
-    
+
     private func getBolusFieldValues() throws -> BolusInputViewFormValues {
-        
         guard let bolusAmountInUnits = LocalizationUtils.doubleFromUserInput(bolusAmount),
                 bolusAmountInUnits > 0 else {
             throw BolusInputViewError.invalidBolusAmount
         }
-        
+
         guard bolusAmountInUnits <= Double(maxBolusAmount()) else {
             throw BolusInputViewError.exceedsMaxAllowed(maxAllowed: maxBolusAmount())
         }
-    
+
         return BolusInputViewFormValues(bolusAmount: bolusAmountInUnits)
     }
-    
+
     private func disableForm() -> Bool {
         return submissionInProgress || bolusAmount.isEmpty
     }
-    
+
     var authenticationHandler: (String) async -> Bool = { message in
         return await withCheckedContinuation { continuation in
             LocalAuthentication.deviceOwnerCheck(message) { result in
@@ -191,18 +189,16 @@ struct BolusInputView: View {
             }
         }
     }
-    
 }
 
 struct BolusInputViewFormValues {
     let bolusAmount: Double
 }
 
-
 enum BolusInputViewError: LocalizedError {
     case invalidBolusAmount
     case exceedsMaxAllowed(maxAllowed: Int)
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidBolusAmount:
@@ -212,7 +208,7 @@ enum BolusInputViewError: LocalizedError {
             return "Enter a bolus amount up to \(localizedAmount) U. The maximum can be increased in Caregiver Settings."
         }
     }
-    
+
     func pluralizeHour(count: Int) -> String {
         if count > 1 {
             return "hours"
@@ -226,7 +222,7 @@ enum BolusInputViewError: LocalizedError {
     let composer = ServiceComposerPreviews()
     let looper = composer.accountServiceManager.selectedLooper!
     var showSheetView = true
-    let showSheetBinding = Binding<Bool>(get: {showSheetView}, set: {showSheetView = $0})
+    let showSheetBinding = Binding<Bool>(get: { showSheetView }, set: { showSheetView = $0 })
     let looperService = composer.accountServiceManager.createLooperService(looper: looper, settings: composer.settings)
     let remoteDataSerivceManager = RemoteDataServiceManager(remoteDataProvider: RemoteDataServiceProviderSimulator())
     return BolusInputView(looperService: looperService, remoteDataSource: remoteDataSerivceManager, showSheetView: showSheetBinding)

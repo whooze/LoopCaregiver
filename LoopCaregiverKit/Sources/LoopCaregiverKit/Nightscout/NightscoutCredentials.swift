@@ -8,11 +8,10 @@
 import Foundation
 
 public struct NightscoutCredentials: Codable, Hashable {
-    
     public let url: URL
     public let secretKey: String
     public let otpURL: String
-    
+
     public init(url: URL, secretKey: String, otpURL: String) {
         self.url = url
         self.secretKey = secretKey

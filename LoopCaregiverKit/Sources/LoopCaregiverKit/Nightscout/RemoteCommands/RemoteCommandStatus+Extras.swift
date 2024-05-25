@@ -3,7 +3,6 @@
 //  LoopCaregiver
 //
 //  Created by Bill Gestrich on 12/31/22.
-//  Copyright © 2022 LoopKit Authors. All rights reserved.
 //
 
 import LoopKit
@@ -18,13 +17,13 @@ extension RemoteCommandStatus {
 extension RemoteCommandStatus.RemoteComandState {
     func toNSRemoteCommandState() -> NSRemoteCommandStatus.NSRemoteComandState {
         switch self {
-        case .Error:
+        case .error:
             return .Error
-        case .Success:
+        case .success:
             return .Success
-        case .InProgress:
+        case .inProgress:
             return .InProgress
-        case .Pending:
+        case .pending:
             return .Pending
         }
     }

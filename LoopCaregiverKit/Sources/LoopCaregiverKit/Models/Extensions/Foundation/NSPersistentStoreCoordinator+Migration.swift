@@ -18,7 +18,7 @@ extension NSPersistentStoreCoordinator {
 
             // delete old store
             let fileCoordinator = NSFileCoordinator(filePresenter: nil)
-            fileCoordinator.coordinate(writingItemAt: atURL, options: .forDeleting, error: nil, byAccessor: { url in
+            fileCoordinator.coordinate(writingItemAt: atURL, options: .forDeleting, error: nil, byAccessor: { _ in
                 do {
                     try FileManager.default.removeItem(at: atURL)
                 } catch {

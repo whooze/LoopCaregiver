@@ -9,7 +9,7 @@ import Foundation
 import NightscoutKit
 
 public extension ProfileSet {
-    func getDefaultProfile() -> Profile? { //get* prefixed because `defaultProfile` already defined as a String on ProfileSet
+    func getDefaultProfile() -> Profile? { // get* prefixed because `defaultProfile` already defined as a String on ProfileSet
         return store["Default"]
     }
 }

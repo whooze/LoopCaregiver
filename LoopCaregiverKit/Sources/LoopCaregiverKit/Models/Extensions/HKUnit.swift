@@ -3,7 +3,6 @@
 //  Naterade
 //
 //  Created by Nathan Racklyeft on 1/17/16.
-//  Copyright © 2016 Nathan Racklyeft. All rights reserved.
 //
 
 import HealthKit
@@ -32,7 +31,7 @@ public extension HKUnit {
     static let gramsPerUnit: HKUnit = {
         return HKUnit.gram().unitDivided(by: .internationalUnit())
     }()
-    
+
     var foundationUnit: Unit? {
         if self == HKUnit.milligramsPerDeciliter {
             return UnitConcentrationMass.milligramsPerDeciliter

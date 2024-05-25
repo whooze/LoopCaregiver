@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension Bundle {
-    public static var coreDataModelURL: URL {
+public extension Bundle {
+    static var coreDataModelURL: URL {
         return Self.module.url(forResource: "LoopCaregiver", withExtension: "momd")!
     }
 }
