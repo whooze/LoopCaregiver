@@ -48,8 +48,10 @@ public struct LatestGlucoseCircularView: View {
 
 // TODO: fails to render and breaks other previews after failure
 
-//struct CurrentBGView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        LatestGlucoseCircularView(glucoseValue: .previewsValue())
-//    }
-//}
+/*
+struct CurrentBGView_Previews: PreviewProvider {
+    static var previews: some View {
+        LatestGlucoseCircularView(glucoseValue: .previewsValue())
+    }
+}
+*/
