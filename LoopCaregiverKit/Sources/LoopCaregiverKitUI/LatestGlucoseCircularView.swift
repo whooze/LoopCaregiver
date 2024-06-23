@@ -27,8 +27,8 @@ public struct LatestGlucoseCircularView: View {
             Text(viewModel.currentGlucoseText)
                 .foregroundStyle(egvColor)
                 .strikethrough(viewModel.isGlucoseStale)
-                .font(.headline)
                 .bold()
+                .minimumScaleFactor(0.8)
             if let currentTrendImageName = viewModel.currentTrendImageName {
                 Image(systemName: currentTrendImageName)
                     .resizable()
