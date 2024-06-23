@@ -28,6 +28,7 @@ struct LoopCaregiverWidget: Widget {
         .description("Displays Looper's last BG.")
         .supportedFamilies([
             .accessoryCircular,
+            .accessoryRectangular,
             .systemSmall
         ])
     }
@@ -38,6 +39,6 @@ struct LoopCaregiverWidget_Previews: PreviewProvider {
     static var previews: some View {
         let composer = ServiceComposerPreviews()
         return LoopCaregiverWidgetView(entry: .previewsEntry(), settings: composer.settings)
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
+            .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
     }
 }

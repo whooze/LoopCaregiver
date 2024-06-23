@@ -82,7 +82,10 @@ public struct TimelineProviderShared {
         )
     }
     
-    public func snapshot(for looperID: String?) async -> GlucoseTimeLineEntry {
+    public func snapshot(for looperID: String?, context: TimelineProviderContext) async -> GlucoseTimeLineEntry {
+        if context.isPreview {
+            return GlucoseTimeLineEntry.previewsEntry()
+        }
         do {
             // Docs suggest returning quickly when context.isPreview is true so we use fake data
             // TODO: Do we need this Looper instance? Maybe this async call is causing issues?
@@ -125,11 +128,11 @@ public struct TimelineProviderShared {
         var errorDescription: String? {
             switch self {
             case .looperNotFound(let looperID):
-                return "The looper for this widget was not found (\(looperID)). Remove this widget from your device's home screen and add it again."
+                return "The looper for this widget was not found (\(looperID)). Configure this widget by touching and holding it for 2 seconds, then choose your Looper."
             case .looperNotConfigured:
-                return "No looper is configured for this widget. Remove this widget from your device's home screen and add it again."
+                return "No looper is configured for this widget. Configure this widget by touching and holding it for 2 seconds, then choose your Looper."
             case .notReady:
-                return "The widget is not ready to display."
+                return "The widget is not ready to display. Wait a few minutes and try again."
             case .missingGlucose:
                 return "Missing glucose"
             }

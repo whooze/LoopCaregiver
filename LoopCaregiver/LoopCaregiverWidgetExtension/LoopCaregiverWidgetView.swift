@@ -35,8 +35,17 @@ struct LoopCaregiverWidgetView: View {
                         .font(.headline)
                     LatestGlucoseCircularView(glucoseValue: glucoseValue)
                 }
-            case .failure:
-                emptyLatestGlucoseView
+            case .failure(let error):
+                switch family {
+                case .accessoryRectangular:
+                    Text(error.localizedDescription)
+                        .font(.footnote)
+                case .accessoryCircular:
+                    emptyLatestGlucoseView
+                default:
+                    Text(error.localizedDescription)
+                        .font(.footnote)
+                }
             }
         }
         .widgetBackground(backgroundView: backgroundView)

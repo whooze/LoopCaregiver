@@ -25,9 +25,10 @@ struct TimelineWidgetProvider: IntentTimelineProvider {
         return providerShared.placeholder()
     }
 
+    /// Shows when widget is in the gallery and other "transient" times per docs.
     func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (GlucoseTimeLineEntry) -> Void) {
         Task {
-            let entry = await providerShared.snapshot(for: configuration.looper?.identifier)
+            let entry = await providerShared.snapshot(for: configuration.looper?.identifier, context: context)
             completion(entry)
         }
     }
