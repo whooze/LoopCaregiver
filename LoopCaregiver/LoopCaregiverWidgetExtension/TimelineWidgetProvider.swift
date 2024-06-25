@@ -23,7 +23,7 @@ struct TimelineWidgetProvider: IntentTimelineProvider {
     
     /// Shows when widget is first created and when user redacts information
     func placeholder(in context: Context) -> GlucoseTimeLineEntry {
-        return providerShared.previewsEntry()
+        return providerShared.placeholder()
     }
 
     /// Shows when widget is in the gallery and other "transient" times per docs.
