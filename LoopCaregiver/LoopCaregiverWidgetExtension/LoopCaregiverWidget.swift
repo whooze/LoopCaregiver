@@ -28,6 +28,7 @@ struct LoopCaregiverWidget: Widget {
         .description("Displays Looper's last BG.")
         .supportedFamilies([
             .accessoryCircular,
+            .accessoryInline,
             .accessoryRectangular,
             .systemSmall
         ])
