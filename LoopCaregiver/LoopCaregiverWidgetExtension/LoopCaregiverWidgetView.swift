@@ -8,6 +8,7 @@
 import Foundation
 import LoopCaregiverKit
 import LoopCaregiverKitUI
+import NightscoutKit
 import SwiftUI
 
 struct LoopCaregiverWidgetView: View {
@@ -36,6 +37,10 @@ struct LoopCaregiverWidgetView: View {
                     Text(glucoseValue.looper.name)
                         .font(.headline)
                     LatestGlucoseCircularView(glucoseValue: glucoseValue)
+                    if let override = glucoseValue.overrideAndStatus?.override {
+                        Text(override.presentableDescription())
+                            .font(.footnote)
+                    }
                 }
             case .failure(let error):
                 switch family {

@@ -291,7 +291,17 @@ public class RemoteDataServiceManager: ObservableObject {
         try await remoteDataProvider.activateClosedLoop(activate: activate)
     }
     
+    public func fetchActiveOverrideStatus() async throws -> (override: NightscoutKit.TemporaryScheduleOverride, status: NightscoutKit.OverrideStatus)? {
+        let latestDeviceStatus = try await remoteDataProvider.fetchLatestDeviceStatus()
+        let currentProfile = try await remoteDataProvider.fetchCurrentProfile()
+        return activeOverrideAndStatus(latestDeviceStatus: latestDeviceStatus, currentProfile: currentProfile)
+    }
+    
     public func activeOverrideAndStatus() -> (override: NightscoutKit.TemporaryScheduleOverride, status: NightscoutKit.OverrideStatus)? {
+        return activeOverrideAndStatus(latestDeviceStatus: latestDeviceStatus, currentProfile: currentProfile)
+    }
+    
+    private func activeOverrideAndStatus(latestDeviceStatus: DeviceStatus?, currentProfile: ProfileSet?) -> (override: NightscoutKit.TemporaryScheduleOverride, status: NightscoutKit.OverrideStatus)? {
         /*
          There are 3 sources of the current override from Nightscout
          1. Devicestatus.overrideStatus: Used by NS Plugin (bubble view)

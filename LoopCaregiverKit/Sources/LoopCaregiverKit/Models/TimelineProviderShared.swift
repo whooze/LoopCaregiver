@@ -68,6 +68,8 @@ public struct TimelineProviderShared {
     private func getTimeLineValue(composer: ServiceComposer, looper: Looper) async throws -> GlucoseTimelineValue {
         let nightscoutDataSource = NightscoutDataSource(looper: looper, settings: composer.settings)
         let sortedSamples = try await nightscoutDataSource.fetchRecentGlucoseSamples().sorted(by: { $0.date < $1.date })
+        let remoteServicemanager = RemoteDataServiceManager(remoteDataProvider: nightscoutDataSource)
+        let overrideAndStatus = try await remoteServicemanager.fetchActiveOverrideStatus()
         guard let latestGlucoseSample = sortedSamples.last else {
             throw TimelineProviderError.missingGlucose
         }
@@ -78,6 +80,7 @@ public struct TimelineProviderShared {
             glucoseSample: latestGlucoseSample,
             lastGlucoseChange: glucoseChange,
             glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
+            overrideAndStatus: overrideAndStatus,
             date: Date()
         )
     }
@@ -87,7 +90,7 @@ public struct TimelineProviderShared {
             let looper = try await getLooper(looperID: looperID)
             if context.isPreview {
                 let fakeGlucoseSample = NewGlucoseSample.previews()
-                return GlucoseTimeLineEntry(looper: looper, glucoseSample: fakeGlucoseSample, lastGlucoseChange: 10, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits, date: Date())
+                return GlucoseTimeLineEntry(looper: looper, glucoseSample: fakeGlucoseSample, lastGlucoseChange: 10, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits, overrideAndStatus: nil, date: Date())
             } else {
                 let value = try await getTimeLineValue(composer: composer, looper: looper)
                 return GlucoseTimeLineEntry(value: value)

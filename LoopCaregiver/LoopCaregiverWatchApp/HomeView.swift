@@ -48,9 +48,12 @@ struct HomeView: View {
                         .if(egvIsOutdated(), transform: { view in
                             view.foregroundColor(.red)
                         })
-                            Text(lastEGVDeltaFormatted())
-                            .font(.footnote)
+                    Text(lastEGVDeltaFormatted())
+                        .font(.footnote)
                 }
+            }
+            if let overrideAndStatus = remoteDataSource.activeOverrideAndStatus() {
+                Text(overrideAndStatus.override.presentableDescription())
             }
         }
         .navigationTitle(accountService.selectedLooper?.name ?? "Name?")
