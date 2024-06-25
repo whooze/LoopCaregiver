@@ -84,12 +84,14 @@ public struct TimelineProviderShared {
     
     public func snapshot(for looperID: String?, context: TimelineProviderContext) async -> GlucoseTimeLineEntry {
         do {
-            // Docs suggest returning quickly when context.isPreview is true so we don't use the network
-            // TODO: Do we need this Looper instance? Maybe this async call is causing issues?
-            // We may just want the Looper ID and name on GlucoseTimeLineEntry?
             let looper = try await getLooper(looperID: looperID)
-            let fakeGlucoseSample = NewGlucoseSample.previews()
-            return GlucoseTimeLineEntry(looper: looper, glucoseSample: fakeGlucoseSample, lastGlucoseChange: 10, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits, date: Date())
+            if context.isPreview {
+                let fakeGlucoseSample = NewGlucoseSample.previews()
+                return GlucoseTimeLineEntry(looper: looper, glucoseSample: fakeGlucoseSample, lastGlucoseChange: 10, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits, date: Date())
+            } else {
+                let value = try await getTimeLineValue(composer: composer, looper: looper)
+                return GlucoseTimeLineEntry(value: value)
+            }
         } catch {
             return GlucoseTimeLineEntry(error: error, date: Date(), looper: nil)
         }

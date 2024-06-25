@@ -31,6 +31,7 @@ struct LoopCaregiverWidget: Widget {
             .accessoryInline,
             .accessoryRectangular,
             .systemSmall
+            // .systemLarge, Half-size of iPhone - need special UI.
         ])
     }
 }
