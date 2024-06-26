@@ -27,7 +27,7 @@ public struct LatestGlucoseRectangularView: View {
                     .foregroundStyle(egvColor)
                     .strikethrough(viewModel.isGlucoseStale)
                     .font(.system(size: 60.0))
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.6)
             }
             VStack(spacing: 0) {
                 HStack {
