@@ -9,17 +9,16 @@ import Charts
 import Combine
 import HealthKit
 import LoopCaregiverKit
-import LoopCaregiverKitUI
 import LoopKit
 import SwiftUI
 
 // swiftlint:disable file_length
-struct NightscoutChartScrollView: View {
+public struct NightscoutChartScrollView: View {
     @ObservedObject var settings: CaregiverSettings
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @State private var scrollRequestSubject = PassthroughSubject<ScrollType, Never>()
     let timer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
-    static let timelineLookbackIntervals = [1, 3, 6, 12, 24]
+    public static let timelineLookbackIntervals = [1, 3, 6, 12, 24]
     @AppStorage(UserDefaults.standard.timelineVisibleLookbackHoursKey)
     private var timelineVisibleLookbackHours = 6
 
@@ -35,6 +34,11 @@ struct NightscoutChartScrollView: View {
 
     @Environment(\.scenePhase)
     private var scenePhase
+    
+    public init(settings: CaregiverSettings, remoteDataSource: RemoteDataServiceManager) {
+        self.settings = settings
+        self.remoteDataSource = remoteDataSource
+    }
 
     func glucoseGraphItems() -> [GraphItem] {
         return remoteDataSource.glucoseSamples.map({ $0.graphItem(displayUnit: settings.glucoseDisplayUnits) })
@@ -61,7 +65,7 @@ struct NightscoutChartScrollView: View {
             .compactMap({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: settings.glucoseDisplayUnits) })
     }
 
-    var body: some View {
+    public var body: some View {
         GeometryReader { containerGeometry in
             ZoomableScrollView { zoomScrollViewProxy in
                 chartView
@@ -132,9 +136,11 @@ struct NightscoutChartScrollView: View {
                     }
             }
         }
+        #if os(iOS)
         .popover(item: $graphItemsInPopover) { graphItemsInPopover in
             graphItemsPopoverView(graphItemsInPopover: graphItemsInPopover)
         }
+        #endif
     }
 
     var chartView: some View {

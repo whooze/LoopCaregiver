@@ -19,6 +19,12 @@ public struct LatestGlucoseRectangularView: View {
         self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
     }
     
+    func chartXRange() -> ClosedRange<Date> {
+        let maxXDate = Date()
+        let minXDate = Date().addingTimeInterval(-60 * 60 * 6)
+        return minXDate...maxXDate
+    }
+
     public var body: some View {
         HStack(spacing: 10) {
             VStack {

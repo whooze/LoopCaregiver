@@ -7,7 +7,6 @@
 
 import Foundation
 import HealthKit
-import LoopCaregiverKitUI
 
 struct GraphItem: Identifiable, Equatable {
     var id = UUID()

@@ -6,6 +6,7 @@
 //
 
 import LoopCaregiverKit
+import LoopCaregiverKitUI
 import LoopKitUI
 import SwiftCharts
 import SwiftUI

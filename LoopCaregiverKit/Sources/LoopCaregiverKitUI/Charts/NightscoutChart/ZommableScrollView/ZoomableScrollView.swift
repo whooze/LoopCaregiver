@@ -234,11 +234,11 @@ struct ZoomScrollRequest: Equatable, CustomStringConvertible {
     }
 }
 
-enum ScrollType: Equatable, CustomStringConvertible {
+public enum ScrollType: Equatable, CustomStringConvertible {
     case scrollViewCenter
     case contentPoint(CGPoint)
     
-    var description: String {
+    public var description: String {
         switch self {
         case .scrollViewCenter:
             return ".scrollViewCenter"
