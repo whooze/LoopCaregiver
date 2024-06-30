@@ -47,10 +47,14 @@ struct LoopCaregiverWidgetView: View {
                 case .accessoryRectangular:
                     Text(error.localizedDescription)
                         .font(.footnote)
+                    Text(entry.date.description)
+                        .font(.footnote)
                 case .accessoryCircular:
                     emptyLatestGlucoseView
                 default:
                     Text(error.localizedDescription)
+                        .font(.footnote)
+                    Text(entry.date.description)
                         .font(.footnote)
                 }
             }

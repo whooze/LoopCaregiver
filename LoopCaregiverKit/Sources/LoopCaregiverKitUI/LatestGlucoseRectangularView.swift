@@ -5,6 +5,7 @@
 //  Created by Auggie Fisher on 1/24/24.
 //
 
+import Charts
 import HealthKit
 import LoopCaregiverKit
 import LoopKit
@@ -18,25 +19,16 @@ public struct LatestGlucoseRectangularView: View {
     public init(glucoseValue: GlucoseTimelineValue) {
         self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
     }
-    
-    func chartXRange() -> ClosedRange<Date> {
-        let maxXDate = Date()
-        let minXDate = Date().addingTimeInterval(-60 * 60 * 6)
-        return minXDate...maxXDate
-    }
 
     public var body: some View {
-        HStack(spacing: 10) {
-            VStack {
-                // BG number
-                Text(viewModel.currentGlucoseNumberText)
-                    .foregroundStyle(egvColor)
-                    .strikethrough(viewModel.isGlucoseStale)
-                    .font(.system(size: 60.0))
-                    .minimumScaleFactor(0.6)
-            }
             VStack(spacing: 0) {
-                HStack {
+                HStack(spacing: 0) {
+                    // BG number
+                        Text(viewModel.currentGlucoseNumberText)
+                            .foregroundStyle(egvColor)
+                            .strikethrough(viewModel.isGlucoseStale)
+                            .font(.headline)
+                            .minimumScaleFactor(0.6)
                     // Trend arrow
                     if let currentTrendImageName = viewModel.currentTrendImageName {
                         Image(systemName: currentTrendImageName)
@@ -45,22 +37,44 @@ public struct LatestGlucoseRectangularView: View {
                             .frame(maxWidth: 12)
                             .offset(.init(width: 0.0, height: 1.5))
                             .accessibilityLabel(Text(currentTrendImageName))
+                            .padding(.init(top: 0, leading: 2, bottom: 0, trailing: 0))
                     }
-                    // BG delta
-                    Text(viewModel.lastGlucoseChangeFormatted!)
+                    // Age
+                    Text(viewModel.currentGlucoseDateText)
                         .strikethrough(viewModel.isGlucoseStale)
-                        .font(.system(size: 20.0))
+                        .font(.headline)
+                        .padding(.init(top: 0, leading: 5, bottom: 0, trailing: 0))
+                    Spacer()
                 }
-                // Minutes since update
-                Text(viewModel.currentGlucoseDateText)
-                    .strikethrough(viewModel.isGlucoseStale)
-                    .font(.system(size: 20.0))
+                chart
+                .padding(.init(top: 0, leading: 0, bottom: 5, trailing: 0))
             }
-        }
     }
     
     var egvColor: Color {
         colorScheme == .dark ? viewModel.egvValueColor : .primary
+    }
+    
+    @ViewBuilder var chart: some View {
+        Chart {
+            ForEach(viewModel.recentGlucoseValues.filter({ $0.date > chartXRange().lowerBound }), id: \.date) {
+                PointMark(
+                    x: .value("Time", $0.date),
+                    y: .value("Reading", $0.quantity.doubleValue(for: .milligramsPerDeciliter))
+                )
+                .symbol(
+                    FilledCircle()
+                )
+            }
+        }
+        .chartXAxis(.hidden)
+        .chartXScale(domain: chartXRange())
+    }
+    
+    func chartXRange() -> ClosedRange<Date> {
+        let maxXDate = Date()
+        let minXDate = Date().addingTimeInterval(-60 * 60 * 1)
+        return minXDate...maxXDate
     }
 }
 
