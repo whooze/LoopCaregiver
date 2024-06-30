@@ -68,6 +68,7 @@ struct ContentView: View {
             }
         })
         .onAppear {
+            reloadWidget()
             if accountService.selectedLooper == nil {
                 do {
                     try watchService.requestWatchConfiguration()
