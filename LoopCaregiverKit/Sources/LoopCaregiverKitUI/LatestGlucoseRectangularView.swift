@@ -73,7 +73,7 @@ public struct LatestGlucoseRectangularView: View {
     
     func chartXRange() -> ClosedRange<Date> {
         let maxXDate = Date()
-        let minXDate = Date().addingTimeInterval(-60 * 60 * 1)
+        let minXDate = Date().addingTimeInterval(-60 * 60 * 2)
         return minXDate...maxXDate
     }
 }
