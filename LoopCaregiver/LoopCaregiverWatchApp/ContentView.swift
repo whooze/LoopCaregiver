@@ -31,7 +31,7 @@ struct ContentView: View {
                 }
             }
             .navigationDestination(for: String.self, destination: { _ in
-                SettingsView(connectivityManager: watchService, accountService: accountService, settings: settings)
+                WatchSettingsView(connectivityManager: watchService, accountService: accountService, settings: settings)
             })
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

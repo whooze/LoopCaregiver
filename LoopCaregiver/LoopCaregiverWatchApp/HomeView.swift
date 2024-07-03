@@ -59,7 +59,7 @@ struct HomeView: View {
         .navigationTitle(accountService.selectedLooper?.name ?? "Name?")
         .navigationDestination(for: String.self,
                                destination: { _ in
-            SettingsView(
+            WatchSettingsView(
                 connectivityManager: connectivityManager,
                 accountService: accountService,
                 settings: settings
