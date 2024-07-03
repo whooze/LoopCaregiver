@@ -67,10 +67,11 @@ public struct TimelineProviderShared {
     @MainActor
     private func getTimeLineValue(composer: ServiceComposer, looper: Looper) async throws -> GlucoseTimelineValue {
         let nightscoutDataSource = NightscoutDataSource(looper: looper, settings: composer.settings)
-        let remoteServicemanager = RemoteDataServiceManager(remoteDataProvider: nightscoutDataSource)
-        await remoteServicemanager.updateData()
-        let sortedSamples = remoteServicemanager.glucoseSamples
-        let overrideAndStatus = remoteServicemanager.activeOverrideAndStatus()
+        let remoteServiceManager = RemoteDataServiceManager(remoteDataProvider: nightscoutDataSource)
+        await remoteServiceManager.updateData()
+        let sortedSamples = remoteServiceManager.glucoseSamples
+        let overrideAndStatus = remoteServiceManager.activeOverrideAndStatus()
+        let currentProfile = remoteServiceManager.currentProfile
         guard let latestGlucoseSample = sortedSamples.last else {
             throw TimelineProviderError.missingGlucose
         }
@@ -83,6 +84,7 @@ public struct TimelineProviderShared {
             glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
             overrideAndStatus: overrideAndStatus,
             recentSamples: sortedSamples,
+            currentProfile: currentProfile,
             date: Date()
         )
     }
@@ -92,7 +94,7 @@ public struct TimelineProviderShared {
             let looper = try await getLooper(looperID: looperID)
             if context.isPreview {
                 let fakeGlucoseSample = NewGlucoseSample.previews()
-                return GlucoseTimeLineEntry(looper: looper, glucoseSample: fakeGlucoseSample, lastGlucoseChange: 10, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits, overrideAndStatus: nil, recentSamples: [], date: Date())
+                return GlucoseTimeLineEntry(looper: looper, glucoseSample: fakeGlucoseSample, lastGlucoseChange: 10, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits, overrideAndStatus: nil, recentSamples: [], currentProfile: nil, date: Date())
             } else {
                 let value = try await getTimeLineValue(composer: composer, looper: looper)
                 return GlucoseTimeLineEntry(value: value)

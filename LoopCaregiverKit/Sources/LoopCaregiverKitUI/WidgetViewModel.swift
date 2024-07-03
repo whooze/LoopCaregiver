@@ -9,6 +9,7 @@ import Foundation
 import HealthKit
 import LoopCaregiverKit
 import LoopKit
+import NightscoutKit
 import SwiftUI
 
 public struct WidgetViewModel {
@@ -17,6 +18,7 @@ public struct WidgetViewModel {
     public let latestGlucose: NewGlucoseSample
     public let lastGlucoseChange: Double?
     public let glucoseDisplayUnits: HKUnit
+    public let currentProfile: ProfileSet?
     public let recentGlucoseValues: [NewGlucoseSample]
 
     public init(glucoseValue: GlucoseTimelineValue) {
@@ -26,6 +28,7 @@ public struct WidgetViewModel {
         self.lastGlucoseChange = glucoseValue.lastGlucoseChange
         self.glucoseDisplayUnits = glucoseValue.glucoseDisplayUnits
         self.recentGlucoseValues = glucoseValue.recentSamples
+        self.currentProfile = glucoseValue.currentProfile
     }
 
     public var currentGlucoseDateText: String {
