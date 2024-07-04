@@ -43,7 +43,7 @@ struct WidgetView: View {
         case .accessoryRectangular:
             LatestGlucoseRectangularView(glucoseValue: glucoseValue)
         case .accessoryInline:
-            LatestGlucoseInlineView(glucoseValue: glucoseValue)
+            LatestGlucoseRowView(glucoseValue: glucoseValue)
         default:
             LatestGlucoseCircularView(glucoseValue: glucoseValue)
         }

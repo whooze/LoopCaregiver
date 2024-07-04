@@ -70,21 +70,24 @@ public struct TimelineProviderShared {
         let remoteServiceManager = RemoteDataServiceManager(remoteDataProvider: nightscoutDataSource)
         await remoteServiceManager.updateData()
         let sortedSamples = remoteServiceManager.glucoseSamples
-        let overrideAndStatus = remoteServiceManager.activeOverrideAndStatus()
-        let currentProfile = remoteServiceManager.currentProfile
         guard let latestGlucoseSample = sortedSamples.last else {
             throw TimelineProviderError.missingGlucose
         }
-        let glucoseChange = sortedSamples.getLastGlucoseChange(displayUnits: composer.settings.glucoseDisplayUnits)
+        let treatmentData = CaregiverTreatmentData(
+            glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
+            glucoseSamples: sortedSamples,
+            predictedGlucose: remoteServiceManager.predictedGlucose,
+            bolusEntries: remoteServiceManager.bolusEntries,
+            carbEntries: remoteServiceManager.carbEntries,
+            recentCommands: remoteServiceManager.recentCommands,
+            currentProfile: remoteServiceManager.currentProfile,
+            overrideAndStatus: remoteServiceManager.activeOverrideAndStatus()
+        )
         
         return GlucoseTimelineValue(
             looper: looper,
             glucoseSample: latestGlucoseSample,
-            lastGlucoseChange: glucoseChange,
-            glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
-            overrideAndStatus: overrideAndStatus,
-            recentSamples: sortedSamples,
-            currentProfile: currentProfile,
+            treatmentData: treatmentData,
             date: Date()
         )
     }
@@ -94,7 +97,22 @@ public struct TimelineProviderShared {
             let looper = try await getLooper(looperID: looperID)
             if context.isPreview {
                 let fakeGlucoseSample = NewGlucoseSample.previews()
-                return GlucoseTimeLineEntry(looper: looper, glucoseSample: fakeGlucoseSample, lastGlucoseChange: 10, glucoseDisplayUnits: composer.settings.glucoseDisplayUnits, overrideAndStatus: nil, recentSamples: [], currentProfile: nil, date: Date())
+                let treatmentData = CaregiverTreatmentData(
+                    glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
+                    glucoseSamples: [],
+                    predictedGlucose: [],
+                    bolusEntries: [],
+                    carbEntries: [],
+                    recentCommands: [],
+                    currentProfile: nil,
+                    overrideAndStatus: nil
+                )
+                return GlucoseTimeLineEntry(
+                    looper: looper,
+                    glucoseSample: fakeGlucoseSample,
+                    treatmentData: treatmentData,
+                    date: Date()
+                )
             } else {
                 let value = try await getTimeLineValue(composer: composer, looper: looper)
                 return GlucoseTimeLineEntry(value: value)

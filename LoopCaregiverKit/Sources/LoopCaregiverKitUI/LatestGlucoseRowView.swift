@@ -1,57 +1,55 @@
 //
-//  LatestGlucoseCircularView.swift
-//  LoopCaregiverWidgetExtension
+//  LatestGlucoseRowView.swift
 //
-//  Created by Bill Gestrich on 6/3/23.
+//
+//  Created by Bill Gestrich on 7/4/24.
 //
 
-import HealthKit
+import Foundation
 import LoopCaregiverKit
-import LoopKit
 import SwiftUI
 
-public struct LatestGlucoseCircularView: View {
+public struct LatestGlucoseRowView: View {
     public let viewModel: WidgetViewModel
     @Environment(\.colorScheme)
     var colorScheme
-
+    
     public init(glucoseValue: GlucoseTimelineValue) {
         self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
     }
-
+    
     public var body: some View {
-        VStack {
-            Text(viewModel.currentGlucoseDateText)
+        HStack(spacing: 3) {
+            Text(viewModel.currentGlucoseText)
                 .strikethrough(viewModel.isGlucoseStale)
-                .font(.footnote)
-            Text(viewModel.currentGlucoseAndChangeText)
                 .foregroundStyle(egvColor)
-                .strikethrough(viewModel.isGlucoseStale)
+                .font(.headline)
                 .bold()
-                .minimumScaleFactor(0.8)
             if let currentTrendImageName = viewModel.currentTrendImageName {
                 Image(systemName: currentTrendImageName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .foregroundStyle(egvColor)
-                    .frame(maxWidth: 15)
-                    .offset(.init(width: 0.0, height: -7.0))
+                    .frame(maxWidth: 13)
                     .accessibilityLabel(Text(currentTrendImageName))
+            }
+            if let currentGlucoseChangeText = viewModel.currentGlucoseChangeText {
+                Text(currentGlucoseChangeText)
+                    .strikethrough(viewModel.isGlucoseStale)
+                    .foregroundStyle(egvColor)
+                    .font(.headline)
+                    .bold()
+            }
+            if !viewModel.currentGlucoseDateText.isEmpty {
+                Text("(" + viewModel.currentGlucoseDateText + ")")
+                    .strikethrough(viewModel.isGlucoseStale)
+                    .font(.footnote)
+                    .bold()
             }
         }
     }
-
+    
     var egvColor: Color {
         colorScheme == .dark ? viewModel.egvValueColor : .primary
     }
 }
-
-// TODO: fails to render and breaks other previews after failure
-
-/*
-struct CurrentBGView_Previews: PreviewProvider {
-    static var previews: some View {
-        LatestGlucoseCircularView(glucoseValue: .previewsValue())
-    }
-}
-*/

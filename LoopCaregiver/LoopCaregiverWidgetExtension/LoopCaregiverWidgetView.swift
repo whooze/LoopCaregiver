@@ -36,11 +36,7 @@ struct LoopCaregiverWidgetView: View {
                 default:
                     Text(glucoseValue.looper.name)
                         .font(.headline)
-                    LatestGlucoseCircularView(glucoseValue: glucoseValue)
-                    if let override = glucoseValue.overrideAndStatus?.override {
-                        Text(override.presentableDescription())
-                            .font(.footnote)
-                    }
+                    LatestGlucoseSquareView(glucoseValue: glucoseValue)
                 }
             case .failure(let error):
                 switch family {
