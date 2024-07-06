@@ -28,6 +28,7 @@ public struct NightscoutChartViewModel {
     
     func glucoseGraphItems() -> [GraphItem] {
         return treatmentData.glucoseSamples.map({ $0.graphItem(displayUnit: treatmentData.glucoseDisplayUnits) })
+            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
     
     func predictionGraphItems() -> [GraphItem] {
@@ -39,16 +40,19 @@ public struct NightscoutChartViewModel {
     func bolusGraphItems() -> [GraphItem] {
         return treatmentData.bolusEntries
             .map({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: treatmentData.glucoseDisplayUnits) })
+            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
 
     func carbEntryGraphItems() -> [GraphItem] {
         return treatmentData.carbEntries
             .map({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: treatmentData.glucoseDisplayUnits) })
+            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
     
     func remoteCommandGraphItems() -> [GraphItem] {
         return treatmentData.recentCommands
             .compactMap({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: treatmentData.glucoseDisplayUnits) })
+            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
     
     func chartXRange() -> ClosedRange<Date> {
