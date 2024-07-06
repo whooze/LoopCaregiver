@@ -28,6 +28,7 @@ public struct LatestGlucoseSquareView: View {
                 showChartYAxis: false
             )
         )
+        .clipped()
         if let override = viewModel.glucoseValue.treatmentData.overrideAndStatus?.override {
             Text(override.presentableDescription())
                 .font(.footnote)
