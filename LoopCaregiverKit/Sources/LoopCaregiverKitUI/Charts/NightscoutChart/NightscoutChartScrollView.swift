@@ -55,7 +55,6 @@ public struct NightscoutChartScrollView: View {
                                     scrollRequestSubject.send(.contentPoint(tapLocation))
                                 }
                                 .onTapGesture(count: 1) { tapLocation in
-                                    print("x pos: \(tapLocation.x)")
                                     if let (date, glucose) = chartProxy.value(at: tapLocation, as: (Date, Double).self) {
                                         let items = getNearbyGraphItems(date: date, value: glucose, chartProxy: chartProxy)
                                         guard !items.isEmpty else {
