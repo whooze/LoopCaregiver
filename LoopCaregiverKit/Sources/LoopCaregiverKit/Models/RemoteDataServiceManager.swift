@@ -51,8 +51,6 @@ public class RemoteDataServiceManager: ObservableObject {
     public func updateData() async {
         updating = true
         
-        let startDate = Date()
-        
         do {
             try await updateGlucoseData() // Not async as we want it to load quickly
             
@@ -90,8 +88,6 @@ public class RemoteDataServiceManager: ObservableObject {
         } catch {
             print("Error fetching data: \(error)")
         }
-        
-        print("Fetch time = \(Date().timeIntervalSince(startDate))")
         
         updating = false
         self.refreshCalculatedData()
