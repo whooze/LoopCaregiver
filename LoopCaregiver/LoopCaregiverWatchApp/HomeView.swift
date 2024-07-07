@@ -72,7 +72,7 @@ struct HomeView: View {
         .onChange(of: scenePhase, { _, _ in
             Task {
                 await remoteDataSource.updateData()
-                reloadWidget()
+                // reloadWidget()
             }
         })
     }
