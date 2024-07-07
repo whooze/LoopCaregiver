@@ -9,7 +9,6 @@ import Foundation
 import HealthKit
 import LoopKit
 import NightscoutKit
-import UIKit // For willEnterForegroundNotification
 
 public class RemoteDataServiceManager: ObservableObject {
     @Published public var currentGlucoseSample: NewGlucoseSample?
@@ -46,15 +45,6 @@ public class RemoteDataServiceManager: ObservableObject {
                 await self.updateData()
             }
         })
-        
-#if os(iOS)
-        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-            guard let self else { return }
-            Task {
-                await self.updateData()
-            }
-        }
-#endif
     }
     
     @MainActor
