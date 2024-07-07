@@ -9,15 +9,11 @@ import Foundation
 
 public class LooperService: ObservableObject, Hashable {
     public let looper: Looper
-    public let accountService: AccountServiceManager
     public var remoteDataSource: RemoteDataServiceManager
-    public let settings: CaregiverSettings
 
-    public init(looper: Looper, accountService: AccountServiceManager, remoteDataSource: RemoteDataServiceManager, settings: CaregiverSettings) {
+    public init(looper: Looper, remoteDataSource: RemoteDataServiceManager) {
         self.looper = looper
-        self.accountService = accountService
         self.remoteDataSource = remoteDataSource
-        self.settings = settings
     }
 
     // Hashable

@@ -80,7 +80,7 @@ struct ChartsListView: View {
                     // Using a custom "padding" solution here with an HStack to avoid this.
                     Spacer(minLength: 10.0)
                     NightscoutChartScrollView(
-                        settings: looperService.settings,
+                        settings: settings,
                         remoteDataSource: remoteDataSource
                     )
                     Spacer(minLength: 10.0)

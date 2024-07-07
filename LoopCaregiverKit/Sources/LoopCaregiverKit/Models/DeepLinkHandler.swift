@@ -56,7 +56,7 @@ public class DeepLinkHandlerPhone: DeepLinkHandler {
     @MainActor
     func handleAddLooperDeepLink(_ deepLink: CreateLooperDeepLink) async throws {
         let looper = Looper(identifier: UUID(), name: deepLink.name, nightscoutCredentials: NightscoutCredentials(url: deepLink.nsURL, secretKey: deepLink.secretKey, otpURL: deepLink.otpURL.absoluteString), lastSelectedDate: Date())
-        let service = accountService.createLooperService(looper: looper, settings: settings)
+        let service = accountService.createLooperService(looper: looper)
         try await service.remoteDataSource.checkAuth()
 
         if let existingLooper = accountService.loopers.first(where: { $0.name == looper.name }) {
@@ -105,7 +105,7 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
     @MainActor
     func handleAddLooperDeepLink(_ deepLink: CreateLooperDeepLink) async throws {
         let looper = Looper(identifier: UUID(), name: deepLink.name, nightscoutCredentials: NightscoutCredentials(url: deepLink.nsURL, secretKey: deepLink.secretKey, otpURL: deepLink.otpURL.absoluteString), lastSelectedDate: Date())
-        let service = accountService.createLooperService(looper: looper, settings: settings)
+        let service = accountService.createLooperService(looper: looper)
         try await service.remoteDataSource.checkAuth()
 
         if let existingLooper = accountService.loopers.first(where: { $0.name == looper.name }) {

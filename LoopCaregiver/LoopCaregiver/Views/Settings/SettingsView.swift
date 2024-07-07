@@ -39,7 +39,7 @@ struct SettingsView: View {
     ) {
         self.settingsViewModel = SettingsViewModel(
             selectedLooper: looperService.looper,
-            accountService: looperService.accountService,
+            accountService: accountService,
             settings: settings
         )
         self.looperService = looperService
@@ -94,7 +94,7 @@ struct SettingsView: View {
                             isPresented: $isPresentingConfirm) {
             Button("Remove \(looperService.looper.name)?", role: .destructive) {
                 do {
-                    try looperService.accountService.removeLooper(looperService.looper)
+                    try accountService.removeLooper(looperService.looper)
                     if !path.isEmpty {
                         path.removeLast()
                     }
@@ -309,7 +309,7 @@ struct SettingsView: View {
                     SectionHeader(label: "Recent Remote Commands")
                 }
             }
-            if looperService.settings.remoteCommands2Enabled {
+            if settings.remoteCommands2Enabled {
                 Section("Remote Special Actions") {
                     Button("Autobolus Activate") {
                         Task {
@@ -485,8 +485,7 @@ struct SettingsView: View {
     var showSheetView = true
     let showSheetBinding = Binding<Bool>(get: { showSheetView }, set: { showSheetView = $0 })
     let looperService = composer.accountServiceManager.createLooperService(
-        looper: looper,
-        settings: composer.settings
+        looper: looper
     )
     return SettingsView(
         looperService: looperService,

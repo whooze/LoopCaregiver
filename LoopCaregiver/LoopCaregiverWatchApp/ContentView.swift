@@ -24,8 +24,8 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack {
-                if let looper = accountService.selectedLooper {
-                    HomeView(connectivityManager: watchService, looperService: accountService.createLooperService(looper: looper, settings: settings))
+                if let looperService = accountService.selectedLooperService {
+                    HomeView(connectivityManager: watchService, accountService: accountService, looperService: looperService)
                 } else {
                      Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
                 }

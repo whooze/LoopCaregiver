@@ -18,10 +18,10 @@ struct HUDView: View {
     @ObservedObject private var settings: CaregiverSettings
     @State private var looperPopoverShowing = false
 
-    init(looperService: LooperService, settings: CaregiverSettings) {
+    init(looperService: LooperService, accountService: AccountServiceManager, settings: CaregiverSettings) {
         self.hudViewModel = HUDViewModel(
             selectedLooper: looperService.looper,
-            accountService: looperService.accountService,
+            accountService: accountService,
             settings: settings
         )
         self.nightscoutDataSource = looperService.remoteDataSource

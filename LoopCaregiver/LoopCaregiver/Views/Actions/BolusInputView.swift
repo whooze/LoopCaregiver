@@ -12,6 +12,7 @@ import SwiftUI
 
 struct BolusInputView: View {
     let looperService: LooperService
+    let settings: CaregiverSettings
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @Binding var showSheetView: Bool
@@ -157,7 +158,7 @@ struct BolusInputView: View {
     }
 
     private func maxBolusAmount() -> Int {
-        return looperService.settings.maxBolusAmount
+        return settings.maxBolusAmount
     }
 
     private func getBolusFieldValues() throws -> BolusInputViewFormValues {
@@ -223,7 +224,7 @@ enum BolusInputViewError: LocalizedError {
     let looper = composer.accountServiceManager.selectedLooper!
     var showSheetView = true
     let showSheetBinding = Binding<Bool>(get: { showSheetView }, set: { showSheetView = $0 })
-    let looperService = composer.accountServiceManager.createLooperService(looper: looper, settings: composer.settings)
+    let looperService = composer.accountServiceManager.createLooperService(looper: looper)
     let remoteDataSerivceManager = RemoteDataServiceManager(remoteDataProvider: RemoteDataServiceProviderSimulator())
-    return BolusInputView(looperService: looperService, remoteDataSource: remoteDataSerivceManager, showSheetView: showSheetBinding)
+    return BolusInputView(looperService: looperService, settings: composer.settings, remoteDataSource: remoteDataSerivceManager, showSheetView: showSheetBinding)
 }

@@ -15,17 +15,20 @@ public class AccountServiceManager: ObservableObject, AccountServiceDelegate, Ac
     // Account Service
     @Published public var loopers: [Looper] = []
     @Published public var selectedLooper: Looper?
+    @Published public var selectedLooperService: LooperService?
+    @Published public var settings: CaregiverSettings
     private var accountService: AccountService
     private let remoteServicesProviderFactory: RemoteServicesProviderFactory
 
-    public init(accountService: AccountService, remoteServicesProviderFactory: RemoteServicesProviderFactory? = nil) {
+    public init(accountService: AccountService, settings: CaregiverSettings, remoteServicesProviderFactory: RemoteServicesProviderFactory? = nil) {
         self.accountService = accountService
+        self.settings = settings
 
         if let remoteServicesProviderFactory {
             self.remoteServicesProviderFactory = remoteServicesProviderFactory
         } else {
-            self.remoteServicesProviderFactory = { looper, settings in
-                return NightscoutDataSource(looper: looper, settings: settings)
+            self.remoteServicesProviderFactory = { factoryLooper, factorySettings in
+                return NightscoutDataSource(looper: factoryLooper, settings: factorySettings)
             }
         }
 
@@ -33,14 +36,12 @@ public class AccountServiceManager: ObservableObject, AccountServiceDelegate, Ac
         accountService.delegate = self
     }
     
-    public func createLooperService(looper: Looper, settings: CaregiverSettings) -> LooperService {
+    public func createLooperService(looper: Looper) -> LooperService {
         let remoteDataSource = remoteServicesProviderFactory(looper, settings)
         let manager = RemoteDataServiceManager(remoteDataProvider: remoteDataSource)
         manager.monitorForUpdates()
         return LooperService(looper: looper,
-                             accountService: self,
-                             remoteDataSource: manager,
-                             settings: settings
+                             remoteDataSource: manager
         )
     }
 
@@ -82,9 +83,15 @@ public class AccountServiceManager: ObservableObject, AccountServiceDelegate, Ac
             self.loopers = try accountService.getLoopers()
                 .sorted(by: { $0.name < $1.name })
             self.selectedLooper = self.loopers.max(by: { $0.lastSelectedDate < $1.lastSelectedDate })
+            if let selectedLooper {
+                selectedLooperService = createLooperService(looper: selectedLooper)
+            } else {
+                selectedLooperService = nil
+            }
         } catch {
             self.selectedLooper = nil
             self.loopers = []
+            self.selectedLooperService = nil
             print("Error Fetching Keychain \(error)")
         }
     }

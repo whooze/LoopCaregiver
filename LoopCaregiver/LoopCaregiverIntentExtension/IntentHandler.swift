@@ -11,7 +11,7 @@ import LoopCaregiverKit
 class IntentHandler: INExtension {
     var accountServiceManager: AccountServiceManager {
         let composer = ServiceComposerProduction()
-        return AccountServiceManager(accountService: composer.accountServiceManager)
+        return AccountServiceManager(accountService: composer.accountServiceManager, settings: composer.settings)
     }
 
     override func handler(for intent: INIntent) -> Any {
