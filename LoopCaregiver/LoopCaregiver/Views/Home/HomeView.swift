@@ -15,6 +15,7 @@ struct HomeView: View {
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @ObservedObject var settings: CaregiverSettings
     @ObservedObject var looperService: LooperService
+    @State private var viewHasAppeared = false
     var watchService: WatchService
     
     @State private var showCarbView = false
@@ -97,14 +98,20 @@ struct HomeView: View {
             SettingsView(
                 looperService: looperService,
                 accountService: accountService,
-                settings: looperService.settings,
+                settings: settings,
                 watchService: watchService,
                 showSheetView: $showSettingsView
             )
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                WidgetCenter.shared.reloadAllTimelines()
+                if viewHasAppeared {
+                    Task {
+                        await accountService.selectedLooperService?.remoteDataSource.updateData()
+                    }
+                } else {
+                    viewHasAppeared = true
+                }
             }
         }
     }
