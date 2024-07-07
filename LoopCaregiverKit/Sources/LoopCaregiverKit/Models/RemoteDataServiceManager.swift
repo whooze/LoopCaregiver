@@ -116,7 +116,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateBolusData()async throws {
+    private func updateBolusData() async throws {
         let bolusEntries = try await remoteDataProvider.fetchBolusEntries()
         if bolusEntries != self.bolusEntries {
             self.bolusEntries = bolusEntries
@@ -124,7 +124,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateBasalData()async throws {
+    private func updateBasalData() async throws {
         let basalEntries = try await remoteDataProvider.fetchBasalEntries()
         if basalEntries != self.basalEntries {
             self.basalEntries = basalEntries
@@ -132,7 +132,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateOverrideData()async throws {
+    private func updateOverrideData() async throws {
         let overridePresets = try await remoteDataProvider.fetchOverridePresets()
         if overridePresets != self.overridePresets {
             self.overridePresets = overridePresets
@@ -140,7 +140,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateDeviceStatusData()async throws {
+    private func updateDeviceStatusData() async throws {
         if let deviceStatus = try await remoteDataProvider.fetchLatestDeviceStatus() {
             if latestDeviceStatus?.timestamp != deviceStatus.timestamp {
                 self.latestDeviceStatus = deviceStatus
@@ -227,7 +227,6 @@ public class RemoteDataServiceManager: ObservableObject {
         }
         
         let predictedValues = loopPrediction.values
-        
         var predictedSamples = [NewGlucoseSample]()
         var currDate = loopPrediction.startDate
         let intervalBetweenPredictedValues = 60.0 * 5.0
