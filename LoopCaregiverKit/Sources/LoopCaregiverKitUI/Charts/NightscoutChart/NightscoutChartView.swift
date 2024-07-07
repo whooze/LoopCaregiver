@@ -187,6 +187,7 @@ struct NightscoutChartView: View {
     let viewModel: NightscoutChartViewModel
     
     var body: some View {
+        ZStack {
             Chart {
                 ForEach(viewModel.getTargetDateRangesAndValues(), id: \.range) { dateRangeAndValue in
                     RectangleMark(
@@ -296,5 +297,12 @@ struct NightscoutChartView: View {
                 } else {
                 }
             }
+            Text("\(timelineCount)")
+        }
+    }
+    
+    var timelineCount: Int {
+        let timelineRefreshKey = "time-line-refresh"
+        return UserDefaults.standard.value(forKey: timelineRefreshKey) as? Int ?? 0
     }
 }

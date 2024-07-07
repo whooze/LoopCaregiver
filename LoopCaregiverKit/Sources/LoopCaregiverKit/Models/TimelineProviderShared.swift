@@ -29,6 +29,10 @@ public struct TimelineProviderShared {
     }
     
     public func timeline(for looper: Looper) async -> Timeline<GlucoseTimeLineEntry> {
+        let timelineRefreshKey = "time-line-refresh"
+        var refreshCount = UserDefaults.standard.value(forKey: timelineRefreshKey) as? Int ?? 0
+        refreshCount += 1
+        UserDefaults.standard.set(refreshCount, forKey: timelineRefreshKey)
         do {
             let value = try await getTimeLineValue(composer: composer, looper: looper)
             var entries = [GlucoseTimeLineEntry]()
