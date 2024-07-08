@@ -33,6 +33,8 @@ struct LoopCaregiverWidgetView: View {
                     LatestGlucoseCircularView(glucoseValue: glucoseValue)
                 case .accessoryInline:
                     LatestGlucoseInlineView(glucoseValue: glucoseValue)
+                case .systemLarge:
+                    LargeWidgetView(glucoseValue: glucoseValue)
                 default:
                     Text(glucoseValue.looper.name)
                     LatestGlucoseSquareView(glucoseValue: glucoseValue)

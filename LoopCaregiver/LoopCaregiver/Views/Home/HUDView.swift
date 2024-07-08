@@ -31,34 +31,7 @@ struct HUDView: View {
     var body: some View {
         VStack {
             HStack(alignment: .center) {
-                HStack {
-                    Text(
-                        nightscoutDataSource.currentGlucoseSample?.presentableStringValue(
-                            displayUnits: settings.glucoseDisplayUnits,
-                            includeShortUnits: false
-                        ) ?? " "
-                    )
-                    .strikethrough(egvIsOutdated())
-                    .font(.largeTitle)
-                    .foregroundColor(egvValueColor())
-                    if let egv = nightscoutDataSource.currentGlucoseSample {
-                        Image(systemName: egv.arrowImageName())
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 15.0)
-                            .foregroundColor(egvValueColor())
-                            .accessibilityLabel(egv.arrowImageName())
-                    }
-                    VStack {
-                        Text(lastEGVTimeFormatted())
-                            .font(.footnote)
-                            .if(egvIsOutdated(), transform: { view in
-                                view.foregroundColor(.red)
-                            })
-                        Text(lastEGVDeltaFormatted())
-                            .font(.footnote)
-                    }
-                }
+                CurrentGlucoseComboView(glucoseSample: nightscoutDataSource.currentGlucoseSample, lastGlucoseChange: lastGlucoseChange, displayUnits: settings.glucoseDisplayUnits)
                 Spacer()
                 HStack {
                     if nightscoutDataSource.updating {
@@ -71,20 +44,14 @@ struct HUDView: View {
                 looperPopoverShowing = false
             }
             if let (activeOverride, status) = nightscoutDataSource.activeOverrideAndStatus() {
-                HStack {
-                    Text(activeOverride.presentableDescription())
-                        .bold()
-                        .font(.subheadline)
-                    Spacer()
-                    if let endTimeDescription = status.endTimeDescription() {
-                        Text(endTimeDescription)
-                            .foregroundColor(.gray)
-                            .bold()
-                            .font(.subheadline)
-                    }
-                }
+                ActiveOverrideInlineView(activeOverride: activeOverride, status: status)
             }
         }
+    }
+    
+    var lastGlucoseChange: Double? {
+        let samples = nightscoutDataSource.glucoseSamples
+        return samples.getLastGlucoseChange(displayUnits: settings.glucoseDisplayUnits)
     }
     
     var pickerButton: some View {
@@ -119,41 +86,6 @@ struct HUDView: View {
             }
             .presentationDetents([.medium])
         }
-    }
-    
-    func egvValueColor() -> Color {
-        guard let currentEGV = nightscoutDataSource.currentGlucoseSample else {
-            return .white
-        }
-        return ColorType(quantity: currentEGV.quantity).color
-    }
-    
-    func egvIsOutdated() -> Bool {
-        guard let currentEGV = nightscoutDataSource.currentGlucoseSample else {
-            return true
-        }
-        return Date().timeIntervalSince(currentEGV.date) > 60 * 10
-    }
-    
-    func lastEGVTimeFormatted() -> String {
-        guard let currentEGV = self.nightscoutDataSource.currentGlucoseSample else {
-            return ""
-        }
-        
-        return currentEGV.date.formatted(.dateTime.hour().minute())
-    }
-    
-    func lastEGVDeltaFormatted() -> String {
-        let samples = nightscoutDataSource.glucoseSamples
-        guard let lastEGVChange = samples.getLastGlucoseChange(displayUnits: settings.glucoseDisplayUnits) else {
-            return ""
-        }
-        
-        return lastEGVChange.formatted(
-            .number
-                .sign(strategy: .always(includingZero: false))
-                .precision(.fractionLength(0...1))
-        )
     }
     
     enum EGVTrend: Int {
