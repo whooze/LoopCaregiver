@@ -17,7 +17,7 @@ struct HUDView: View {
     @ObservedObject var nightscoutDataSource: RemoteDataServiceManager
     @ObservedObject private var settings: CaregiverSettings
     @State private var looperPopoverShowing = false
-
+    
     init(looperService: LooperService, accountService: AccountServiceManager, settings: CaregiverSettings) {
         self.hudViewModel = HUDViewModel(
             selectedLooper: looperService.looper,
@@ -27,7 +27,7 @@ struct HUDView: View {
         self.nightscoutDataSource = looperService.remoteDataSource
         self.settings = settings
     }
-
+    
     var body: some View {
         VStack {
             HStack(alignment: .center) {
@@ -38,9 +38,9 @@ struct HUDView: View {
                             includeShortUnits: false
                         ) ?? " "
                     )
-                        .strikethrough(egvIsOutdated())
-                        .font(.largeTitle)
-                        .foregroundColor(egvValueColor())
+                    .strikethrough(egvIsOutdated())
+                    .font(.largeTitle)
+                    .foregroundColor(egvValueColor())
                     if let egv = nightscoutDataSource.currentGlucoseSample {
                         Image(systemName: egv.arrowImageName())
                             .resizable()
@@ -55,8 +55,8 @@ struct HUDView: View {
                             .if(egvIsOutdated(), transform: { view in
                                 view.foregroundColor(.red)
                             })
-                                Text(lastEGVDeltaFormatted())
-                                .font(.footnote)
+                        Text(lastEGVDeltaFormatted())
+                            .font(.footnote)
                     }
                 }
                 Spacer()
@@ -86,8 +86,8 @@ struct HUDView: View {
             }
         }
     }
-
-   var pickerButton: some View {
+    
+    var pickerButton: some View {
         Button {
             looperPopoverShowing = true
         } label: {
@@ -120,29 +120,29 @@ struct HUDView: View {
             .presentationDetents([.medium])
         }
     }
-
+    
     func egvValueColor() -> Color {
         guard let currentEGV = nightscoutDataSource.currentGlucoseSample else {
             return .white
         }
         return ColorType(quantity: currentEGV.quantity).color
     }
-
+    
     func egvIsOutdated() -> Bool {
         guard let currentEGV = nightscoutDataSource.currentGlucoseSample else {
             return true
         }
         return Date().timeIntervalSince(currentEGV.date) > 60 * 10
     }
-
+    
     func lastEGVTimeFormatted() -> String {
         guard let currentEGV = self.nightscoutDataSource.currentGlucoseSample else {
             return ""
         }
-
+        
         return currentEGV.date.formatted(.dateTime.hour().minute())
     }
-
+    
     func lastEGVDeltaFormatted() -> String {
         let samples = nightscoutDataSource.glucoseSamples
         guard let lastEGVChange = samples.getLastGlucoseChange(displayUnits: settings.glucoseDisplayUnits) else {
@@ -152,10 +152,10 @@ struct HUDView: View {
         return lastEGVChange.formatted(
             .number
                 .sign(strategy: .always(includingZero: false))
-            .precision(.fractionLength(0...1))
+                .precision(.fractionLength(0...1))
         )
     }
-
+    
     enum EGVTrend: Int {
         case doubleUp = 1
         case singleUp = 2
@@ -194,13 +194,13 @@ class HUDViewModel: ObservableObject {
     @ObservedObject var accountService: AccountServiceManager
     private var settings: CaregiverSettings
     private var subscribers: Set<AnyCancellable> = []
-
+    
     init(selectedLooper: Looper, accountService: AccountServiceManager, settings: CaregiverSettings) {
         self.selectedLooper = selectedLooper
         self.accountService = accountService
         self.settings = settings
         self.glucoseDisplayUnits = self.settings.glucoseDisplayUnits
-
+        
         // TODO: This is a hack to support: accountService.selectedLooper = looper
         // Move this logic to accountService.
         self.accountService.$selectedLooper.sink { _ in
@@ -210,11 +210,11 @@ class HUDViewModel: ObservableObject {
             }
         }.store(in: &subscribers)
     }
-
+    
     func loopers() -> [Looper] {
         return accountService.loopers
     }
-
+    
     @objc
     func defaultsChanged(notication: Notification) {
         if self.glucoseDisplayUnits != settings.glucoseDisplayUnits {
