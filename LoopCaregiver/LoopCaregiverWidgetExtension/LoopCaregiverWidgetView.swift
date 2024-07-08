@@ -35,7 +35,6 @@ struct LoopCaregiverWidgetView: View {
                     LatestGlucoseInlineView(glucoseValue: glucoseValue)
                 default:
                     Text(glucoseValue.looper.name)
-                        .font(.headline)
                     LatestGlucoseSquareView(glucoseValue: glucoseValue)
                 }
             case .failure(let error):
