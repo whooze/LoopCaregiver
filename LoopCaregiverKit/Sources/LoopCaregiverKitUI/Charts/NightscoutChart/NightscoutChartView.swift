@@ -315,7 +315,15 @@ struct NightscoutChartView: View {
                 } else {
                 }
             }
-            Text("\(timelineCount)")
+//            VStack {
+//                Spacer()
+//                HStack {
+//                    Spacer()
+//                    Text("\(timelineCount)")
+//                        .font(.footnote)
+//                        .opacity(0.1)
+//                }
+//            }
         }
     }
     
