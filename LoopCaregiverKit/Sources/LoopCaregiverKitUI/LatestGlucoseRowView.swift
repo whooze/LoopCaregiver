@@ -11,8 +11,6 @@ import SwiftUI
 
 public struct LatestGlucoseRowView: View {
     public let viewModel: WidgetViewModel
-    @Environment(\.colorScheme)
-    var colorScheme
     
     public init(glucoseValue: GlucoseTimelineValue) {
         self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
@@ -50,6 +48,6 @@ public struct LatestGlucoseRowView: View {
     }
     
     var egvColor: Color {
-        colorScheme == .dark ? viewModel.egvValueColor : .primary
+        viewModel.egvValueColor
     }
 }

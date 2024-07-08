@@ -12,8 +12,6 @@ import SwiftUI
 
 public struct LatestGlucoseRectangularView: View {
     public let viewModel: WidgetViewModel
-    @Environment(\.colorScheme)
-    var colorScheme
     
     public init(glucoseValue: GlucoseTimelineValue) {
         self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
