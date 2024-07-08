@@ -83,6 +83,24 @@ public struct NightscoutChartViewModel {
         }
     }
     
+    func minValueOfAllGraphItems() -> Double? {
+        let minBG = self.glucoseGraphItems().min(by: { $0.value < $1.value })?.quantity.doubleValue(for: .milligramsPerDeciliter)
+        var minPredictedY: Double?
+        if timelinePredictionEnabled {
+            minPredictedY = self.predictionGraphItems().min(by: { $0.value < $1.value })?.quantity.doubleValue(for: .milligramsPerDeciliter)
+        }
+        
+        if let minBG, let minPredictedY {
+            return min(minBG, minPredictedY)
+        } else if let minBG {
+            return minBG
+        } else if let minPredictedY {
+            return minPredictedY
+        } else {
+            return nil
+        }
+    }
+    
     func maxValueOfAllGraphItems() -> Double? {
         let maxBGY = self.glucoseGraphItems().max(by: { $0.value < $1.value })?.quantity.doubleValue(for: .milligramsPerDeciliter)
         var maxPredictedY: Double?
