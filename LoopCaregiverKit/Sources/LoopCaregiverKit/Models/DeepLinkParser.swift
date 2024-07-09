@@ -26,6 +26,9 @@ public class DeepLinkParser {
             } else if action == SelectLooperDeepLink.actionName {
                 let deepLink = try SelectLooperDeepLink(pathParts: pathComponents, queryParameters: queryParameters)
                 return .selectLooper(deepLink: deepLink)
+            } else if action == SelectLooperErrorDeepLink.actionName {
+                let deepLink = try SelectLooperErrorDeepLink(pathParts: pathComponents, queryParameters: queryParameters)
+                return .selectLooperError(deepLink: deepLink)
             } else if action == RequestWatchConfigurationDeepLink.actionName {
                 let deepLink = try RequestWatchConfigurationDeepLink(pathParts: pathComponents, queryParameters: queryParameters)
                 return .requestWatchConfigurationDeepLink(deepLink: deepLink)
@@ -65,28 +68,30 @@ public class DeepLinkParser {
 
 public enum DeepLinkAction {
     case selectLooper(deepLink: SelectLooperDeepLink)
+    case selectLooperError(deepLink: SelectLooperErrorDeepLink)
     case addLooper(deepLink: CreateLooperDeepLink)
     case requestWatchConfigurationDeepLink(deepLink: RequestWatchConfigurationDeepLink)
 }
 
 public protocol DeepLink {
-    var host: String { get }
+    var url: URL { get }
+    static var host: String { get }
     static var actionName: String { get }
-    
-    func toURL() throws -> URL
 }
 
 public extension DeepLink {
-    var host: String {
+    static var host: String {
         return "caregiver"
     }
 }
 
 public struct SelectLooperDeepLink: DeepLink {
     public let looperUUID: String
+    public let url: URL
 
     public init(looperUUID: String) {
         self.looperUUID = looperUUID
+        self.url = URL(string: "\(Self.host)://\(Self.actionName)/\(looperUUID)")!
     }
 
     public init(pathParts: [String], queryParameters: [String: String]) throws {
@@ -94,10 +99,6 @@ public struct SelectLooperDeepLink: DeepLink {
             throw SelectLooperDeepLink.SelectLooperDeepLinkError.widgetConfigurationRequired
         }
         self = SelectLooperDeepLink(looperUUID: uuid)
-    }
-
-    public func toURL() -> URL {
-        return URL(string: "\(host)://\(Self.actionName)/\(looperUUID)")!
     }
 
     public static let actionName = "selectLooper"
@@ -114,19 +115,78 @@ public struct SelectLooperDeepLink: DeepLink {
     }
 }
 
+public struct SelectLooperErrorDeepLink: DeepLink {
+    public let url: URL
+    public let error: Error
+
+    public init(errorMessage: String) {
+        self.url = URL(string: "\(Self.host)://\(Self.actionName)/\(errorMessage)")!
+        self.error = SelectLooperError.error(errorMessage)
+    }
+
+    public init(pathParts: [String], queryParameters: [String: String]) throws {
+        guard let errorMessage = pathParts.first, !errorMessage.isEmpty else {
+            throw SelectLooperErrorDeepLinkError.missingErrorMessage
+        }
+        self = SelectLooperErrorDeepLink(errorMessage: errorMessage)
+    }
+
+    public static let actionName = "selectLooperError"
+    
+    enum SelectLooperError: LocalizedError {
+        case error(String)
+        
+        var errorDescription: String? {
+            switch self {
+            case .error(let errorMessage):
+                return errorMessage
+            }
+        }
+    }
+
+    enum SelectLooperErrorDeepLinkError: LocalizedError {
+        case missingErrorMessage
+
+        var errorDescription: String? {
+            switch self {
+            case .missingErrorMessage:
+                return "Missing Error Message."
+            }
+        }
+    }
+}
+
 public struct CreateLooperDeepLink: DeepLink {
     public let name: String
     public let nsURL: URL
     public let secretKey: String
     public let otpURL: URL
+    public let url: URL
 
     public static let actionName = "createLooper"
-
-    public init(name: String, nsURL: URL, secretKey: String, otpURL: URL) {
+    
+    public init(name: String, nsURL: URL, secretKey: String, otpURLString: String) throws {
         self.name = name
         self.nsURL = nsURL
         self.secretKey = secretKey
+        
+        guard let otpURL = URL(string: otpURLString) else {
+            throw CreateLooperDeepLinkError.missingOTPURL
+        }
         self.otpURL = otpURL
+        
+        guard let otpURLStringEncoded = otpURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
+            throw CreateLooperDeepLinkError.urlEncodingError(url: otpURL.absoluteString)
+        }
+        
+        guard let nsURLStringEncoded = nsURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
+            throw CreateLooperDeepLinkError.urlEncodingError(url: nsURL.absoluteString)
+        }
+        // TODO: The date is appended to each deep link to ensure we have a unique message received by the watch.
+        // See https://stackoverflow.com/a/47915741
+        let url = URL(string: "\(Self.host)://\(Self.actionName)?name=\(name)&secretKey=\(secretKey)&nsURL=\(nsURLStringEncoded)&otpURL=\(otpURLStringEncoded)&createdDate=\(Date())")!
+        
+        self.url = url
     }
 
     public init(pathParts: [String], queryParameters: [String: String]) throws {
@@ -144,25 +204,15 @@ public struct CreateLooperDeepLink: DeepLink {
             throw CreateLooperDeepLinkError.missingNSSecretKey
         }
 
-        guard let otpURLString = queryParameters["otpURL"]?.removingPercentEncoding, !otpURLString.isEmpty,
-        let otpURL = URL(string: otpURLString)
-        else {
+        guard let otpURLString = queryParameters["otpURL"]?.removingPercentEncoding, !otpURLString.isEmpty else {
             throw CreateLooperDeepLinkError.missingOTPURL
         }
-
-        self = CreateLooperDeepLink(name: name, nsURL: nightscoutURL, secretKey: apiSecret, otpURL: otpURL)
+        
+        self = try CreateLooperDeepLink(name: name, nsURL: nightscoutURL, secretKey: apiSecret, otpURLString: otpURLString)
     }
-
-    public func toURL() throws -> URL {
-        guard let otpURL = otpURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
-            throw CreateLooperDeepLinkError.urlEncodingError(url: otpURL.absoluteString)
-        }
-        guard let nsURL = nsURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
-            throw CreateLooperDeepLinkError.urlEncodingError(url: nsURL.absoluteString)
-        }
-        // TODO: The date is appended to each deep link to ensure we have a unique message received by the watch each time.
-        // See https://stackoverflow.com/a/47915741
-        return URL(string: "\(host)://\(Self.actionName)?name=\(name)&secretKey=\(secretKey)&nsURL=\(nsURL)&otpURL=\(otpURL)&createdDate=\(Date())")!
+    
+    public static func deepLinkWithLooper(_ looper: Looper) throws -> CreateLooperDeepLink {
+        return try CreateLooperDeepLink(name: looper.name, nsURL: looper.nightscoutCredentials.url, secretKey: looper.nightscoutCredentials.secretKey, otpURLString: looper.nightscoutCredentials.otpURL)
     }
 
     enum CreateLooperDeepLinkError: LocalizedError, Equatable {
@@ -190,17 +240,31 @@ public struct CreateLooperDeepLink: DeepLink {
 }
 
 public struct RequestWatchConfigurationDeepLink: DeepLink {
+    public let url: URL
+    
     public init() {
+        // TODO: The date is appended to each deep link to ensure we have a unique message received by the watch each time.
+        self.url = URL(string: "\(Self.host)://\(Self.actionName)?createdDate=\(Date())")!
     }
 
     public init(pathParts: [String], queryParameters: [String: String]) throws {
         self = RequestWatchConfigurationDeepLink()
     }
 
-    public func toURL() -> URL {
-        // TODO: The date is appended to each deep link to ensure we have a unique message received by the watch each time.
-        return URL(string: "\(host)://\(Self.actionName)?createdDate=\(Date())")!
-    }
-
     public static let actionName = "requestWatchConfiguration"
+}
+
+public extension GlucoseTimeLineEntry {
+    func selectLooperDeepLink() -> DeepLink {
+        switch self {
+        case .success(let glucoseEntry):
+            return SelectLooperDeepLink(looperUUID: glucoseEntry.looper.id)
+        case .failure(let error):
+            if let looper = error.looper {
+                return SelectLooperDeepLink(looperUUID: looper.id)
+            } else {
+                return SelectLooperErrorDeepLink(errorMessage: error.localizedDescription)
+            }
+        }
+    }
 }

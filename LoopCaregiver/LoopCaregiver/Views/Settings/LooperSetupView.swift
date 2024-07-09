@@ -202,7 +202,7 @@ struct LooperSetupView: View {
             nightscoutCredentials: NightscoutCredentials(url: nightscoutURL, secretKey: apiSecret, otpURL: otpURL),
             lastSelectedDate: Date()
         )
-        let service = accountService.createLooperService(looper: looper, settings: settings)
+        let service = accountService.createLooperService(looper: looper)
         try await service.remoteDataSource.checkAuth()
 
         try accountService.addLooper(looper)

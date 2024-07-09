@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "LoopCaregiverKit",
-    platforms: [.iOS(.v16), .watchOS(.v10)],
+    platforms: [.iOS(.v16), .watchOS(.v9)],
     products: [
         .library(
             name: "LoopCaregiverKit",

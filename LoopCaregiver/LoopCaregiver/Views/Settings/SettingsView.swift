@@ -9,6 +9,7 @@ import Combine
 import LoopCaregiverKit
 import LoopKitUI
 import SwiftUI
+import WidgetKit
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
@@ -38,7 +39,7 @@ struct SettingsView: View {
     ) {
         self.settingsViewModel = SettingsViewModel(
             selectedLooper: looperService.looper,
-            accountService: looperService.accountService,
+            accountService: accountService,
             settings: settings
         )
         self.looperService = looperService
@@ -93,7 +94,7 @@ struct SettingsView: View {
                             isPresented: $isPresentingConfirm) {
             Button("Remove \(looperService.looper.name)?", role: .destructive) {
                 do {
-                    try looperService.accountService.removeLooper(looperService.looper)
+                    try accountService.removeLooper(looperService.looper)
                     if !path.isEmpty {
                         path.removeLast()
                     }
@@ -247,6 +248,12 @@ struct SettingsView: View {
                 SectionHeader(label: "Remote Commands")
             }
             Section {
+                LabeledContent("User ID", value: accountService.selectedLooper?.id ?? "")
+                Button(action: {
+                    WidgetCenter.shared.reloadAllTimelines()
+                }, label: {
+                    Text("Reload Timeline")
+                })
                 Toggle("Demo Mode", isOn: $settings.demoModeEnabled)
                 Text("Demo mode hides sensitive data for Caregiver presentations.")
                     .font(.footnote)
@@ -282,19 +289,11 @@ struct SettingsView: View {
         guard let selectedLooper = accountService.selectedLooper else {
             return ""
         }
-        guard let otpURL = URL(string: selectedLooper.nightscoutCredentials.otpURL) else {
-            return ""
-        }
-        let secretKey = selectedLooper.nightscoutCredentials.secretKey
-        let deepLink = CreateLooperDeepLink(
-            name: selectedLooper.name,
-            nsURL: selectedLooper.nightscoutCredentials.url,
-            secretKey: secretKey,
-            otpURL: otpURL
-        )
         do {
-            return try deepLink.toURL().absoluteString
+            let deepLink = try CreateLooperDeepLink.deepLinkWithLooper(selectedLooper)
+            return deepLink.url.absoluteString
         } catch {
+            print(error.localizedDescription)
             return ""
         }
     }
@@ -310,7 +309,7 @@ struct SettingsView: View {
                     SectionHeader(label: "Recent Remote Commands")
                 }
             }
-            if looperService.settings.remoteCommands2Enabled {
+            if settings.remoteCommands2Enabled {
                 Section("Remote Special Actions") {
                     Button("Autobolus Activate") {
                         Task {
@@ -486,8 +485,7 @@ struct SettingsView: View {
     var showSheetView = true
     let showSheetBinding = Binding<Bool>(get: { showSheetView }, set: { showSheetView = $0 })
     let looperService = composer.accountServiceManager.createLooperService(
-        looper: looper,
-        settings: composer.settings
+        looper: looper
     )
     return SettingsView(
         looperService: looperService,

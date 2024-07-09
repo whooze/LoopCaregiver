@@ -6,14 +6,15 @@
 //
 
 import HealthKit
+import LoopCaregiverKit
 import LoopKit
 import SwiftUI
 
 public struct LatestGlucoseInlineView: View {
     public let viewModel: WidgetViewModel
 
-    public init(viewModel: WidgetViewModel) {
-        self.viewModel = viewModel
+    public init(glucoseValue: GlucoseTimelineValue) {
+        self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
     }
 
     public var body: some View {
@@ -45,7 +46,6 @@ public struct LatestGlucoseInlineView: View {
 
 struct LatestGlucoseInlineView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = WidgetViewModel(timelineEntryDate: Date(), latestGlucose: NewGlucoseSample.placeholder(), lastGlucoseChange: 3, isLastEntry: true, glucoseDisplayUnits: .gramsPerUnit, looper: nil)
-        LatestGlucoseInlineView(viewModel: viewModel)
+        LatestGlucoseInlineView(glucoseValue: .previewsValue())
     }
 }

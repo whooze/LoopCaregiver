@@ -16,7 +16,7 @@ public class ServiceComposerProduction: ServiceComposer {
     public init() {
         let userDefaults = Self.createUserDefaults()
         self.settings = Self.createCaregiverSettings(userDefaults: userDefaults)
-        self.accountServiceManager = Self.createAccountServiceManager()
+        self.accountServiceManager = Self.createAccountServiceManager(settings: settings)
         self.watchService = Self.createWatchService(accountServiceManager: accountServiceManager)
         self.deepLinkHandler = Self.createDeepLinkHandler(accountServiceManager: accountServiceManager, settings: settings, watchService: watchService)
     }
@@ -42,9 +42,9 @@ public class ServiceComposerProduction: ServiceComposer {
         }
     }
 
-    static func createAccountServiceManager() -> AccountServiceManager {
+    static func createAccountServiceManager(settings: CaregiverSettings) -> AccountServiceManager {
         let containerFactory = Self.createPersistentContainerFactory()
-        return AccountServiceManager(accountService: CoreDataAccountService(containerFactory: containerFactory))
+        return AccountServiceManager(accountService: CoreDataAccountService(containerFactory: containerFactory), settings: settings)
     }
 
     static func createWatchService(accountServiceManager: AccountServiceManager) -> WatchService {

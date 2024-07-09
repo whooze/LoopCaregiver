@@ -9,7 +9,6 @@ import Foundation
 import HealthKit
 import LoopKit
 import NightscoutKit
-import UIKit // For willEnterForegroundNotification
 
 public class RemoteDataServiceManager: ObservableObject {
     @Published public var currentGlucoseSample: NewGlucoseSample?
@@ -46,15 +45,6 @@ public class RemoteDataServiceManager: ObservableObject {
                 await self.updateData()
             }
         })
-        
-#if os(iOS)
-        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-            guard let self else { return }
-            Task {
-                await self.updateData()
-            }
-        }
-#endif
     }
     
     @MainActor
@@ -126,7 +116,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateBolusData()async throws {
+    private func updateBolusData() async throws {
         let bolusEntries = try await remoteDataProvider.fetchBolusEntries()
         if bolusEntries != self.bolusEntries {
             self.bolusEntries = bolusEntries
@@ -134,7 +124,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateBasalData()async throws {
+    private func updateBasalData() async throws {
         let basalEntries = try await remoteDataProvider.fetchBasalEntries()
         if basalEntries != self.basalEntries {
             self.basalEntries = basalEntries
@@ -142,7 +132,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateOverrideData()async throws {
+    private func updateOverrideData() async throws {
         let overridePresets = try await remoteDataProvider.fetchOverridePresets()
         if overridePresets != self.overridePresets {
             self.overridePresets = overridePresets
@@ -150,7 +140,7 @@ public class RemoteDataServiceManager: ObservableObject {
     }
     
     @MainActor
-    private func updateDeviceStatusData()async throws {
+    private func updateDeviceStatusData() async throws {
         if let deviceStatus = try await remoteDataProvider.fetchLatestDeviceStatus() {
             if latestDeviceStatus?.timestamp != deviceStatus.timestamp {
                 self.latestDeviceStatus = deviceStatus
@@ -237,7 +227,6 @@ public class RemoteDataServiceManager: ObservableObject {
         }
         
         let predictedValues = loopPrediction.values
-        
         var predictedSamples = [NewGlucoseSample]()
         var currDate = loopPrediction.startDate
         let intervalBetweenPredictedValues = 60.0 * 5.0
@@ -291,7 +280,17 @@ public class RemoteDataServiceManager: ObservableObject {
         try await remoteDataProvider.activateClosedLoop(activate: activate)
     }
     
+    public func fetchActiveOverrideStatus() async throws -> (override: NightscoutKit.TemporaryScheduleOverride, status: NightscoutKit.OverrideStatus)? {
+        let latestDeviceStatus = try await remoteDataProvider.fetchLatestDeviceStatus()
+        let currentProfile = try await remoteDataProvider.fetchCurrentProfile()
+        return activeOverrideAndStatus(latestDeviceStatus: latestDeviceStatus, currentProfile: currentProfile)
+    }
+    
     public func activeOverrideAndStatus() -> (override: NightscoutKit.TemporaryScheduleOverride, status: NightscoutKit.OverrideStatus)? {
+        return activeOverrideAndStatus(latestDeviceStatus: latestDeviceStatus, currentProfile: currentProfile)
+    }
+    
+    private func activeOverrideAndStatus(latestDeviceStatus: DeviceStatus?, currentProfile: ProfileSet?) -> (override: NightscoutKit.TemporaryScheduleOverride, status: NightscoutKit.OverrideStatus)? {
         /*
          There are 3 sources of the current override from Nightscout
          1. Devicestatus.overrideStatus: Used by NS Plugin (bubble view)

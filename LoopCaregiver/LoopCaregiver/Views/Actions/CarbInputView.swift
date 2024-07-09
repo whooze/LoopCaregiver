@@ -12,6 +12,7 @@ import SwiftUI
 
 struct CarbInputView: View {
     var looperService: LooperService
+    @ObservedObject var settings: CaregiverSettings
     @Binding var showSheetView: Bool
     
     @State private var carbInput: String = ""
@@ -269,7 +270,7 @@ struct CarbInputView: View {
     }
     
     private func maxCarbAmount() -> Int {
-        return looperService.settings.maxCarbAmount
+        return settings.maxCarbAmount
     }
     
     private func getCarbFieldValues() throws -> CarbInputViewFormValues {
@@ -373,8 +374,8 @@ enum CarbInputViewError: LocalizedError {
     let looper = composer.accountServiceManager.selectedLooper!
     var showSheetView = true
     let showSheetBinding = Binding<Bool>(get: { showSheetView }, set: { showSheetView = $0 })
-    let looperService = composer.accountServiceManager.createLooperService(looper: looper, settings: composer.settings)
-    return CarbInputView(looperService: looperService, showSheetView: showSheetBinding)
+    let looperService = composer.accountServiceManager.createLooperService(looper: looper)
+    return CarbInputView(looperService: looperService, settings: composer.settings, showSheetView: showSheetBinding)
 }
 
 extension Date {

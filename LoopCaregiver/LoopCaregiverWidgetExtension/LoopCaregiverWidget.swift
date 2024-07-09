@@ -13,7 +13,7 @@ import WidgetKit
 
 struct LoopCaregiverWidget: Widget {
     let kind: String = "LoopCaregiverWidget"
-    let timelineProvider = TimelineProvider()
+    let timelineProvider = TimelineWidgetProvider()
     let composer = ServiceComposerProduction()
 
     var body: some WidgetConfiguration {
@@ -28,6 +28,10 @@ struct LoopCaregiverWidget: Widget {
         .description("Displays Looper's last BG.")
         .supportedFamilies([
             .accessoryCircular,
+            .accessoryInline,
+            .accessoryRectangular,
+            .systemLarge,
+            .systemMedium,
             .systemSmall
         ])
     }
@@ -37,17 +41,7 @@ struct LoopCaregiverWidget: Widget {
 struct LoopCaregiverWidget_Previews: PreviewProvider {
     static var previews: some View {
         let composer = ServiceComposerPreviews()
-        let looper = composer.accountServiceManager.selectedLooper!
-        let entry = SimpleEntry(
-            looper: looper,
-            currentGlucoseSample: NewGlucoseSample.placeholder(),
-            lastGlucoseChange: 10,
-            error: nil,
-            date: .now,
-            entryIndex: 0,
-            isLastEntry: false
-        )
-        return LoopCaregiverWidgetView(entry: entry, settings: composer.settings)
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
+        return LoopCaregiverWidgetView(entry: .previewsEntry(), settings: composer.settings)
+            .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
     }
 }

@@ -19,9 +19,11 @@ struct ContentView: View {
 
     var body: some View {
         return Group {
-            if let looper = accountService.selectedLooper {
+            if let looperService = accountService.selectedLooperService {
                 HomeView(
-                    looperService: accountService.createLooperService(looper: looper, settings: settings),
+                    looperService: looperService,
+                    accountService: accountService,
+                    settings: settings,
                     watchService: watchService
                 )
             } else {

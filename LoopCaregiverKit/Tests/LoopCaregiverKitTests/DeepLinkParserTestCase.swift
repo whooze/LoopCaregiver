@@ -75,7 +75,7 @@ final class DeepLinkParserTestCase: XCTestCase {
         let deepLink = SelectLooperDeepLink(looperUUID: "12345")
 
         // Act
-        let url = deepLink.toURL()
+        let url = deepLink.url
 
         // Assert
         XCTAssertEqual(url, URL(string: "caregiver://selectLooper/12345")!)

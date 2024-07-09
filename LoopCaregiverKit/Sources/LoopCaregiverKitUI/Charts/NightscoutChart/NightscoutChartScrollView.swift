@@ -9,23 +9,19 @@ import Charts
 import Combine
 import HealthKit
 import LoopCaregiverKit
-import LoopCaregiverKitUI
 import LoopKit
 import SwiftUI
 
-// swiftlint:disable file_length
-struct NightscoutChartScrollView: View {
+public struct NightscoutChartScrollView: View {
     @ObservedObject var settings: CaregiverSettings
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @State private var scrollRequestSubject = PassthroughSubject<ScrollType, Never>()
     let timer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
-    static let timelineLookbackIntervals = [1, 3, 6, 12, 24]
+    public static let timelineLookbackIntervals = [1, 3, 6, 12, 24]
     @AppStorage(UserDefaults.standard.timelineVisibleLookbackHoursKey)
     private var timelineVisibleLookbackHours = 6
 
     @State private var graphItemsInPopover: [GraphItem]?
-
-    private let configuration = NightscoutChartConfiguration()
 
     // TODO: Remove Disabled Zoom View Things
     @State private var lastScrollUpdate: Date?
@@ -35,36 +31,16 @@ struct NightscoutChartScrollView: View {
 
     @Environment(\.scenePhase)
     private var scenePhase
-
-    func glucoseGraphItems() -> [GraphItem] {
-        return remoteDataSource.glucoseSamples.map({ $0.graphItem(displayUnit: settings.glucoseDisplayUnits) })
+    
+    public init(settings: CaregiverSettings, remoteDataSource: RemoteDataServiceManager) {
+        self.settings = settings
+        self.remoteDataSource = remoteDataSource
     }
 
-    func predictionGraphItems() -> [GraphItem] {
-        return remoteDataSource.predictedGlucose
-            .map({ $0.graphItem(displayUnit: settings.glucoseDisplayUnits) })
-            .filter({ $0.displayTime <= Date().addingTimeInterval(Double(timelinePredictionHours) * 60.0 * 60.0 ) })
-    }
-
-    func bolusGraphItems() -> [GraphItem] {
-        return remoteDataSource.bolusEntries
-            .map({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: settings.glucoseDisplayUnits) })
-    }
-
-    func carbEntryGraphItems() -> [GraphItem] {
-        return remoteDataSource.carbEntries
-            .map({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: settings.glucoseDisplayUnits) })
-    }
-
-    func remoteCommandGraphItems() -> [GraphItem] {
-        return remoteDataSource.recentCommands
-            .compactMap({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: settings.glucoseDisplayUnits) })
-    }
-
-    var body: some View {
+    public var body: some View {
         GeometryReader { containerGeometry in
             ZoomableScrollView { zoomScrollViewProxy in
-                chartView
+                NightscoutChartView(viewModel: graphViewModel)
                     .chartOverlay { chartProxy in
                         GeometryReader { chartGeometry in
                             Rectangle().fill(.clear).contentShape(Rectangle())
@@ -79,7 +55,6 @@ struct NightscoutChartScrollView: View {
                                     scrollRequestSubject.send(.contentPoint(tapLocation))
                                 }
                                 .onTapGesture(count: 1) { tapLocation in
-                                    print("x pos: \(tapLocation.x)")
                                     if let (date, glucose) = chartProxy.value(at: tapLocation, as: (Date, Double).self) {
                                         let items = getNearbyGraphItems(date: date, value: glucose, chartProxy: chartProxy)
                                         guard !items.isEmpty else {
@@ -89,8 +64,8 @@ struct NightscoutChartScrollView: View {
                                     }
                                 }
                                 .onReceive(scrollRequestSubject) { scrollType in
-                                    let lookbackHours = CGFloat(totalGraphHours - timelinePredictionHours)
-                                    let lookBackWidthRatio = lookbackHours / CGFloat(totalGraphHours)
+                                    let lookbackHours = CGFloat(graphViewModel.totalGraphHours - graphViewModel.timelinePredictionHours)
+                                    let lookBackWidthRatio = lookbackHours / CGFloat(graphViewModel.totalGraphHours)
                                     let axisWidth = chartGeometry.size.width - chartProxy.plotAreaSize.width
                                     let graphWithoutYAxisWidth = (containerGeometry.size.width * zoomLevel) - axisWidth
                                     let lookbackWidth = graphWithoutYAxisWidth * lookBackWidthRatio
@@ -132,79 +107,35 @@ struct NightscoutChartScrollView: View {
                     }
             }
         }
+        #if os(iOS)
         .popover(item: $graphItemsInPopover) { graphItemsInPopover in
             graphItemsPopoverView(graphItemsInPopover: graphItemsInPopover)
         }
+        #endif
     }
-
-    var chartView: some View {
-        Chart {
-            ForEach(glucoseGraphItems()) {
-                PointMark(
-                    x: .value("Time", $0.displayTime),
-                    y: .value("Reading", $0.value)
-                )
-                .foregroundStyle(by: .value("Reading", $0.colorType))
-                .symbol(
-                    FilledCircle()
-                )
-            }
-            if settings.timelinePredictionEnabled {
-                ForEach(predictionGraphItems()) {
-                    LineMark(
-                        x: .value("Time", $0.displayTime),
-                        y: .value("Reading", $0.value)
-                    )
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [7.0, 3.0]))
-                    .foregroundStyle(Color(uiColor: .magenta.withAlphaComponent(0.5)))
-                }
-            }
-            ForEach(bolusGraphItems()) { graphItem in
-                PointMark(
-                    x: .value("Time", graphItem.displayTime),
-                    y: .value("Reading", graphItem.value)
-                )
-                .foregroundStyle(by: .value("Reading", ColorType.clear))
-                .annotation(position: .overlay, alignment: .center, spacing: 0) {
-                    return TreatmentAnnotationView(graphItem: graphItem)
-                }
-            }
-            ForEach(carbEntryGraphItems()) { graphItem in
-                PointMark(
-                    x: .value("Time", graphItem.displayTime),
-                    y: .value("Reading", graphItem.value)
-                )
-                .foregroundStyle(by: .value("Reading", ColorType.clear))
-                .annotation(position: .overlay, alignment: .center, spacing: 0) {
-                    return TreatmentAnnotationView(graphItem: graphItem)
-                }
-            }
-            ForEach(remoteCommandGraphItems()) { graphItem in
-                PointMark(
-                    x: .value("Time", graphItem.displayTime),
-                    y: .value("Reading", graphItem.value)
-                )
-                .foregroundStyle(by: .value("Reading", ColorType.clear))
-                .annotation(position: .overlay, alignment: .center, spacing: 0) {
-                    return TreatmentAnnotationView(graphItem: graphItem)
-                }
-            }
-        }
-        // Make sure the domain values line up with what is in foregroundStyle above.
-        .chartForegroundStyleScale(domain: ColorType.membersAsRange(), range: ColorType.allCases.map({ $0.color }), type: .none)
-        .chartXScale(domain: chartXRange())
-        .chartYScale(domain: chartYRange())
-        .chartXAxis {
-            AxisMarks(position: .bottom, values: AxisMarkValues.automatic(desiredCount: totalAxisMarks, roundLowerBound: false, roundUpperBound: false)) { date in
-                if let date = date.as(Date.self) {
-                    AxisValueLabel(format: xAxisLabelFormatStyle(for: date))
-                } else {
-                    AxisValueLabel(format: xAxisLabelFormatStyle(for: Date()))
-                }
-                AxisGridLine(centered: true)
-            }
-        }
-//        .chartYAxis(.hidden)
+    
+    var treatmentData: CaregiverTreatmentData {
+        CaregiverTreatmentData(
+            glucoseDisplayUnits: settings.glucoseDisplayUnits,
+            glucoseSamples: remoteDataSource.glucoseSamples,
+            predictedGlucose: remoteDataSource.predictedGlucose,
+            bolusEntries: remoteDataSource.bolusEntries,
+            carbEntries: remoteDataSource.carbEntries,
+            recentCommands: remoteDataSource.recentCommands,
+            currentProfile: remoteDataSource.currentProfile,
+            overrideAndStatus: remoteDataSource.activeOverrideAndStatus()
+        )
+    }
+    
+    var graphViewModel: NightscoutChartViewModel {
+        NightscoutChartViewModel(
+            treatmentData: treatmentData,
+            timelinePredictionEnabled: settings.timelinePredictionEnabled,
+            totalLookbackhours: 24,
+            timelineVisibleLookbackHours: timelineVisibleLookbackHours,
+            showChartXAxis: true,
+            showChartYAxis: true
+        )
     }
 
     func graphItemsPopoverView(graphItemsInPopover: [GraphItem]) -> some View {
@@ -275,7 +206,7 @@ struct NightscoutChartScrollView: View {
             return hypot(tappedDatePosition - graphItemDatePosition, tappedValuePosition - graphItemValuePosition)
         }
 
-        let tappableGraphItems = allGraphItems().filter({ graphItem in
+        let tappableGraphItems = graphViewModel.allGraphItems().filter({ graphItem in
             switch graphItem.type {
             case .bolus, .carb:
                 return true
@@ -295,115 +226,8 @@ struct NightscoutChartScrollView: View {
         }
     }
 
-    func allGraphItems() -> [GraphItem] {
-        return remoteCommandGraphItems() + carbEntryGraphItems() + bolusGraphItems() + predictionGraphItems() + glucoseGraphItems()
-    }
-
-    func chartXRange() -> ClosedRange<Date> {
-        let maxXDate = Date().addingTimeInterval(60 * 60 * TimeInterval(timelinePredictionHours))
-        let minXDate = Date().addingTimeInterval(-60 * 60 * TimeInterval(configuration.totalLookbackhours))
-        return minXDate...maxXDate
-    }
-
     var zoomLevel: Double {
-        return CGFloat(totalGraphHours) / CGFloat(visibleFrameHours)
-    }
-
-    var timelinePredictionHours: Int {
-        guard settings.timelinePredictionEnabled else {
-            return 0
-        }
-
-        return min(6, timelineVisibleLookbackHours)
-    }
-
-    var totalGraphHours: Int {
-        return configuration.totalLookbackhours + timelinePredictionHours
-    }
-
-    var visibleFrameHours: Int {
-        return timelineVisibleLookbackHours + timelinePredictionHours
-    }
-
-    func chartYRange() -> ClosedRange<Double> {
-        return chartYBase()...chartYTop()
-    }
-
-    func chartYBase() -> Double {
-        return HKQuantity(unit: .milligramsPerDeciliter, doubleValue: 0).doubleValue(for: settings.glucoseDisplayUnits)
-    }
-
-    func chartYTop() -> Double {
-        guard let maxGraphYValue = maxValueOfAllGraphItems() else {
-            return HKQuantity(unit: .milligramsPerDeciliter, doubleValue: 400).doubleValue(for: settings.glucoseDisplayUnits)
-        }
-
-        if maxGraphYValue >= 300 {
-            return HKQuantity(unit: .milligramsPerDeciliter, doubleValue: 400).doubleValue(for: settings.glucoseDisplayUnits)
-        } else if maxGraphYValue >= 200 {
-            return HKQuantity(unit: .milligramsPerDeciliter, doubleValue: 300).doubleValue(for: settings.glucoseDisplayUnits)
-        } else {
-            return HKQuantity(unit: .milligramsPerDeciliter, doubleValue: 200).doubleValue(for: settings.glucoseDisplayUnits)
-        }
-    }
-
-    func maxValueOfAllGraphItems() -> Double? {
-        let maxBGY = self.glucoseGraphItems().max(by: { $0.value < $1.value })?.quantity.doubleValue(for: .milligramsPerDeciliter)
-        var maxPredictedY: Double?
-        if settings.timelinePredictionEnabled {
-            maxPredictedY = self.predictionGraphItems().max(by: { $0.value < $1.value })?.quantity.doubleValue(for: .milligramsPerDeciliter)
-        }
-
-        if let maxBGY, let maxPredictedY {
-            return max(maxBGY, maxPredictedY)
-        } else if let maxBGY {
-            return maxBGY
-        } else if let maxPredictedY {
-            return maxPredictedY
-        } else {
-            return nil
-        }
-    }
-
-    func formatGlucoseQuantity(_ quantity: HKQuantity) -> Double {
-        return quantity.doubleValue(for: settings.glucoseDisplayUnits)
-    }
-
-    private var xAxisStride: Calendar.Component {
-            return .minute
-    }
-
-     // How many minutes to skip (i.e. 1 is show every hour)
-    private var xAxisStrideCount: Int {
-        let visibleFrameMinutes = visibleFrameHours * 60
-        return visibleFrameMinutes / 6
-    }
-
-    private var maxVisibleXLabels: Int {
-        return 5
-    }
-
-    private var totalAxisMarks: Int {
-        return totalGraphHours / visibleFrameHours * maxVisibleXLabels
-    }
-
-    private func xAxisLabelFormatStyle(for date: Date) -> Date.FormatStyle {
-        switch visibleFrameHours {
-        case 0..<2:
-            return .dateTime.hour().minute()
-        case 2..<4:
-            return .dateTime.hour().minute()
-        case 4..<6:
-            return .dateTime.hour().minute()
-        case 6..<12:
-            return .dateTime.hour().minute()
-        case 12..<24:
-            return .dateTime.hour().minute()
-        case 24...:
-            return .dateTime.hour().minute()
-        default:
-            return .dateTime.hour().minute()
-        }
+        return CGFloat(graphViewModel.totalGraphHours) / CGFloat(graphViewModel.visibleFrameHours)
     }
 }
 
@@ -488,9 +312,3 @@ func interpolateYValueInRange(yRange: (y1: Double, y2: Double), referenceXRange:
     let rangeDifference = abs(yRange.y1 - yRange.y2)
     return yRange.y1 + (rangeDifference * scaleFactor)
 }
-
-struct NightscoutChartConfiguration {
-    let totalLookbackhours: Int = 24
-    let graphTag = 1000
-}
-// swiftlint:enable file_length

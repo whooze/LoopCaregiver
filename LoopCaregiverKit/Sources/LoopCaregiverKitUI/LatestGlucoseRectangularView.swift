@@ -12,55 +12,32 @@ import SwiftUI
 
 public struct LatestGlucoseRectangularView: View {
     public let viewModel: WidgetViewModel
-    @Environment(\.colorScheme)
-    var colorScheme
     
-    public init(viewModel: WidgetViewModel) {
-        self.viewModel = viewModel
+    public init(glucoseValue: GlucoseTimelineValue) {
+        self.viewModel = WidgetViewModel(glucoseValue: glucoseValue)
     }
     
     public var body: some View {
-        HStack(spacing: 10) {
-            VStack {
-                // BG number
-                Text(viewModel.currentGlucoseNumberText)
-                    .foregroundStyle(egvColor)
-                    .strikethrough(viewModel.isGlucoseStale)
-                    .font(.system(size: 60.0))
-            }
-            VStack(spacing: 0) {
-                HStack {
-                    // Trend arrow
-                    if let currentTrendImageName = viewModel.currentTrendImageName {
-                        Image(systemName: currentTrendImageName)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: 12)
-                            .offset(.init(width: 0.0, height: 1.5))
-                            .accessibilityLabel(Text(currentTrendImageName))
-                    }
-                    // BG delta
-                    Text(viewModel.lastGlucoseChangeFormatted!)
-                        .strikethrough(viewModel.isGlucoseStale)
-                        .font(.system(size: 20.0))
-                }
-                // Minutes since update
-                Text(viewModel.currentGlucoseDateText)
-                    .strikethrough(viewModel.isGlucoseStale)
-                    .font(.system(size: 20.0))
-            }
+        VStack(spacing: 0) {
+            LatestGlucoseRowView(glucoseValue: viewModel.glucoseValue)
+            NightscoutChartView(
+                viewModel: NightscoutChartViewModel(
+                    treatmentData: viewModel.treatmentData,
+                    timelinePredictionEnabled: true,
+                    totalLookbackhours: 1,
+                    timelineVisibleLookbackHours: 1,
+                    showChartXAxis: false,
+                    showChartYAxis: false
+                )
+            )
+            .padding(.init(top: 5, leading: 0, bottom: 5, trailing: 0))
+            .clipped()
         }
-    }
-    
-    var egvColor: Color {
-        colorScheme == .dark ? viewModel.egvValueColor : .primary
     }
 }
 
 struct LatestGlucoseRectangularView_Previews: PreviewProvider {
     static var previews: some View {
-        let latestGlucose = NewGlucoseSample(date: Date().addingTimeInterval(-60 * 5 * 60), quantity: .init(unit: .milligramsPerDeciliter, doubleValue: 100), condition: .aboveRange, trend: .flat, trendRate: .none, isDisplayOnly: false, wasUserEntered: false, syncIdentifier: "12345")
-        let viewModel = WidgetViewModel(timelineEntryDate: Date(), latestGlucose: latestGlucose, lastGlucoseChange: 1, isLastEntry: true, glucoseDisplayUnits: .milligramsPerDeciliter, looper: nil)
-        LatestGlucoseRectangularView(viewModel: viewModel)
+        LatestGlucoseRectangularView(glucoseValue: .previewsValue())
     }
 }

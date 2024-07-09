@@ -71,7 +71,7 @@ public extension WatchService {
 
     func requestWatchConfiguration() throws {
         let deepLink = RequestWatchConfigurationDeepLink()
-        connectivityService.send(deepLink.toURL().absoluteString)
+        connectivityService.send(deepLink.url.absoluteString)
     }
 }
 #endif

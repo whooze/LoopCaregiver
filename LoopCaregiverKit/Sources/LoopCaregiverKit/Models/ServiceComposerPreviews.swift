@@ -17,7 +17,10 @@ public class ServiceComposerPreviews: ServiceComposer {
         let containerFactory = InMemoryPersistentContainerFactory()
         let userDefaults = UserDefaults(suiteName: Bundle.main.appGroupSuiteName)!
         self.settings = CaregiverSettings(userDefaults: userDefaults, appGroupsSupported: true)
-        self.accountServiceManager = AccountServiceManager(accountService: CoreDataAccountService(containerFactory: containerFactory), remoteServicesProviderFactory: { _, _ in RemoteDataServiceProviderSimulator() })
+        self.accountServiceManager = AccountServiceManager(accountService: CoreDataAccountService(containerFactory: containerFactory),
+                                                           settings: settings,
+                                                           remoteServicesProviderFactory: { _, _ in RemoteDataServiceProviderSimulator()
+        })
         self.watchService = WatchService(accountService: self.accountServiceManager)
         self.deepLinkHandler = DeepLinkHandlerPhone(accountService: accountServiceManager, settings: settings, watchService: watchService)
         self.addTestLooper()

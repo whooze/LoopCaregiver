@@ -1,5 +1,5 @@
 //
-//  SettingsView.swift
+//  WatchSettingsView.swift
 //  LoopCaregiverWatchApp
 //
 //  Created by Bill Gestrich on 12/26/23.
@@ -9,7 +9,7 @@ import LoopCaregiverKit
 import SwiftUI
 import WidgetKit
 
-struct SettingsView: View {
+struct WatchSettingsView: View {
     @ObservedObject var connectivityManager: WatchService
     @ObservedObject var accountService: AccountServiceManager
     @ObservedObject var settings: CaregiverSettings

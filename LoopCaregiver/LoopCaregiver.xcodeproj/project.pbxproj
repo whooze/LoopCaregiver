@@ -7,22 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A90152942C321FF90067D123 /* PinchZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90152932C321FF90067D123 /* PinchZoom.swift */; };
 		A90DAD7A2B2C76CA0092A3D9 /* Looper+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90DAD792B2C76CA0092A3D9 /* Looper+SwiftUI.swift */; };
 		A92256352B2F952F0024EA56 /* LoopCaregiverKit in Frameworks */ = {isa = PBXBuildFile; productRef = A92256342B2F952F0024EA56 /* LoopCaregiverKit */; };
-		A930C6C22A8F99AA004BB459 /* CGRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = A930C6C12A8F99AA004BB459 /* CGRect.swift */; };
-		A930C6C52A9364BD004BB459 /* DemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A930C6C42A9364BC004BB459 /* DemoView.swift */; };
 		A933EFA22B30FF460094C32C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA12B30FF460094C32C /* HomeView.swift */; };
-		A933EFA42B3106970094C32C /* TimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA32B3106970094C32C /* TimelineProvider.swift */; };
-		A933EFA92B3116F20094C32C /* SimpleEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA82B3116F20094C32C /* SimpleEntry.swift */; };
+		A933EFA42B3106970094C32C /* TimelineWatchProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A933EFA32B3106970094C32C /* TimelineWatchProvider.swift */; };
 		A9346F862AC9820500C15F70 /* OverrideViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9346F852AC9820500C15F70 /* OverrideViewModelTests.swift */; };
 		A947025D2932299600FB3E59 /* ChartsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A947025C2932299600FB3E59 /* ChartsListView.swift */; };
 		A94702692932429F00FB3E59 /* DoseChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94702682932429F00FB3E59 /* DoseChartView.swift */; };
 		A947026C293254B500FB3E59 /* COBChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A947026B293254B500FB3E59 /* COBChartView.swift */; };
 		A94702702932C21E00FB3E59 /* IOBChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A947026F2932C21E00FB3E59 /* IOBChartView.swift */; };
 		A9480DFF2B2CA5430044C972 /* LoopKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9480DFE2B2CA5430044C972 /* LoopKit */; };
-		A94EFDBF2B44DBD80048E4F3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94EFDBD2B44DBD80048E4F3 /* SettingsView.swift */; };
+		A94EFDBF2B44DBD80048E4F3 /* WatchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94EFDBD2B44DBD80048E4F3 /* WatchSettingsView.swift */; };
 		A94EFDC02B44DBD80048E4F3 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94EFDBE2B44DBD80048E4F3 /* SettingsViewModel.swift */; };
-		A95223792A7FA0890070FE13 /* RemoteCommand+Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95223782A7FA0890070FE13 /* RemoteCommand+Charts.swift */; };
 		A95CCCEE2B2F90DF000BFC25 /* LoopCaregiverKit in Frameworks */ = {isa = PBXBuildFile; productRef = A95CCCED2B2F90DF000BFC25 /* LoopCaregiverKit */; };
 		A95F50C5292A648600079AAF /* PredictedGlucoseChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95F50C4292A648600079AAF /* PredictedGlucoseChartView.swift */; };
 		A96929352926E5CE00B8BF43 /* HUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96929342926E5CE00B8BF43 /* HUDView.swift */; };
@@ -31,9 +28,7 @@
 		A970838F2B4D54CC0053D633 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A970838E2B4D54CC0053D633 /* CustomDatePicker.swift */; };
 		A97083912B4D55130053D633 /* OverrideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97083902B4D55130053D633 /* OverrideViewModel.swift */; };
 		A97083932B4D55A00053D633 /* OverridePickerRowModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97083922B4D55A00053D633 /* OverridePickerRowModel.swift */; };
-		A9744DEC293405A4000A3D6A /* PinchZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9744DEB293405A4000A3D6A /* PinchZoom.swift */; };
 		A98348912AD206CD0034ABB2 /* PresetRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98348902AD206CD0034ABB2 /* PresetRowView.swift */; };
-		A98F5E112930F18A00A03580 /* NewGlucoseSample+Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98F5E102930F18A00A03580 /* NewGlucoseSample+Charts.swift */; };
 		A99DC86529992DD20058EBA5 /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99DC86429992DD20058EBA5 /* DisclaimerView.swift */; };
 		A99F2F382A29350D00F7DE2D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99F2F372A29350C00F7DE2D /* WidgetKit.framework */; };
 		A99F2F3A2A29350D00F7DE2D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99F2F392A29350D00F7DE2D /* SwiftUI.framework */; };
@@ -42,11 +37,8 @@
 		A99F2F442A29350F00F7DE2D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A99F2F432A29350F00F7DE2D /* Assets.xcassets */; };
 		A99F2F462A29350F00F7DE2D /* LoopCaregiverWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F422A29350D00F7DE2D /* LoopCaregiverWidget.intentdefinition */; };
 		A99F2F472A29350F00F7DE2D /* LoopCaregiverWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F422A29350D00F7DE2D /* LoopCaregiverWidget.intentdefinition */; };
-		A99F2F742A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F732A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift */; };
-		A99F2F772A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F762A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift */; };
-		A99F2F7B2A2AA0E100F7DE2D /* SimpleEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F792A2AA0DD00F7DE2D /* SimpleEntry.swift */; };
 		A99F2F7D2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F7C2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift */; };
-		A99F2F7F2A2AA19E00F7DE2D /* TimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F7E2A2AA19E00F7DE2D /* TimelineProvider.swift */; };
+		A99F2F7F2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99F2F7E2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift */; };
 		A9A62C7F2AD1BD4C004CD316 /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A62C7E2AD1BD4C004CD316 /* TimeInterval.swift */; };
 		A9B033E4292306A90052AA9E /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = A9B033E3292306A90052AA9E /* CodeScanner */; };
 		A9B033E829231DCE0052AA9E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B033E729231DCE0052AA9E /* SettingsView.swift */; };
@@ -55,7 +47,6 @@
 		A9BBD8252B2C992900072287 /* LoopCaregiverKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9BBD8242B2C992900072287 /* LoopCaregiverKit */; };
 		A9BBD8272B2C992F00072287 /* LoopCaregiverKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9BBD8262B2C992F00072287 /* LoopCaregiverKit */; };
 		A9BBD8292B2C993500072287 /* LoopCaregiverKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9BBD8282B2C993500072287 /* LoopCaregiverKit */; };
-		A9BD0DE02A89515700988E2C /* ZoomableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BD0DDF2A89515700988E2C /* ZoomableScrollView.swift */; };
 		A9BD7B532AD0D8D300E73973 /* OverrideInsulinNeedsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BD7B522AD0D8D300E73973 /* OverrideInsulinNeedsView.swift */; };
 		A9BD7B552AD17AAD00E73973 /* PresetEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BD7B542AD17AAD00E73973 /* PresetEditView.swift */; };
 		A9C89ED72A7074EE00EFD938 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C89ED62A7074EE00EFD938 /* UIColor.swift */; };
@@ -72,17 +63,12 @@
 		A9CFDD3A2AEC02D700FA701B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9CFDD392AEC02D700FA701B /* Assets.xcassets */; };
 		A9CFDD3E2AEC02D700FA701B /* LoopCaregiverWatchAppExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A9CFDD312AEC02D600FA701B /* LoopCaregiverWatchAppExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A9D3FF222A6C3B99000C891D /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D3FF212A6C3B99000C891D /* Color.swift */; };
-		A9DCD2EB2BC9373100AA258A /* GraphItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2EA2BC9373100AA258A /* GraphItem.swift */; };
-		A9DCD2ED2BC9375600AA258A /* FilledCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2EC2BC9375600AA258A /* FilledCircle.swift */; };
-		A9DCD2EF2BC9378000AA258A /* AnnotationColorStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2EE2BC9378000AA258A /* AnnotationColorStyle.swift */; };
 		A9DCD2F12BCD2C2C00AA258A /* OverrideViewDelegateMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DCD2F02BCD2C2C00AA258A /* OverrideViewDelegateMock.swift */; };
 		A9E14D3A2A2BA5A600BDB93D /* LoopCaregiverWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A99F2F362A29350C00F7DE2D /* LoopCaregiverWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A9EC197C291FEF940022D39F /* LoopCaregiverApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC197B291FEF940022D39F /* LoopCaregiverApp.swift */; };
 		A9EC197E291FEF940022D39F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC197D291FEF940022D39F /* ContentView.swift */; };
 		A9EC1980291FEF950022D39F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9EC197F291FEF950022D39F /* Assets.xcassets */; };
 		A9EC1983291FEF950022D39F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9EC1982291FEF950022D39F /* Preview Assets.xcassets */; };
-		A9EC199E292101550022D39F /* NightscoutChartScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC199D292101550022D39F /* NightscoutChartScrollView.swift */; };
-		A9EC19A1292128D60022D39F /* TreatmentAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC19A0292128D60022D39F /* TreatmentAnnotationView.swift */; };
 		A9EC19A9292144040022D39F /* OverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC19A8292144040022D39F /* OverrideView.swift */; };
 		A9EC19AB292156D80022D39F /* CarbInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC19AA292156D80022D39F /* CarbInputView.swift */; };
 		A9EC19AD2921A19C0022D39F /* BolusInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EC19AC2921A19C0022D39F /* BolusInputView.swift */; };
@@ -193,22 +179,19 @@
 /* Begin PBXFileReference section */
 		3D717B1629799E8A00B31B03 /* LoopCaregiver.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LoopCaregiver.xcconfig; sourceTree = "<group>"; };
 		3DF4E0882980736C00E91E16 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A90152932C321FF90067D123 /* PinchZoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoom.swift; sourceTree = "<group>"; };
 		A90DAD792B2C76CA0092A3D9 /* Looper+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Looper+SwiftUI.swift"; sourceTree = "<group>"; };
-		A930C6C12A8F99AA004BB459 /* CGRect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGRect.swift; sourceTree = "<group>"; };
-		A930C6C42A9364BC004BB459 /* DemoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoView.swift; sourceTree = "<group>"; };
 		A933181B2969FC17006CC3A2 /* Crypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crypto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A933EFA12B30FF460094C32C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		A933EFA32B3106970094C32C /* TimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineProvider.swift; sourceTree = "<group>"; };
-		A933EFA82B3116F20094C32C /* SimpleEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleEntry.swift; sourceTree = "<group>"; };
+		A933EFA32B3106970094C32C /* TimelineWatchProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineWatchProvider.swift; sourceTree = "<group>"; };
 		A9346F832AC9820500C15F70 /* LoopCaregiverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LoopCaregiverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9346F852AC9820500C15F70 /* OverrideViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideViewModelTests.swift; sourceTree = "<group>"; };
 		A947025C2932299600FB3E59 /* ChartsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsListView.swift; sourceTree = "<group>"; };
 		A94702682932429F00FB3E59 /* DoseChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoseChartView.swift; sourceTree = "<group>"; };
 		A947026B293254B500FB3E59 /* COBChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COBChartView.swift; sourceTree = "<group>"; };
 		A947026F2932C21E00FB3E59 /* IOBChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOBChartView.swift; sourceTree = "<group>"; };
-		A94EFDBD2B44DBD80048E4F3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A94EFDBD2B44DBD80048E4F3 /* WatchSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchSettingsView.swift; sourceTree = "<group>"; };
 		A94EFDBE2B44DBD80048E4F3 /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
-		A95223782A7FA0890070FE13 /* RemoteCommand+Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RemoteCommand+Charts.swift"; sourceTree = "<group>"; };
 		A95F50BF292A602F00079AAF /* LoopKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = LoopKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A95F50C4292A648600079AAF /* PredictedGlucoseChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictedGlucoseChartView.swift; sourceTree = "<group>"; };
 		A95F50C6292A657F00079AAF /* LoopKitUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = LoopKitUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -222,9 +205,7 @@
 		A97083902B4D55130053D633 /* OverrideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideViewModel.swift; sourceTree = "<group>"; };
 		A97083922B4D55A00053D633 /* OverridePickerRowModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverridePickerRowModel.swift; sourceTree = "<group>"; };
 		A973364229678EA300DFE395 /* NightscoutUploadKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = NightscoutUploadKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A9744DEB293405A4000A3D6A /* PinchZoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoom.swift; sourceTree = "<group>"; };
 		A98348902AD206CD0034ABB2 /* PresetRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetRowView.swift; sourceTree = "<group>"; };
-		A98F5E102930F18A00A03580 /* NewGlucoseSample+Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NewGlucoseSample+Charts.swift"; sourceTree = "<group>"; };
 		A99BC5172AE5645B006D52EF /* .github */ = {isa = PBXFileReference; lastKnownFileType = folder; name = .github; path = ../.github; sourceTree = "<group>"; };
 		A99BC5182AE56468006D52EF /* fastlane */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fastlane; path = ../fastlane; sourceTree = "<group>"; };
 		A99DC86429992DD20058EBA5 /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
@@ -238,17 +219,13 @@
 		A99F2F452A29350F00F7DE2D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A99F2F4F2A29396900F7DE2D /* LoopCaregiverWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LoopCaregiverWidgetExtension.entitlements; sourceTree = "<group>"; };
 		A99F2F502A29398F00F7DE2D /* LoopCaregiver.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LoopCaregiver.entitlements; sourceTree = "<group>"; };
-		A99F2F732A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CarbCorrectionNightscoutTreatment+Charts.swift"; sourceTree = "<group>"; };
-		A99F2F762A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BolusNightscoutTreatment+Charts.swift"; sourceTree = "<group>"; };
-		A99F2F792A2AA0DD00F7DE2D /* SimpleEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleEntry.swift; sourceTree = "<group>"; };
 		A99F2F7C2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopCaregiverWidgetView.swift; sourceTree = "<group>"; };
-		A99F2F7E2A2AA19E00F7DE2D /* TimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineProvider.swift; sourceTree = "<group>"; };
+		A99F2F7E2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineWidgetProvider.swift; sourceTree = "<group>"; };
 		A9A62C7E2AD1BD4C004CD316 /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
 		A9B033E729231DCE0052AA9E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A9BAEE6B2B5C552D002C7C46 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		A9BAEE6D2B5C555F002C7C46 /* FirstRunView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunView.swift; sourceTree = "<group>"; };
 		A9BBD8232B2C991D00072287 /* LoopCaregiverKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = LoopCaregiverKit; path = ../LoopCaregiverKit; sourceTree = "<group>"; };
-		A9BD0DDF2A89515700988E2C /* ZoomableScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomableScrollView.swift; sourceTree = "<group>"; };
 		A9BD7B522AD0D8D300E73973 /* OverrideInsulinNeedsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideInsulinNeedsView.swift; sourceTree = "<group>"; };
 		A9BD7B542AD17AAD00E73973 /* PresetEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetEditView.swift; sourceTree = "<group>"; };
 		A9C666392ADAD41700D3B5CA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -268,17 +245,12 @@
 		A9CFDD442AEC043300FA701B /* LoopCaregiverWatchAppExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LoopCaregiverWatchAppExtension.entitlements; sourceTree = "<group>"; };
 		A9CFDD452AEC055500FA701B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A9D3FF212A6C3B99000C891D /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
-		A9DCD2EA2BC9373100AA258A /* GraphItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphItem.swift; sourceTree = "<group>"; };
-		A9DCD2EC2BC9375600AA258A /* FilledCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilledCircle.swift; sourceTree = "<group>"; };
-		A9DCD2EE2BC9378000AA258A /* AnnotationColorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationColorStyle.swift; sourceTree = "<group>"; };
 		A9DCD2F02BCD2C2C00AA258A /* OverrideViewDelegateMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideViewDelegateMock.swift; sourceTree = "<group>"; };
 		A9EC1978291FEF940022D39F /* LoopCaregiver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LoopCaregiver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9EC197B291FEF940022D39F /* LoopCaregiverApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopCaregiverApp.swift; sourceTree = "<group>"; };
 		A9EC197D291FEF940022D39F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A9EC197F291FEF950022D39F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A9EC1982291FEF950022D39F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		A9EC199D292101550022D39F /* NightscoutChartScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightscoutChartScrollView.swift; sourceTree = "<group>"; };
-		A9EC19A0292128D60022D39F /* TreatmentAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreatmentAnnotationView.swift; sourceTree = "<group>"; };
 		A9EC19A8292144040022D39F /* OverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideView.swift; sourceTree = "<group>"; };
 		A9EC19AA292156D80022D39F /* CarbInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbInputView.swift; sourceTree = "<group>"; };
 		A9EC19AC2921A19C0022D39F /* BolusInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BolusInputView.swift; sourceTree = "<group>"; };
@@ -369,15 +341,6 @@
 			path = Diagnostics;
 			sourceTree = "<group>";
 		};
-		A930C6C32A922127004BB459 /* ZommableScrollView */ = {
-			isa = PBXGroup;
-			children = (
-				A9BD0DDF2A89515700988E2C /* ZoomableScrollView.swift */,
-				A930C6C42A9364BC004BB459 /* DemoView.swift */,
-			);
-			path = ZommableScrollView;
-			sourceTree = "<group>";
-		};
 		A9346F842AC9820500C15F70 /* LoopCaregiverTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -387,38 +350,12 @@
 			path = LoopCaregiverTests;
 			sourceTree = "<group>";
 		};
-		A947025A2932286200FB3E59 /* NightscoutChart */ = {
-			isa = PBXGroup;
-			children = (
-				A9EC199D292101550022D39F /* NightscoutChartScrollView.swift */,
-				A9DCD2EE2BC9378000AA258A /* AnnotationColorStyle.swift */,
-				A9DCD2EC2BC9375600AA258A /* FilledCircle.swift */,
-				A9DCD2EA2BC9373100AA258A /* GraphItem.swift */,
-				A9744DEB293405A4000A3D6A /* PinchZoom.swift */,
-				A9EC19A0292128D60022D39F /* TreatmentAnnotationView.swift */,
-				A930C6C32A922127004BB459 /* ZommableScrollView */,
-			);
-			path = NightscoutChart;
-			sourceTree = "<group>";
-		};
 		A947025B2932287A00FB3E59 /* PredicatedGlucoseChart */ = {
 			isa = PBXGroup;
 			children = (
 				A95F50C4292A648600079AAF /* PredictedGlucoseChartView.swift */,
 			);
 			path = PredicatedGlucoseChart;
-			sourceTree = "<group>";
-		};
-		A94702662932356B00FB3E59 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				A98F5E102930F18A00A03580 /* NewGlucoseSample+Charts.swift */,
-				A99F2F732A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift */,
-				A99F2F762A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift */,
-				A95223782A7FA0890070FE13 /* RemoteCommand+Charts.swift */,
-				A930C6C12A8F99AA004BB459 /* CGRect.swift */,
-			);
-			path = Extensions;
 			sourceTree = "<group>";
 		};
 		A94702672932428D00FB3E59 /* DoseChart */ = {
@@ -448,7 +385,7 @@
 		A94EFDBC2B44DBD80048E4F3 /* SettingsView */ = {
 			isa = PBXGroup;
 			children = (
-				A94EFDBD2B44DBD80048E4F3 /* SettingsView.swift */,
+				A94EFDBD2B44DBD80048E4F3 /* WatchSettingsView.swift */,
 				A94EFDBE2B44DBD80048E4F3 /* SettingsViewModel.swift */,
 			);
 			path = SettingsView;
@@ -474,12 +411,11 @@
 		A95F50C3292A641C00079AAF /* Charts */ = {
 			isa = PBXGroup;
 			children = (
+				A90152932C321FF90067D123 /* PinchZoom.swift */,
 				A947025C2932299600FB3E59 /* ChartsListView.swift */,
 				A947026A293254A800FB3E59 /* COBChart */,
 				A94702672932428D00FB3E59 /* DoseChart */,
-				A94702662932356B00FB3E59 /* Extensions */,
 				A947026E2932C20E00FB3E59 /* IOBChart */,
-				A947025A2932286200FB3E59 /* NightscoutChart */,
 				A947025B2932287A00FB3E59 /* PredicatedGlucoseChart */,
 			);
 			path = Charts;
@@ -563,8 +499,7 @@
 				A99F2F4F2A29396900F7DE2D /* LoopCaregiverWidgetExtension.entitlements */,
 				A99F2F3C2A29350D00F7DE2D /* LoopCaregiverWidgetBundle.swift */,
 				A99F2F7C2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift */,
-				A99F2F792A2AA0DD00F7DE2D /* SimpleEntry.swift */,
-				A99F2F7E2A2AA19E00F7DE2D /* TimelineProvider.swift */,
+				A99F2F7E2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift */,
 				A99F2F402A29350D00F7DE2D /* LoopCaregiverWidget.swift */,
 				A99F2F422A29350D00F7DE2D /* LoopCaregiverWidget.intentdefinition */,
 				A99F2F432A29350F00F7DE2D /* Assets.xcassets */,
@@ -602,8 +537,7 @@
 			children = (
 				A9CFDD442AEC043300FA701B /* LoopCaregiverWatchAppExtension.entitlements */,
 				A9CFDD352AEC02D600FA701B /* LoopCaregiverWatchAppExtension.swift */,
-				A933EFA32B3106970094C32C /* TimelineProvider.swift */,
-				A933EFA82B3116F20094C32C /* SimpleEntry.swift */,
+				A933EFA32B3106970094C32C /* TimelineWatchProvider.swift */,
 				A9CFDD372AEC02D600FA701B /* ConfigurationAppIntent.swift */,
 				A9CFDD392AEC02D700FA701B /* Assets.xcassets */,
 				A9CFDD3B2AEC02D700FA701B /* Info.plist */,
@@ -982,11 +916,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A99F2F7B2A2AA0E100F7DE2D /* SimpleEntry.swift in Sources */,
 				A99F2F3D2A29350D00F7DE2D /* LoopCaregiverWidgetBundle.swift in Sources */,
 				A99F2F7D2A2AA16200F7DE2D /* LoopCaregiverWidgetView.swift in Sources */,
 				A99F2F412A29350D00F7DE2D /* LoopCaregiverWidget.swift in Sources */,
-				A99F2F7F2A2AA19E00F7DE2D /* TimelineProvider.swift in Sources */,
+				A99F2F7F2A2AA19E00F7DE2D /* TimelineWidgetProvider.swift in Sources */,
 				A99F2F462A29350F00F7DE2D /* LoopCaregiverWidget.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -997,7 +930,7 @@
 			files = (
 				A9EC5C7E2B10E9FC00AA32EF /* UserDefaults+Watch.swift in Sources */,
 				A9CFDD202AEBFF1200FA701B /* ContentView.swift in Sources */,
-				A94EFDBF2B44DBD80048E4F3 /* SettingsView.swift in Sources */,
+				A94EFDBF2B44DBD80048E4F3 /* WatchSettingsView.swift in Sources */,
 				A933EFA22B30FF460094C32C /* HomeView.swift in Sources */,
 				A94EFDC02B44DBD80048E4F3 /* SettingsViewModel.swift in Sources */,
 				A9CFDD1E2AEBFF1200FA701B /* LoopCaregiverWatchApp.swift in Sources */,
@@ -1008,8 +941,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A933EFA92B3116F20094C32C /* SimpleEntry.swift in Sources */,
-				A933EFA42B3106970094C32C /* TimelineProvider.swift in Sources */,
+				A933EFA42B3106970094C32C /* TimelineWatchProvider.swift in Sources */,
 				A9EC5C7F2B10E9FC00AA32EF /* UserDefaults+Watch.swift in Sources */,
 				A9CFDD362AEC02D600FA701B /* LoopCaregiverWatchAppExtension.swift in Sources */,
 				A9CFDD382AEC02D600FA701B /* ConfigurationAppIntent.swift in Sources */,
@@ -1022,45 +954,33 @@
 			files = (
 				A970838F2B4D54CC0053D633 /* CustomDatePicker.swift in Sources */,
 				A9BAEE6E2B5C555F002C7C46 /* FirstRunView.swift in Sources */,
-				A9DCD2ED2BC9375600AA258A /* FilledCircle.swift in Sources */,
-				A9BD0DE02A89515700988E2C /* ZoomableScrollView.swift in Sources */,
 				A9A62C7F2AD1BD4C004CD316 /* TimeInterval.swift in Sources */,
 				A97083912B4D55130053D633 /* OverrideViewModel.swift in Sources */,
-				A99F2F772A2A98AE00F7DE2D /* BolusNightscoutTreatment+Charts.swift in Sources */,
 				A94702702932C21E00FB3E59 /* IOBChartView.swift in Sources */,
 				A96929352926E5CE00B8BF43 /* HUDView.swift in Sources */,
 				A9EC19A9292144040022D39F /* OverrideView.swift in Sources */,
 				A97083932B4D55A00053D633 /* OverridePickerRowModel.swift in Sources */,
 				A94702692932429F00FB3E59 /* DoseChartView.swift in Sources */,
-				A9DCD2EB2BC9373100AA258A /* GraphItem.swift in Sources */,
 				A9ECCB2A2B286DB50057DEDF /* UserDefaults+Extensions.swift in Sources */,
-				A9DCD2EF2BC9378000AA258A /* AnnotationColorStyle.swift in Sources */,
-				A95223792A7FA0890070FE13 /* RemoteCommand+Charts.swift in Sources */,
 				A98348912AD206CD0034ABB2 /* PresetRowView.swift in Sources */,
 				A96929412926EFEC00B8BF43 /* LooperSetupView.swift in Sources */,
-				A98F5E112930F18A00A03580 /* NewGlucoseSample+Charts.swift in Sources */,
 				A9EC197E291FEF940022D39F /* ContentView.swift in Sources */,
 				A9BAEE6C2B5C552D002C7C46 /* HomeView.swift in Sources */,
+				A90152942C321FF90067D123 /* PinchZoom.swift in Sources */,
 				A947026C293254B500FB3E59 /* COBChartView.swift in Sources */,
 				A9D3FF222A6C3B99000C891D /* Color.swift in Sources */,
 				A9BD7B552AD17AAD00E73973 /* PresetEditView.swift in Sources */,
-				A930C6C22A8F99AA004BB459 /* CGRect.swift in Sources */,
-				A9EC199E292101550022D39F /* NightscoutChartScrollView.swift in Sources */,
 				A969293B2926ECF500B8BF43 /* BottomBarView.swift in Sources */,
 				A9EC19AB292156D80022D39F /* CarbInputView.swift in Sources */,
 				A9ECCB2C2B29C5270057DEDF /* AppExpirationAlerterRepresentable.swift in Sources */,
 				A9B033E829231DCE0052AA9E /* SettingsView.swift in Sources */,
-				A9744DEC293405A4000A3D6A /* PinchZoom.swift in Sources */,
-				A99F2F742A2A986600F7DE2D /* CarbCorrectionNightscoutTreatment+Charts.swift in Sources */,
 				B63A43D72B2549BA004CFEAA /* BuildDetails.swift in Sources */,
 				A90DAD7A2B2C76CA0092A3D9 /* Looper+SwiftUI.swift in Sources */,
 				A95F50C5292A648600079AAF /* PredictedGlucoseChartView.swift in Sources */,
 				A947025D2932299600FB3E59 /* ChartsListView.swift in Sources */,
 				A9C89ED92A70758000EFD938 /* UIColor+HIG.swift in Sources */,
-				A930C6C52A9364BD004BB459 /* DemoView.swift in Sources */,
 				A9C89ED72A7074EE00EFD938 /* UIColor.swift in Sources */,
 				A9EC197C291FEF940022D39F /* LoopCaregiverApp.swift in Sources */,
-				A9EC19A1292128D60022D39F /* TreatmentAnnotationView.swift in Sources */,
 				A99DC86529992DD20058EBA5 /* DisclaimerView.swift in Sources */,
 				A9BD7B532AD0D8D300E73973 /* OverrideInsulinNeedsView.swift in Sources */,
 				A9ECCB282B286CD90057DEDF /* AppExpirationAlerter.swift in Sources */,

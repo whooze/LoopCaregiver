@@ -18,45 +18,33 @@ struct HomeView: View {
     @ObservedObject var looperService: LooperService
     @Environment(\.scenePhase)
     var scenePhase
-
-    init(connectivityManager: WatchService, looperService: LooperService) {
+    
+    init(connectivityManager: WatchService, accountService: AccountServiceManager, looperService: LooperService) {
         self.connectivityManager = connectivityManager
         self.looperService = looperService
-        self.settings = looperService.settings
-        self.accountService = looperService.accountService
+        self.settings = accountService.settings
+        self.accountService = accountService
         self.remoteDataSource = looperService.remoteDataSource
     }
-
+    
     var body: some View {
-        VStack {
-            HStack {
-                Text(remoteDataSource.currentGlucoseSample?.presentableStringValue(displayUnits: settings.glucoseDisplayUnits, includeShortUnits: false) ?? " ")
-                    .strikethrough(egvIsOutdated())
-                    .font(.largeTitle)
-                    .foregroundColor(egvValueColor())
-                if let egv = remoteDataSource.currentGlucoseSample {
-                    Image(systemName: egv.arrowImageName())
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 15.0)
-                        .foregroundColor(egvValueColor())
-                        .accessibilityLabel(Text(egv.arrowImageName()))
-                }
-                VStack {
-                    Text(lastEGVTimeFormatted())
+        Group {
+            switch glucoseTimelineEntry {
+            case .success(let glucoseTimelineValue):
+                LatestGlucoseRowView(glucoseValue: glucoseTimelineValue)
+                NightscoutChartScrollView(settings: settings, remoteDataSource: remoteDataSource)
+                if let override = glucoseTimelineValue.treatmentData.overrideAndStatus?.override {
+                    Text(override.presentableDescription())
                         .font(.footnote)
-                        .if(egvIsOutdated(), transform: { view in
-                            view.foregroundColor(.red)
-                        })
-                            Text(lastEGVDeltaFormatted())
-                            .font(.footnote)
                 }
+            case .failure(let glucoseTimeLineEntryError):
+                Text(glucoseTimeLineEntryError.localizedDescription)
             }
         }
-        .navigationTitle(accountService.selectedLooper?.name ?? "Name?")
+        .navigationTitle(accountService.selectedLooper?.name ?? "?")
         .navigationDestination(for: String.self,
                                destination: { _ in
-            SettingsView(
+            WatchSettingsView(
                 connectivityManager: connectivityManager,
                 accountService: accountService,
                 settings: settings
@@ -84,54 +72,46 @@ struct HomeView: View {
         .onChange(of: scenePhase, { _, _ in
             Task {
                 await remoteDataSource.updateData()
+                // reloadWidget()
             }
         })
     }
-
-    func glucoseText() -> String {
-        return remoteDataSource.currentGlucoseSample?.presentableStringValue(
-            displayUnits: settings.glucoseDisplayUnits,
-            includeShortUnits: false
-        ) ?? " "
-    }
-
-    func lastEGVTimeFormatted() -> String {
-        guard let currentEGV = remoteDataSource.currentGlucoseSample else {
-            return ""
+    
+    private var glucoseTimelineEntry: GlucoseTimeLineEntry {
+        let sortedSamples = remoteDataSource.glucoseSamples
+        guard let latestGlucoseSample = sortedSamples.last else {
+            return GlucoseTimeLineEntry(error: WatchViewError.missingGlucose, date: Date(), looper: looperService.looper)
         }
-
-        return currentEGV.date.formatted(.dateTime.hour().minute())
-    }
-
-    func egvIsOutdated() -> Bool {
-        guard let currentEGV = remoteDataSource.currentGlucoseSample else {
-            return true
-        }
-        return Date().timeIntervalSince(currentEGV.date) > 60 * 10
-    }
-
-    func egvValueColor() -> Color {
-        guard let currentEGV = remoteDataSource.currentGlucoseSample else {
-            return .white
-        }
-        return ColorType(quantity: currentEGV.quantity).color
-    }
-
-    func lastEGVDeltaFormatted() -> String {
-        let samples = remoteDataSource.glucoseSamples
-        let displayUnits = settings.glucoseDisplayUnits
-        guard let lastEGVChange = samples.getLastGlucoseChange(displayUnits: displayUnits) else {
-            return ""
-        }
-        
-        return lastEGVChange.formatted(
-            .number
-                .sign(strategy: .always(includingZero: false))
-            .precision(.fractionLength(0...1))
+        let treatmentData = CaregiverTreatmentData(
+            glucoseDisplayUnits: settings.glucoseDisplayUnits,
+            glucoseSamples: sortedSamples,
+            predictedGlucose: remoteDataSource.predictedGlucose,
+            bolusEntries: remoteDataSource.bolusEntries,
+            carbEntries: remoteDataSource.carbEntries,
+            recentCommands: remoteDataSource.recentCommands,
+            overrideAndStatus: remoteDataSource.activeOverrideAndStatus()
         )
+        let value = GlucoseTimelineValue(
+            looper: looperService.looper,
+            glucoseSample: latestGlucoseSample,
+            treatmentData: treatmentData,
+            date: Date()
+        )
+        return GlucoseTimeLineEntry(value: value)
     }
-
-    func reloadWidget() {
+    
+    private enum WatchViewError: LocalizedError {
+        case missingGlucose
+        
+        var errorDescription: String? {
+            switch self {
+            case .missingGlucose:
+                return "Missing glucose"
+            }
+        }
+    }
+    
+    private func reloadWidget() {
         WidgetCenter.shared.reloadAllTimelines()
     }
 }
@@ -141,9 +121,8 @@ struct HomeView: View {
     return NavigationStack {
         let looper = composer.accountServiceManager.selectedLooper!
         let looperService = composer.accountServiceManager.createLooperService(
-            looper: looper,
-            settings: composer.settings
+            looper: looper
         )
-        HomeView(connectivityManager: composer.watchService, looperService: looperService)
+        HomeView(connectivityManager: composer.watchService, accountService: composer.accountServiceManager, looperService: looperService)
     }
 }

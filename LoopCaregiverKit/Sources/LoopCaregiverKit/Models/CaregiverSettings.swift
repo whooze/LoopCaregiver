@@ -8,8 +8,9 @@
 import Combine
 import Foundation
 import HealthKit
+import WidgetKit
 
-public class CaregiverSettings: ObservableObject {
+public class CaregiverSettings: NSObject, ObservableObject {
     @Published public var glucoseDisplayUnits: HKUnit
     @Published public var timelinePredictionEnabled: Bool
     @Published public var experimentalFeaturesUnlocked: Bool
@@ -21,6 +22,7 @@ public class CaregiverSettings: ObservableObject {
 
     let userDefaults: UserDefaults
 
+    var glucosePrefObservationToken: NSObject?
     var cancellables = [AnyCancellable]()
 
     public let appGroupsSupported: Bool
@@ -43,7 +45,7 @@ public class CaregiverSettings: ObservableObject {
         self.disclaimerAcceptedDate = userDefaults.disclaimerAcceptedDate
         self.maxCarbAmount = userDefaults.maxCarbAmount
         self.maxBolusAmount = userDefaults.maxBolusAmount
-
+        super.init()
         // Binding
         self.bindToPublishers()
         self.bindToUserDefaults()
@@ -55,6 +57,18 @@ public class CaregiverSettings: ObservableObject {
                 self.userDefaults.set(val, forKey: self.userDefaults.glucoseUnitKey)
             }
         }.store(in: &cancellables)
+        
+        // This may be how to deal with widgets not picking up when preference
+        // change in the app. Per the docs, NSNotification.didChangeNotification
+        // does not work for out-of-process updates and KVO is recommended.
+        // Consider making a custom property wrapper that can manage this.
+        glucosePrefObservationToken = self.userDefaults.observe(\.glucoseUnit) { _, _ in
+            let glucoseDisplayUnits = self.userDefaults.glucosePreference.unit
+            if self.glucoseDisplayUnits != glucoseDisplayUnits {
+                self.glucoseDisplayUnits = glucoseDisplayUnits
+            }
+            WidgetCenter.shared.reloadAllTimelines()
+        }
 
         $timelinePredictionEnabled.sink { val in
             if val != self.userDefaults.timelinePredictionEnabled {
@@ -205,6 +219,11 @@ public extension UserDefaults {
 
     var maxBolusAmountKey: String {
         return "maxBolusAmount"
+    }
+    
+    @objc var glucoseUnit: Int {
+        get { return integer(forKey: glucoseUnitKey) }
+        set { set(newValue, forKey: glucoseUnitKey) }
     }
 
     @objc dynamic var glucosePreference: GlucoseUnitPrefererence {
