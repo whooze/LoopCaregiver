@@ -28,6 +28,7 @@ public struct LatestGlucoseSquareView: View {
                 showChartYAxis: false
             )
         )
+        .padding(.init(top: 5, leading: 0, bottom: 5, trailing: 0))
         .clipped()
         if let override = viewModel.glucoseValue.treatmentData.overrideAndStatus?.override {
             Text(override.presentableDescription())
