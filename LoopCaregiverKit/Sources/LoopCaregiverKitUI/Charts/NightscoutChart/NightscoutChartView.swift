@@ -214,7 +214,8 @@ struct NightscoutChartView: View {
                         yStart: .value("Reading", viewModel.getNormalizedTargetInUserUnits(target: dateRangeAndValue.value).0),
                         yEnd: .value("Reading", viewModel.getNormalizedTargetInUserUnits(target: dateRangeAndValue.value).1)
                     )
-                    .opacity(0.4)
+                    .opacity(0.2)
+                    .foregroundStyle(Color("glucose", bundle: .module))
                 }
                 ForEach(viewModel.glucoseGraphItems()) {
                     PointMark(
@@ -315,15 +316,6 @@ struct NightscoutChartView: View {
                 } else {
                 }
             }
-//            VStack {
-//                Spacer()
-//                HStack {
-//                    Spacer()
-//                    Text("\(timelineCount)")
-//                        .font(.footnote)
-//                        .opacity(0.1)
-//                }
-//            }
         }
     }
     
