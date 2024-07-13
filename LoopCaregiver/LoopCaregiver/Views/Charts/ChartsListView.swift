@@ -42,7 +42,7 @@ struct ChartsListView: View {
             }
             ChartWrapperView(
                 title: "Active Insulin",
-                subtitle: formattedIOB(),
+                subtitle: remoteDataSource.currentIOB?.formattedIOB() ?? "",
                 hideLabels: $isInteractingWithActiveInsulinChart
             ) {
             }
@@ -58,7 +58,7 @@ struct ChartsListView: View {
                 )
             }
             .frame(maxHeight: 150.0)
-            ChartWrapperView(title: "Active Carbohydrates", subtitle: formattedCOB(), hideLabels: $isInteractingWithActiveCarbsChart) {
+            ChartWrapperView(title: "Active Carbohydrates", subtitle: remoteDataSource.currentCOB?.formattedCOB() ?? "", hideLabels: $isInteractingWithActiveCarbsChart) {
                 /*
                  if remoteDataSource.glucoseSamples.count > 0, remoteDataSource.predictedGlucose.count > 0 {
                  COBChartView(remoteDataSource: remoteDataSource,
@@ -104,33 +104,6 @@ struct ChartsListView: View {
         }
         
         return "Eventually \(eventualGlucose.presentableStringValue(displayUnits: settings.glucoseDisplayUnits, includeShortUnits: true))"
-    }
-    
-    func formattedCOB() -> String {
-        guard let cob = remoteDataSource.currentCOB?.cob else {
-            return ""
-        }
-        return String(format: "%.0f g", cob)
-    }
-    
-    func formattedIOB() -> String {
-        guard let iob = remoteDataSource.currentIOB?.iob else {
-            return ""
-        }
-        
-        var maxFractionalDigits = 0
-        if iob > 1 {
-            maxFractionalDigits = 1
-        } else {
-            maxFractionalDigits = 2
-        }
-        
-        let iobString = iob.formatted(
-            .number
-            .precision(.fractionLength(0...maxFractionalDigits))
-        )
-
-        return iobString + " U Total"
     }
     
     func formattedInsulinDelivery() -> String {

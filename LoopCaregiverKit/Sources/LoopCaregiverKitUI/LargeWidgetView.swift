@@ -21,6 +21,19 @@ public struct LargeWidgetView: View {
             HStack {
                 CurrentGlucoseComboView(glucoseSample: viewModel.latestGlucose, lastGlucoseChange: viewModel.lastGlucoseChange, displayUnits: viewModel.glucoseDisplayUnits)
                 Spacer()
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("IOB:")
+                        Text("COB:")
+                        Text("Rec Bolus:")
+                    }
+                    VStack(alignment: .leading) {
+                        Text(viewModel.glucoseValue.treatmentData.currentIOB?.formattedIOB() ?? "")
+                        Text(viewModel.glucoseValue.treatmentData.currentCOB?.formattedCOB() ?? "")
+                        Text(viewModel.glucoseValue.treatmentData.recommendedBolus?.description ?? "")
+                    }
+                }
+                .font(.footnote)
             }
             if let (override, status) = viewModel.glucoseValue.treatmentData.overrideAndStatus {
                 ActiveOverrideInlineView(activeOverride: override, status: status)

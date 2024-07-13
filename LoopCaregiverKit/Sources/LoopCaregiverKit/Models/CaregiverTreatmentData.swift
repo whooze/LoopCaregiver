@@ -18,6 +18,9 @@ public struct CaregiverTreatmentData {
     public let recentCommands: [RemoteCommand]
     public let currentProfile: ProfileSet?
     public let overrideAndStatus: (override: NightscoutKit.TemporaryScheduleOverride, status: NightscoutKit.OverrideStatus)?
+    public let currentIOB: IOBStatus?
+    public let currentCOB: COBStatus?
+    public let recommendedBolus: Double?
     
     public init(
         glucoseDisplayUnits: HKUnit,
@@ -27,7 +30,10 @@ public struct CaregiverTreatmentData {
         carbEntries: [CarbCorrectionNightscoutTreatment],
         recentCommands: [RemoteCommand],
         currentProfile: ProfileSet? = nil,
-        overrideAndStatus: (override: NightscoutKit.TemporaryScheduleOverride, status: OverrideStatus)?
+        overrideAndStatus: (override: NightscoutKit.TemporaryScheduleOverride, status: OverrideStatus)?,
+        currentIOB: IOBStatus?,
+        currentCOB: COBStatus?,
+        recommendedBolus: Double?
     ) {
         self.glucoseDisplayUnits = glucoseDisplayUnits
         self.glucoseSamples = glucoseSamples
@@ -37,6 +43,9 @@ public struct CaregiverTreatmentData {
         self.recentCommands = recentCommands
         self.currentProfile = currentProfile
         self.overrideAndStatus = overrideAndStatus
+        self.currentIOB = currentIOB
+        self.currentCOB = currentCOB
+        self.recommendedBolus = recommendedBolus
     }
     
     public var lastGlucoseChange: Double? {

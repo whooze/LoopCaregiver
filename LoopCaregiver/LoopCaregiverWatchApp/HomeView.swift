@@ -89,7 +89,10 @@ struct HomeView: View {
             bolusEntries: remoteDataSource.bolusEntries,
             carbEntries: remoteDataSource.carbEntries,
             recentCommands: remoteDataSource.recentCommands,
-            overrideAndStatus: remoteDataSource.activeOverrideAndStatus()
+            overrideAndStatus: remoteDataSource.activeOverrideAndStatus(),
+            currentIOB: remoteDataSource.currentIOB,
+            currentCOB: remoteDataSource.currentCOB,
+            recommendedBolus: remoteDataSource.recommendedBolus
         )
         let value = GlucoseTimelineValue(
             looper: looperService.looper,

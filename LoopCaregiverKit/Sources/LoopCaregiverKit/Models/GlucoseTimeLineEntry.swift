@@ -106,7 +106,10 @@ public struct GlucoseTimelineValue {
             carbEntries: [],
             recentCommands: [],
             currentProfile: nil,
-            overrideAndStatus: nil
+            overrideAndStatus: nil,
+            currentIOB: nil,
+            currentCOB: nil,
+            recommendedBolus: nil
         )
         
         return GlucoseTimelineValue(

@@ -85,7 +85,10 @@ public struct TimelineProviderShared {
             carbEntries: remoteServiceManager.carbEntries,
             recentCommands: remoteServiceManager.recentCommands,
             currentProfile: remoteServiceManager.currentProfile,
-            overrideAndStatus: remoteServiceManager.activeOverrideAndStatus()
+            overrideAndStatus: remoteServiceManager.activeOverrideAndStatus(),
+            currentIOB: remoteServiceManager.currentIOB,
+            currentCOB: remoteServiceManager.currentCOB,
+            recommendedBolus: remoteServiceManager.recommendedBolus
         )
         
         return GlucoseTimelineValue(
@@ -109,7 +112,10 @@ public struct TimelineProviderShared {
                     carbEntries: [],
                     recentCommands: [],
                     currentProfile: nil,
-                    overrideAndStatus: nil
+                    overrideAndStatus: nil,
+                    currentIOB: nil,
+                    currentCOB: nil,
+                    recommendedBolus: nil
                 )
                 return GlucoseTimeLineEntry(
                     looper: looper,

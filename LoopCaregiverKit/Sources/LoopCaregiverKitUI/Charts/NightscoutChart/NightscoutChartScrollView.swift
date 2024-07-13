@@ -123,7 +123,10 @@ public struct NightscoutChartScrollView: View {
             carbEntries: remoteDataSource.carbEntries,
             recentCommands: remoteDataSource.recentCommands,
             currentProfile: remoteDataSource.currentProfile,
-            overrideAndStatus: remoteDataSource.activeOverrideAndStatus()
+            overrideAndStatus: remoteDataSource.activeOverrideAndStatus(),
+            currentIOB: remoteDataSource.currentIOB,
+            currentCOB: remoteDataSource.currentCOB,
+            recommendedBolus: remoteDataSource.recommendedBolus
         )
     }
     
