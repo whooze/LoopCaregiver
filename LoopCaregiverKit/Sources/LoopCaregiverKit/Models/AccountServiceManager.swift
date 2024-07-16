@@ -92,7 +92,7 @@ public class AccountServiceManager: ObservableObject, AccountServiceDelegate, Ac
             self.selectedLooper = nil
             self.loopers = []
             self.selectedLooperService = nil
-            print("Error Fetching Keychain \(error)")
+            print("Error fetching loopers: \(error)")
         }
     }
 

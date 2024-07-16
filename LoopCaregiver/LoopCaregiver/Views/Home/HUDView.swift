@@ -105,7 +105,7 @@ class HUDViewModel: ObservableObject {
     @Published var glucoseDisplayUnits: HKUnit
     /*
      TODO: This property both reflects
-     the selectedLooper account to the AccountServiceManager
+     the selectedLooper of the AccountServiceManager
      and the selection state of the HUD view. This may be a problem
      as it can lead to recursive updates since updating the active
      loop user, updates the lastSelectedDate, which sends a new
@@ -113,6 +113,8 @@ class HUDViewModel: ObservableObject {
      See note == method of Looper.
      See also the refresh() method of AccountServiceManager which
      may be working around some of this.
+     Note we could probably make selectedLooper optional. See
+     WatchSettingsView for example of how this was done.
      */
     @Published var selectedLooper: Looper {
         didSet {
