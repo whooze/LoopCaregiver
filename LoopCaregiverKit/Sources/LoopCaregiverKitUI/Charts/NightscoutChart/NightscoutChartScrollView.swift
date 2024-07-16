@@ -98,7 +98,9 @@ public struct NightscoutChartScrollView: View {
                     }
                     .onAppear(perform: {
                         scrollRequestSubject.send(.scrollViewCenter)
-                        zoomScrollViewProxy.scrollTrailing()
+                        DispatchQueue.main.async { // On the watch only, it won't scroll in onAppear without introducing a delay
+                            zoomScrollViewProxy.scrollTrailing()
+                        }
                     })
                     .onChange(of: scenePhase) { newPhase in
                         if newPhase == .active {
