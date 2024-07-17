@@ -51,6 +51,11 @@ public struct TimelineProviderShared {
                 let futureValue = value.valueWithDate(nowDate.addingTimeInterval(60 * TimeInterval(index)))
                 entries.append(.success(futureValue))
             }
+            
+            // The last entry is an error entry as we don't want to show any older glucose info at that point.
+            let errorDate = nowDate.addingTimeInterval(60.0 * TimeInterval(indexCount))
+            let glucoseError = GlucoseTimeLineEntryError(error: TimelineProviderError.missingGlucose, date: errorDate, looper: looper)
+            entries.append(.failure(glucoseError))
             return Timeline(entries: entries, policy: .after(nextRequestDate))
         } catch {
             return Timeline.createTimeline(error: error, looper: looper)
