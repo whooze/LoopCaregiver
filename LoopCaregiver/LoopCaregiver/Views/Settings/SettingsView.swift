@@ -250,6 +250,11 @@ struct SettingsView: View {
             Section {
                 LabeledContent("User ID", value: accountService.selectedLooper?.id ?? "")
                 Button(action: {
+                    WidgetCenter.shared.invalidateConfigurationRecommendations()
+                }, label: {
+                    Text("Invalidate Recommendations")
+                })
+                Button(action: {
                     WidgetCenter.shared.reloadAllTimelines()
                 }, label: {
                     Text("Reload Timeline")
