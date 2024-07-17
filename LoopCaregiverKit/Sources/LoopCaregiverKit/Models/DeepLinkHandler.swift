@@ -44,7 +44,11 @@ public class DeepLinkHandlerPhone: DeepLinkHandler {
         }
 
         if accountService.selectedLooper != looper {
-            accountService.selectedLooper = looper
+            do {
+                try accountService.updateActiveLoopUser(looper)
+            } catch {
+                print("Error setting Looper \(looper)")
+            }
         }
     }
     
@@ -133,7 +137,12 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
         }
 
         if accountService.selectedLooper != looper {
-            accountService.selectedLooper = looper
+            do {
+                try accountService.updateActiveLoopUser(looper)
+            } catch {
+                print("Error selecting Looper: \(error)")
+            }
+
         }
     }
     

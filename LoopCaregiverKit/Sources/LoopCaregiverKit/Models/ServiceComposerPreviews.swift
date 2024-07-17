@@ -31,7 +31,7 @@ public class ServiceComposerPreviews: ServiceComposer {
         let looper = Looper(identifier: UUID(), name: "Liz", nightscoutCredentials: nsCredentials, lastSelectedDate: Date())
         do {
             try self.accountServiceManager.addLooper(looper)
-            self.accountServiceManager.selectedLooper = looper
+            try self.accountServiceManager.updateActiveLoopUser(looper)
         } catch {
             print("Error adding Looper: \(error)")
         }
