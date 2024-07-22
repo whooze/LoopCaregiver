@@ -100,6 +100,7 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
         case .selectLooper(let selectLooperDeepLink):
             try await handleSelectLooperDeepLink(selectLooperDeepLink)
         case .selectLooperError(let selectLooperErrorDeepLink):
+            // Throws
             try await handleSelectLooperErrorDeepLink(selectLooperErrorDeepLink)
         case .requestWatchConfigurationDeepLink:
             preconditionFailure("Should not be received from iPhone")

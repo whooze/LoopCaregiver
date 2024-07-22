@@ -64,6 +64,8 @@ struct ContentView: View {
                     print("Error handling deep link: \(error)")
                     deepLinkErrorText = error.localizedDescription
                     deepLinkErrorShowing = true
+                    WidgetCenter.shared.invalidateConfigurationRecommendations()
+                    WidgetCenter.shared.reloadAllTimelines()
                 }
             }
         })
