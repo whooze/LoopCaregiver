@@ -175,26 +175,6 @@ struct TimelineWrapperView<ChartContent: View>: View {
     }
 }
 
-struct TitleSubtitleRowView: View {
-    let title: String
-    let subtitle: String
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .bold()
-                .font(.subheadline)
-                .padding([.leading], 10.0)
-            Spacer()
-            Text(subtitle)
-                .foregroundColor(.gray)
-                .bold()
-                .font(.subheadline)
-                .padding([.trailing], 10.0)
-        }
-    }
-}
-
 extension ChartSettings {
     static var `default`: ChartSettings {
         var settings = ChartSettings()

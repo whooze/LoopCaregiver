@@ -7,6 +7,7 @@
 
 import Foundation
 import LoopCaregiverKit
+import LoopCaregiverKitUI
 import SwiftUI
 import WidgetKit
 

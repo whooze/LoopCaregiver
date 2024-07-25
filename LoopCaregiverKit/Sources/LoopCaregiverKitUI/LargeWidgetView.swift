@@ -25,18 +25,23 @@ public struct LargeWidgetView: View {
                     VStack(alignment: .leading) {
                         Text("IOB:")
                         Text("COB:")
-                        Text("Rec Bolus:")
                     }
                     VStack(alignment: .leading) {
                         Text(viewModel.glucoseValue.treatmentData.currentIOB?.formattedIOB() ?? "")
                         Text(viewModel.glucoseValue.treatmentData.currentCOB?.formattedCOB() ?? "")
-                        Text(viewModel.glucoseValue.treatmentData.recommendedBolus?.description ?? "")
                     }
                 }
                 .font(.footnote)
             }
             if let (override, status) = viewModel.glucoseValue.treatmentData.overrideAndStatus {
                 ActiveOverrideInlineView(activeOverride: override, status: status)
+            }
+            if let recommendedBolus = viewModel.glucoseValue.treatmentData.recommendedBolus {
+                TitleSubtitleRowView(
+                    title: "Recommended Bolus",
+                    subtitle: LocalizationUtils.presentableStringFromBolusAmount(recommendedBolus) + " U"
+                )
+                .padding([.bottom, .trailing], 5.0)
             }
             NightscoutChartView(
                 viewModel: NightscoutChartViewModel(
