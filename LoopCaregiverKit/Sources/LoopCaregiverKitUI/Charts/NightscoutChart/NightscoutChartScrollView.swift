@@ -19,7 +19,7 @@ public struct NightscoutChartScrollView: View {
     let timer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
     public static let timelineLookbackIntervals = [1, 3, 6, 12, 24]
     @AppStorage(UserDefaults.standard.timelineVisibleLookbackHoursKey)
-    private var timelineVisibleLookbackHours = 6
+    private var timelineVisibleLookbackHours = NightscoutChartScrollView.defaultTimelineVisibleLookbackHours
 
     @State private var graphItemsInPopover: [GraphItem]?
 
@@ -233,6 +233,14 @@ public struct NightscoutChartScrollView: View {
 
     var zoomLevel: Double {
         return CGFloat(graphViewModel.totalGraphHours) / CGFloat(graphViewModel.visibleFrameHours)
+    }
+    
+    static var defaultTimelineVisibleLookbackHours: Int {
+#if os(watchOS)
+        return 1
+#else
+        return 6
+#endif
     }
 }
 
