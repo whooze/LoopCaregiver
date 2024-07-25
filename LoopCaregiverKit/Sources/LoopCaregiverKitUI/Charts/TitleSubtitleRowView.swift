@@ -21,13 +21,11 @@ public struct TitleSubtitleRowView: View {
             Text(title)
                 .bold()
                 .font(.subheadline)
-                .padding([.leading], 10.0)
             Spacer()
             Text(subtitle)
                 .foregroundColor(.gray)
                 .bold()
                 .font(.subheadline)
-                .padding([.trailing], 10.0)
         }
     }
 }

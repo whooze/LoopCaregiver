@@ -143,7 +143,6 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
             } catch {
                 print("Error selecting Looper: \(error)")
             }
-
         }
     }
     

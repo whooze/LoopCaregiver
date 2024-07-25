@@ -78,15 +78,19 @@ struct ChartsListView: View {
                     // Using .padding causes the chart overlay GeometryReader to
                     // have an offset that is the padding amount.
                     // Using a custom "padding" solution here with an HStack to avoid this.
-                    Spacer(minLength: 10.0)
+                    Spacer(minLength: outerPadding)
                     NightscoutChartScrollView(
                         settings: settings,
                         remoteDataSource: remoteDataSource
                     )
-                    Spacer(minLength: 10.0)
+                    Spacer(minLength: outerPadding)
                 }
             }
         }
+    }
+    
+    var outerPadding: Double {
+        return 10.0
     }
     
     var loopGraphInterval: DateInterval {
@@ -116,6 +120,7 @@ struct ChartWrapperView<ChartContent: View>: View {
     let subtitle: String
     @Binding var hideLabels: Bool
     let chartContent: ChartContent
+    let outerPadding = 10.0
     
     init(
         title: String,
@@ -133,6 +138,7 @@ struct ChartWrapperView<ChartContent: View>: View {
         VStack {
             TitleSubtitleRowView(title: title, subtitle: subtitle)
                 .opacity(hideLabels ? 0.0 : 1.0)
+                .padding([.leading, .trailing], outerPadding)
             chartContent
         }
     }
