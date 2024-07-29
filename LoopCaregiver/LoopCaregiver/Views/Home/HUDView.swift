@@ -46,6 +46,12 @@ struct HUDView: View {
             if let (activeOverride, status) = nightscoutDataSource.activeOverrideAndStatus() {
                 ActiveOverrideInlineView(activeOverride: activeOverride, status: status)
             }
+            if let recommendedBolus = nightscoutDataSource.recommendedBolus {
+                TitleSubtitleRowView(
+                    title: "Recommended Bolus",
+                    subtitle: LocalizationUtils.presentableStringFromBolusAmount(recommendedBolus) + " U"
+                )
+            }
         }
     }
     
