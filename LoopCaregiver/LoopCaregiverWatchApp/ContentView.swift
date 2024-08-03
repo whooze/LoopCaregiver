@@ -15,7 +15,8 @@ struct ContentView: View {
     var deepLinkHandler: DeepLinkHandler
     @EnvironmentObject var settings: CaregiverSettings
     @EnvironmentObject var watchService: WatchService
-
+    @Environment(\.scenePhase) var scenePhase
+    
     @State private var deepLinkErrorShowing = false
     @State private var deepLinkErrorText: String = ""
 
@@ -70,13 +71,19 @@ struct ContentView: View {
             }
         })
         .onAppear {
-            // reloadWidget()
             if accountService.selectedLooper == nil {
                 do {
                     try watchService.requestWatchConfiguration()
                 } catch {
                     print(error)
                 }
+            }
+        }
+        .onChange(of: scenePhase) { (_, newPhase) in
+            if newPhase == .active {
+                reloadWidget()
+            } else if newPhase == .background {
+                reloadWidget()
             }
         }
     }
