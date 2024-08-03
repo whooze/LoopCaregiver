@@ -151,7 +151,7 @@ public struct TimelineProviderShared {
             throw TimelineProviderError.looperNotConfigured
         }
         let loopers = try composer.accountServiceManager.getLoopers()
-        guard let looper = loopers.first(where: { $0.id == looperID || $0.name == looperName}) else {
+        guard let looper = loopers.first(where: { $0.id == looperID || $0.name == looperName }) else {
             throw TimelineProviderError.looperNotFound(looperID)
         }
 

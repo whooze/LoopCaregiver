@@ -15,7 +15,8 @@ struct ContentView: View {
     var deepLinkHandler: DeepLinkHandler
     @EnvironmentObject var settings: CaregiverSettings
     @EnvironmentObject var watchService: WatchService
-    @Environment(\.scenePhase) var scenePhase
+    @Environment(\.scenePhase)
+    var scenePhase
     
     @State private var deepLinkErrorShowing = false
     @State private var deepLinkErrorText: String = ""
