@@ -19,9 +19,9 @@ public struct TimelineProviderShared {
     public init() {
     }
     
-    public func timeline(for looperID: String?) async -> Timeline<GlucoseTimeLineEntry> {
+    public func timeline(for looperID: String?, looperName: String?) async -> Timeline<GlucoseTimeLineEntry> {
         do {
-            let looper = try await getLooper(looperID: looperID)
+            let looper = try await getLooper(looperID: looperID, looperName: looperName)
             return await timeline(for: looper)
         } catch {
             return Timeline.createTimeline(error: error, looper: nil)
@@ -104,9 +104,9 @@ public struct TimelineProviderShared {
         )
     }
     
-    public func snapshot(for looperID: String?, context: TimelineProviderContext) async -> GlucoseTimeLineEntry {
+    public func snapshot(for looperID: String?, looperName: String?, context: TimelineProviderContext) async -> GlucoseTimeLineEntry {
         do {
-            let looper = try await getLooper(looperID: looperID)
+            let looper = try await getLooper(looperID: looperID, looperName: looperName)
             if context.isPreview {
                 let fakeGlucoseSample = NewGlucoseSample.previews()
                 let treatmentData = CaregiverTreatmentData(
@@ -146,12 +146,12 @@ public struct TimelineProviderShared {
         }
     }
     
-    private func getLooper(looperID: String?) async throws -> Looper {
+    private func getLooper(looperID: String?, looperName: String?) async throws -> Looper {
         guard let looperID else {
             throw TimelineProviderError.looperNotConfigured
         }
         let loopers = try composer.accountServiceManager.getLoopers()
-        guard let looper = loopers.first(where: { $0.id == looperID }) else {
+        guard let looper = loopers.first(where: { $0.id == looperID || $0.name == looperName}) else {
             throw TimelineProviderError.looperNotFound(looperID)
         }
 
@@ -178,7 +178,7 @@ public struct TimelineProviderShared {
         }
         
         func configurationText() -> String {
-            return "Edit by pressing widget for 2 seconds, then choose your Looper."
+            return "Edit by pressing the widget for 2 seconds, then choose your Looper again."
         }
     }
 }
