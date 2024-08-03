@@ -113,6 +113,10 @@ public struct NightscoutChartScrollView: View {
         .popover(item: $graphItemsInPopover) { graphItemsInPopover in
             graphItemsPopoverView(graphItemsInPopover: graphItemsInPopover)
         }
+        #elseif os(watchOS)
+        .sheet(item: $graphItemsInPopover) { graphItems in
+            graphItemsPopoverView(graphItemsInPopover: graphItems)
+        }
         #endif
     }
     
@@ -171,13 +175,15 @@ public struct NightscoutChartScrollView: View {
                     }
                 }
             }
+            #if os(iOS)
             .toolbar(content: {
-                    Button {
-                        self.graphItemsInPopover = nil
-                    } label: {
-                        Text("Done")
-                    }
+                Button {
+                    self.graphItemsInPopover = nil
+                } label: {
+                    Text("Done")
+                }
             })
+            #endif
         }
         .presentationDetents([.medium])
     }
