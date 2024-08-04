@@ -233,10 +233,10 @@ public struct NightscoutChartScrollView: View {
             item1.displayTime < item2.displayTime
         }).filter({ distanceCalcuator(graphItem: $0, date: date, value: value) < 20 })
 
-        if sortedItems.count <= 5 {
+        if sortedItems.count <= 10 {
             return sortedItems
         } else {
-            return Array(sortedItems[0...4])
+            return Array(sortedItems[0...9])
         }
     }
 
