@@ -80,7 +80,7 @@ struct ContentView: View {
                 }
             }
         }
-        .onChange(of: scenePhase) { (_, newPhase) in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 reloadWidget()
             } else if newPhase == .background {
