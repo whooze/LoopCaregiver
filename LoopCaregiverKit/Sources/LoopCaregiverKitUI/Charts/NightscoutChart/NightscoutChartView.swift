@@ -206,7 +206,7 @@ struct NightscoutChartView: View {
     let viewModel: NightscoutChartViewModel
     
     var body: some View {
-        ZStack {
+        TimelineView(.everyMinute) { context in
             Chart {
                 ForEach(viewModel.getTargetDateRangesAndValues(), id: \.range) { dateRangeAndValue in
                     RectangleMark(
@@ -268,6 +268,11 @@ struct NightscoutChartView: View {
                         return TreatmentAnnotationView(graphItem: graphItem)
                     }
                 }
+                RuleMark(
+                    x: .value("Now", context.date)
+                )
+                .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
+                .foregroundStyle(.primary)
             }
             // Make sure the domain values line up with what is in foregroundStyle above.
             .chartForegroundStyleScale(domain: ColorType.membersAsRange(), range: ColorType.allCases.map({ $0.color }), type: .none)
