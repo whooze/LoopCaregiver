@@ -81,7 +81,8 @@ struct ChartsListView: View {
                     Spacer(minLength: outerPadding)
                     NightscoutChartScrollView(
                         settings: settings,
-                        remoteDataSource: remoteDataSource
+                        remoteDataSource: remoteDataSource,
+                        compactMode: false
                     )
                     Spacer(minLength: outerPadding)
                 }

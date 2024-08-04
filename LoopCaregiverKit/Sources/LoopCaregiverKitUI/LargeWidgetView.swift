@@ -49,6 +49,7 @@ public struct LargeWidgetView: View {
                     timelinePredictionEnabled: true,
                     totalLookbackhours: 6,
                     timelineVisibleLookbackHours: 6,
+                    compactMode: false,
                     showChartXAxis: true,
                     showChartYAxis: true
                 )

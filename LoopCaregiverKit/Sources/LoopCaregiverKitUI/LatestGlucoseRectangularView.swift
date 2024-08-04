@@ -26,6 +26,7 @@ public struct LatestGlucoseRectangularView: View {
                     timelinePredictionEnabled: true,
                     totalLookbackhours: 1,
                     timelineVisibleLookbackHours: 1,
+                    compactMode: true,
                     showChartXAxis: false,
                     showChartYAxis: false
                 )

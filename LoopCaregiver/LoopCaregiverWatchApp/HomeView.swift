@@ -16,7 +16,7 @@ struct HomeView: View {
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @ObservedObject var settings: CaregiverSettings
     @ObservedObject var looperService: LooperService
-    @State private var dataUpdating: Bool = false
+    @State private var dataUpdating = false
     @Environment(\.scenePhase)
     var scenePhase
     
@@ -34,7 +34,7 @@ struct HomeView: View {
             case .success(let glucoseTimelineValue):
                 GeometryReader { geometryProxy in
                     List {
-                        NightscoutChartScrollView(settings: settings, remoteDataSource: remoteDataSource)
+                        NightscoutChartScrollView(settings: settings, remoteDataSource: remoteDataSource, compactMode: true)
                             .frame(height: geometryProxy.size.height * 0.75)
                             .listRowBackground(Color.clear)
                             .listRowInsets(.none)

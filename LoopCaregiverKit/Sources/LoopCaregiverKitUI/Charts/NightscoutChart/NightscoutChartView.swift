@@ -18,6 +18,7 @@ public struct NightscoutChartViewModel {
     let timelinePredictionEnabled: Bool
     let totalLookbackhours: Int
     var timelineVisibleLookbackHours: Int
+    let compactMode: Bool
     let graphTag = 1000
     let showChartXAxis: Bool
     let showChartYAxis: Bool
@@ -146,12 +147,12 @@ public struct NightscoutChartViewModel {
         return totalGraphHours / visibleFrameHours * maxVisibleXLabels
     }
     
-    var totalGraphHours: Int {
-        return totalLookbackhours + timelinePredictionHours
+    var maxVisibleXLabels: Int {
+        return compactMode ? 3 : 5
     }
     
-    var maxVisibleXLabels: Int {
-        return 5
+    var totalGraphHours: Int {
+        return totalLookbackhours + timelinePredictionHours
     }
     
     var timelinePredictionHours: Int {
@@ -307,13 +308,12 @@ struct NightscoutChartView: View {
                 if viewModel.showChartXAxis {
                     AxisMarks(position: .bottom, values: AxisMarkValues.automatic(desiredCount: viewModel.totalAxisMarks, roundLowerBound: false, roundUpperBound: false)) { date in
                         if let date = date.as(Date.self) {
-                            AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: date))
+                            AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: date), collisionResolution: .truncate)
                         } else {
                             AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: Date()))
                         }
                         AxisGridLine(centered: true)
                     }
-                } else {
                 }
             }
         }

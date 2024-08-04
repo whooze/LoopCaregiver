@@ -8,13 +8,12 @@
 import Foundation
 import SwiftUI
 
-extension Image {
-    public static var workout: Image {
+public extension Image {
+    static var workout: Image {
         return Image("workout", bundle: Bundle.module)
     }
     
-    public static var workoutSelected: Image {
+    static var workoutSelected: Image {
         return Image("workout-selected", bundle: Bundle.module)
     }
 }
-
