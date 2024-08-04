@@ -15,7 +15,7 @@ class TimelineWatchProvider: AppIntentTimelineProvider {
     let providerShared = TimelineProviderShared()
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<GlucoseTimeLineEntry> {
-        return await providerShared.timeline(for: configuration.looperID, looperName: configuration.name)
+        return await providerShared.timeline(for: configuration.looperID)
     }
     
     /// Shows the first time widget appears on watchface and when redacted
@@ -26,7 +26,7 @@ class TimelineWatchProvider: AppIntentTimelineProvider {
     /// Shows when widget is in the gallery and other "transient" times per docs.
     /// This does not seem to be called on the Watch.
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> GlucoseTimeLineEntry {
-        return await providerShared.snapshot(for: configuration.looperID, looperName: configuration.name, context: context)
+        return await providerShared.snapshot(for: configuration.looperID, context: context)
     }
     
     /// Used to recommend Looper configurations on Watch only since WatchOS
