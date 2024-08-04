@@ -16,7 +16,7 @@ struct TimelineWidgetProvider: IntentTimelineProvider {
     
     func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<GlucoseTimeLineEntry>) -> Void) {
         Task {
-            let timeline = await providerShared.timeline(for: configuration.looper?.identifier)
+            let timeline = await providerShared.timeline(for: configuration.looper?.identifier, looperName: configuration.looper?.displayString)
             completion(timeline)
         }
     }
@@ -33,7 +33,7 @@ struct TimelineWidgetProvider: IntentTimelineProvider {
     /// Home View Add Widget: The view shows this with Context.isPreview == true
     func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (GlucoseTimeLineEntry) -> Void) {
         Task {
-            let entry = await providerShared.snapshot(for: configuration.looper?.identifier, context: context)
+            let entry = await providerShared.snapshot(for: configuration.looper?.identifier, looperName: configuration.looper?.displayString, context: context)
             completion(entry)
         }
     }
