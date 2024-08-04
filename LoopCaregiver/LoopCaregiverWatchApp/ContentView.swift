@@ -29,17 +29,15 @@ struct ContentView: View {
                 if let looperService = accountService.selectedLooperService {
                     HomeView(connectivityManager: watchService, accountService: accountService, looperService: looperService)
                 } else {
-                     Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
-                }
-            }
-            .navigationDestination(for: String.self, destination: { _ in
-                WatchSettingsView(connectivityManager: watchService, accountService: accountService, settings: settings)
-            })
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink(value: "SettingsView") {
-                        Image(systemName: "gear")
-                            .accessibilityLabel(Text("Settings"))
+                    Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
+                    NavigationLink {
+                        WatchSettingsView(
+                            connectivityManager: watchService,
+                            accountService: accountService,
+                            settings: settings
+                        )
+                    } label: {
+                        Label("Settings", systemImage: "gear")
                     }
                 }
             }

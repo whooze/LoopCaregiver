@@ -16,6 +16,7 @@ struct HomeView: View {
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @ObservedObject var settings: CaregiverSettings
     @ObservedObject var looperService: LooperService
+    @State private var dataUpdating: Bool = false
     @Environment(\.scenePhase)
     var scenePhase
     
@@ -28,53 +29,98 @@ struct HomeView: View {
     }
     
     var body: some View {
-        Group {
+        ZStack {
             switch glucoseTimelineEntry {
             case .success(let glucoseTimelineValue):
-                LatestGlucoseRowView(glucoseValue: glucoseTimelineValue)
-                NightscoutChartScrollView(settings: settings, remoteDataSource: remoteDataSource)
-                if let override = glucoseTimelineValue.treatmentData.overrideAndStatus?.override {
-                    Text(override.presentableDescription())
-                        .font(.footnote)
+                GeometryReader { geometryProxy in
+                    List {
+                        NightscoutChartScrollView(settings: settings, remoteDataSource: remoteDataSource)
+                            .frame(height: geometryProxy.size.height * 0.75)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(.none)
+                        if let (override, status) = glucoseTimelineValue.treatmentData.overrideAndStatus {
+                            NavigationLink {
+                                Text("Override Control Coming Soon...")
+                            } label: {
+                                Label {
+                                    if status.active {
+                                        Text(override.presentableDescription())
+                                    } else {
+                                        Text("Overrides")
+                                    }
+                                } icon: {
+                                    workoutImage(isActive: status.active)
+                                        .renderingMode(.template)
+                                        .foregroundColor(.blue)
+                                        .accessibilityLabel(Text("Workout"))
+                                }
+                            }
+                        }
+                        NavigationLink {
+                            WatchSettingsView(
+                                connectivityManager: connectivityManager,
+                                accountService: accountService,
+                                settings: settings
+                            )
+                        } label: {
+                            Label("Settings", systemImage: "gear")
+                        }
+                    }
+                    .listRowInsets(.none)
                 }
             case .failure(let glucoseTimeLineEntryError):
-                Text(glucoseTimeLineEntryError.localizedDescription)
+                if !dataUpdating {
+                    Text(glucoseTimeLineEntryError.localizedDescription)
+                }
+            }
+            if dataUpdating {
+                ProgressView()
+                    .allowsHitTesting(false)
             }
         }
-        .navigationTitle(accountService.selectedLooper?.name ?? "?")
-        .navigationDestination(for: String.self,
-                               destination: { _ in
-            WatchSettingsView(
-                connectivityManager: connectivityManager,
-                accountService: accountService,
-                settings: settings
-            )
-        })
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                NavigationLink(value: "SettingsView") {
-                    Image(systemName: "gear")
-                        .accessibilityLabel(Text("Settings"))
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
+                Button(action: {
                     Task {
-                        await looperService.remoteDataSource.updateData()
-                        reloadWidget()
+                        updateData()
                     }
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .accessibilityLabel(Text("Refresh"))
-                }
+                }, label: {
+                    switch glucoseTimelineEntry {
+                    case .success(let glucoseTimelineValue):
+                        LatestGlucoseRowView(glucoseValue: glucoseTimelineValue)
+                    case .failure:
+                        Text("")
+                    }
+                })
             }
         }
         .onChange(of: scenePhase, { _, _ in
-            Task {
-                await remoteDataSource.updateData()
-                // reloadWidget()
-            }
+            updateData()
         })
+    }
+    
+    func workoutImage(isActive: Bool) -> Image {
+        if overrideIsActive() {
+            return Image.workoutSelected
+        } else {
+            return Image.workout
+        }
+    }
+    
+    private func overrideIsActive() -> Bool {
+        remoteDataSource.activeOverride() != nil
+    }
+    
+    @MainActor
+    private func updateData() {
+        dataUpdating = true
+        Task {
+            await looperService.remoteDataSource.updateData()
+            reloadWidget()
+            await MainActor.run {
+                dataUpdating = false
+            }
+        }
     }
     
     private var glucoseTimelineEntry: GlucoseTimeLineEntry {
