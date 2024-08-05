@@ -29,36 +29,36 @@ public struct NightscoutChartViewModel {
     
     func glucoseGraphItems() -> [GraphItem] {
         return treatmentData.glucoseSamples.map({ $0.graphItem(displayUnit: treatmentData.glucoseDisplayUnits) })
-            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
+            .filter({ $0.displayTime >= nowDate.addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
     
     func predictionGraphItems() -> [GraphItem] {
         return treatmentData.predictedGlucose
             .map({ $0.graphItem(displayUnit: treatmentData.glucoseDisplayUnits) })
-            .filter({ $0.displayTime <= Date().addingTimeInterval(Double(timelinePredictionHours) * 60.0 * 60.0 ) })
+            .filter({ $0.displayTime <= nowDate.addingTimeInterval(Double(timelinePredictionHours) * 60.0 * 60.0 ) })
     }
     
     func bolusGraphItems() -> [GraphItem] {
         return treatmentData.bolusEntries
             .map({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: treatmentData.glucoseDisplayUnits) })
-            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
+            .filter({ $0.displayTime >= nowDate.addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
     
     func carbEntryGraphItems() -> [GraphItem] {
         return treatmentData.carbEntries
             .map({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: treatmentData.glucoseDisplayUnits) })
-            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
+            .filter({ $0.displayTime >= nowDate.addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
     
     func remoteCommandGraphItems() -> [GraphItem] {
         return treatmentData.recentCommands
             .compactMap({ $0.graphItem(egvValues: glucoseGraphItems(), displayUnit: treatmentData.glucoseDisplayUnits) })
-            .filter({ $0.displayTime >= Date().addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
+            .filter({ $0.displayTime >= nowDate.addingTimeInterval(-Double(totalLookbackhours) * 60.0 * 60.0 ) })
     }
     
     func chartXRange() -> ClosedRange<Date> {
-        let maxXDate = Date().addingTimeInterval(60 * 60 * TimeInterval(timelinePredictionHours))
-        let minXDate = Date().addingTimeInterval(-60 * 60 * TimeInterval(totalLookbackhours))
+        let maxXDate = nowDate.addingTimeInterval(60 * 60 * TimeInterval(timelinePredictionHours))
+        let minXDate = nowDate.addingTimeInterval(-60 * 60 * TimeInterval(totalLookbackhours))
         return minXDate...maxXDate
     }
     
@@ -192,6 +192,13 @@ public struct NightscoutChartViewModel {
         return (lowTargetValue, highTargetValue)
     }
     
+    var nowDate: Date {
+        // This allows the view to respond to external updates
+        // Without this, the view won't update when displayed in
+        // a widget.
+        return max(treatmentData.creationDate, Date())
+    }
+    
     struct LowHighTarget: OffsetItem {
         let lowTargetValue: ProfileSet.ScheduleItem
         let highTargetValue: ProfileSet.ScheduleItem
@@ -314,7 +321,7 @@ struct NightscoutChartView: View {
                     if let date = date.as(Date.self) {
                         AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: date), collisionResolution: .truncate)
                     } else {
-                        AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: Date()))
+                        AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: nowDate))
                     }
                     AxisGridLine(centered: true)
                 }
