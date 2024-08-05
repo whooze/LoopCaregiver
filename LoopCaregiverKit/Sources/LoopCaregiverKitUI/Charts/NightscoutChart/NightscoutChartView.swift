@@ -206,122 +206,127 @@ struct NightscoutChartView: View {
     let viewModel: NightscoutChartViewModel
     
     var body: some View {
-        TimelineView(.everyMinute) { context in
-            Chart {
-                ForEach(viewModel.getTargetDateRangesAndValues(), id: \.range) { dateRangeAndValue in
-                    RectangleMark(
-                        xStart: .value("Time", dateRangeAndValue.range.lowerBound),
-                        xEnd: .value("Time", dateRangeAndValue.range.upperBound),
-                        yStart: .value("Reading", viewModel.getNormalizedTargetInUserUnits(target: dateRangeAndValue.value).0),
-                        yEnd: .value("Reading", viewModel.getNormalizedTargetInUserUnits(target: dateRangeAndValue.value).1)
-                    )
-                    .opacity(0.2)
-                    .foregroundStyle(Color("glucose", bundle: .module))
-                }
-                ForEach(viewModel.glucoseGraphItems()) {
-                    PointMark(
+        Chart {
+            ForEach(viewModel.getTargetDateRangesAndValues(), id: \.range) { dateRangeAndValue in
+                RectangleMark(
+                    xStart: .value("Time", dateRangeAndValue.range.lowerBound),
+                    xEnd: .value("Time", dateRangeAndValue.range.upperBound),
+                    yStart: .value("Reading", viewModel.getNormalizedTargetInUserUnits(target: dateRangeAndValue.value).0),
+                    yEnd: .value("Reading", viewModel.getNormalizedTargetInUserUnits(target: dateRangeAndValue.value).1)
+                )
+                .opacity(0.2)
+                .foregroundStyle(Color("glucose", bundle: .module))
+            }
+            ForEach(viewModel.glucoseGraphItems()) {
+                PointMark(
+                    x: .value("Time", $0.displayTime),
+                    y: .value("Reading", $0.value)
+                )
+                .foregroundStyle(by: .value("Reading", $0.colorType))
+                .symbol(
+                    FilledCircle()
+                )
+            }
+            if viewModel.timelinePredictionEnabled {
+                ForEach(viewModel.predictionGraphItems()) {
+                    LineMark(
                         x: .value("Time", $0.displayTime),
                         y: .value("Reading", $0.value)
                     )
-                    .foregroundStyle(by: .value("Reading", $0.colorType))
-                    .symbol(
-                        FilledCircle()
-                    )
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [7.0, 3.0]))
+                    .foregroundStyle(Color(uiColor: .magenta.withAlphaComponent(0.5)))
                 }
-                if viewModel.timelinePredictionEnabled {
-                    ForEach(viewModel.predictionGraphItems()) {
-                        LineMark(
-                            x: .value("Time", $0.displayTime),
-                            y: .value("Reading", $0.value)
-                        )
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [7.0, 3.0]))
-                        .foregroundStyle(Color(uiColor: .magenta.withAlphaComponent(0.5)))
-                    }
-                }
-                ForEach(viewModel.bolusGraphItems()) { graphItem in
-                    PointMark(
-                        x: .value("Time", graphItem.displayTime),
-                        y: .value("Reading", graphItem.value)
-                    )
-                    .foregroundStyle(by: .value("Reading", ColorType.clear))
-                    .annotation(position: .overlay, alignment: .center, spacing: 0) {
-                        return TreatmentAnnotationView(graphItem: graphItem)
-                    }
-                }
-                ForEach(viewModel.carbEntryGraphItems()) { graphItem in
-                    PointMark(
-                        x: .value("Time", graphItem.displayTime),
-                        y: .value("Reading", graphItem.value)
-                    )
-                    .foregroundStyle(by: .value("Reading", ColorType.clear))
-                    .annotation(position: .overlay, alignment: .center, spacing: 0) {
-                        return TreatmentAnnotationView(graphItem: graphItem)
-                    }
-                }
-                ForEach(viewModel.remoteCommandGraphItems()) { graphItem in
-                    PointMark(
-                        x: .value("Time", graphItem.displayTime),
-                        y: .value("Reading", graphItem.value)
-                    )
-                    .foregroundStyle(by: .value("Reading", ColorType.clear))
-                    .annotation(position: .overlay, alignment: .center, spacing: 0) {
-                        return TreatmentAnnotationView(graphItem: graphItem)
-                    }
-                }
-                RuleMark(
-                    x: .value("Now", context.date)
+            }
+            ForEach(viewModel.bolusGraphItems()) { graphItem in
+                PointMark(
+                    x: .value("Time", graphItem.displayTime),
+                    y: .value("Reading", graphItem.value)
                 )
-                .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
-                .foregroundStyle(.primary)
-            }
-            // Make sure the domain values line up with what is in foregroundStyle above.
-            .chartForegroundStyleScale(domain: ColorType.membersAsRange(), range: ColorType.allCases.map({ $0.color }), type: .none)
-            .chartXScale(domain: viewModel.chartXRange())
-            .chartYScale(domain: viewModel.chartYRange())
-            .chartYAxis {
-                if !viewModel.showChartYAxis {
-                    AxisMarks(
-                        preset: .aligned,
-                        position: .trailing,
-                        values: .stride(by: (viewModel.chartYRange().upperBound - viewModel.chartYRange().lowerBound) / 2 ),
-                        stroke: StrokeStyle(
-                            lineWidth: 0,
-                            lineCap: .butt,
-                            lineJoin: .bevel,
-                            miterLimit: 1,
-                            dash: [],
-                            dashPhase: 1
-                        )
-                    )
-                } else {
-                    AxisMarks(
-                        preset: .aligned,
-                        position: .trailing,
-                        values: .stride(by: (viewModel.chartYRange().upperBound - viewModel.chartYRange().lowerBound) / 4 ),
-                        stroke: StrokeStyle(
-                            lineWidth: 1,
-                            lineCap: .butt,
-                            lineJoin: .bevel,
-                            miterLimit: 1,
-                            dash: [],
-                            dashPhase: 1
-                        )
-                    )
+                .foregroundStyle(by: .value("Reading", ColorType.clear))
+                .annotation(position: .overlay, alignment: .center, spacing: 0) {
+                    return TreatmentAnnotationView(graphItem: graphItem)
                 }
             }
-            .chartXAxis {
-                if viewModel.showChartXAxis {
-                    AxisMarks(position: .bottom, values: AxisMarkValues.automatic(desiredCount: viewModel.totalAxisMarks, roundLowerBound: false, roundUpperBound: false)) { date in
-                        if let date = date.as(Date.self) {
-                            AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: date), collisionResolution: .truncate)
-                        } else {
-                            AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: Date()))
-                        }
-                        AxisGridLine(centered: true)
+            ForEach(viewModel.carbEntryGraphItems()) { graphItem in
+                PointMark(
+                    x: .value("Time", graphItem.displayTime),
+                    y: .value("Reading", graphItem.value)
+                )
+                .foregroundStyle(by: .value("Reading", ColorType.clear))
+                .annotation(position: .overlay, alignment: .center, spacing: 0) {
+                    return TreatmentAnnotationView(graphItem: graphItem)
+                }
+            }
+            ForEach(viewModel.remoteCommandGraphItems()) { graphItem in
+                PointMark(
+                    x: .value("Time", graphItem.displayTime),
+                    y: .value("Reading", graphItem.value)
+                )
+                .foregroundStyle(by: .value("Reading", ColorType.clear))
+                .annotation(position: .overlay, alignment: .center, spacing: 0) {
+                    return TreatmentAnnotationView(graphItem: graphItem)
+                }
+            }
+            RuleMark(
+                x: .value("Now", nowDate)
+            )
+            .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
+            .foregroundStyle(.primary)
+        }
+        // Make sure the domain values line up with what is in foregroundStyle above.
+        .chartForegroundStyleScale(domain: ColorType.membersAsRange(), range: ColorType.allCases.map({ $0.color }), type: .none)
+        .chartXScale(domain: viewModel.chartXRange())
+        .chartYScale(domain: viewModel.chartYRange())
+        .chartYAxis {
+            if !viewModel.showChartYAxis {
+                AxisMarks(
+                    preset: .aligned,
+                    position: .trailing,
+                    values: .stride(by: (viewModel.chartYRange().upperBound - viewModel.chartYRange().lowerBound) / 2 ),
+                    stroke: StrokeStyle(
+                        lineWidth: 0,
+                        lineCap: .butt,
+                        lineJoin: .bevel,
+                        miterLimit: 1,
+                        dash: [],
+                        dashPhase: 1
+                    )
+                )
+            } else {
+                AxisMarks(
+                    preset: .aligned,
+                    position: .trailing,
+                    values: .stride(by: (viewModel.chartYRange().upperBound - viewModel.chartYRange().lowerBound) / 4 ),
+                    stroke: StrokeStyle(
+                        lineWidth: 1,
+                        lineCap: .butt,
+                        lineJoin: .bevel,
+                        miterLimit: 1,
+                        dash: [],
+                        dashPhase: 1
+                    )
+                )
+            }
+        }
+        .chartXAxis {
+            if viewModel.showChartXAxis {
+                AxisMarks(position: .bottom, values: AxisMarkValues.automatic(desiredCount: viewModel.totalAxisMarks, roundLowerBound: false, roundUpperBound: false)) { date in
+                    if let date = date.as(Date.self) {
+                        AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: date), collisionResolution: .truncate)
+                    } else {
+                        AxisValueLabel(format: viewModel.xAxisLabelFormatStyle(for: Date()))
                     }
+                    AxisGridLine(centered: true)
                 }
             }
         }
+    }
+    
+    var nowDate: Date {
+        // This allows the view to respond to external updates
+        // Without this, the view won't update when displayed in
+        // a widget.
+        return max(viewModel.treatmentData.creationDate, Date())
     }
     
     var timelineCount: Int {

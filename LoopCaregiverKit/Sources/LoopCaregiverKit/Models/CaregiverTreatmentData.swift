@@ -10,6 +10,7 @@ import LoopKit
 import NightscoutKit
 
 public struct CaregiverTreatmentData {
+    public let creationDate: Date
     public let glucoseDisplayUnits: HKUnit
     public let glucoseSamples: [NewGlucoseSample]
     public let predictedGlucose: [NewGlucoseSample]
@@ -23,6 +24,7 @@ public struct CaregiverTreatmentData {
     public let recommendedBolus: Double?
     
     public init(
+        creationDate: Date? = nil,
         glucoseDisplayUnits: HKUnit,
         glucoseSamples: [NewGlucoseSample],
         predictedGlucose: [NewGlucoseSample],
@@ -35,6 +37,7 @@ public struct CaregiverTreatmentData {
         currentCOB: COBStatus?,
         recommendedBolus: Double?
     ) {
+        self.creationDate = creationDate ?? Date()
         self.glucoseDisplayUnits = glucoseDisplayUnits
         self.glucoseSamples = glucoseSamples
         self.predictedGlucose = predictedGlucose
