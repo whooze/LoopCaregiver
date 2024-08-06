@@ -51,6 +51,8 @@ struct HomeView: View {
                                 } icon: {
                                     workoutImage(isActive: status.active)
                                         .renderingMode(.template)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
                                         .foregroundColor(.blue)
                                         .accessibilityLabel(Text("Workout"))
                                 }
