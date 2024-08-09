@@ -167,7 +167,7 @@ public struct TimelineProviderShared {
         var errorDescription: String? {
             switch self {
             case let .looperNotFound(looperID, looperName, availableCount):
-                return "The looper for this widget was not found: \(looperName), (\(looperID)) \(availableCount)." + configurationText()
+                return "The looper for this widget was not found: \(looperName), (\(looperID.dropLast(30))), (\(availableCount))." + configurationText()
             case .looperNotConfigured:
                 return "No looper is configured for this widget. " + configurationText()
             case .notReady:

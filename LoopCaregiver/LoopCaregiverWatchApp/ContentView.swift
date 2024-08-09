@@ -24,21 +24,26 @@ struct ContentView: View {
     @State private var path = NavigationPath()
 
     var body: some View {
+        let _ = Self._printChanges()
         NavigationStack(path: $path) {
             VStack {
                 if let looperService = accountService.selectedLooperService {
                     HomeView(connectivityManager: watchService, accountService: accountService, looperService: looperService)
                 } else {
                     Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
-                    NavigationLink {
-                        WatchSettingsView(
-                            connectivityManager: watchService,
-                            accountService: accountService,
-                            settings: settings
-                        )
-                    } label: {
-                        Label("Settings", systemImage: "gear")
-                    }
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                NavigationLink {
+                                    WatchSettingsView(
+                                        connectivityManager: watchService,
+                                        accountService: accountService,
+                                        settings: settings
+                                    )
+                                } label: {
+                                    Label("Settings", systemImage: "gear")
+                                }
+                            }
+                        }
                 }
             }
             .alert(deepLinkErrorText, isPresented: $deepLinkErrorShowing) {

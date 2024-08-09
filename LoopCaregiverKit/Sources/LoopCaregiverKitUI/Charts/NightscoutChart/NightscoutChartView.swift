@@ -213,6 +213,7 @@ struct NightscoutChartView: View {
     let viewModel: NightscoutChartViewModel
     
     var body: some View {
+        let _ = Self._printChanges()
         Chart {
             ForEach(viewModel.getTargetDateRangesAndValues(), id: \.range) { dateRangeAndValue in
                 RectangleMark(
