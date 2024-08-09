@@ -181,16 +181,11 @@ public class RemoteDataServiceManager: ObservableObject {
     
     @MainActor
     private func refreshCalculatedData() {
-        guard let updatedRecomendedBolus = calculateValidRecommendedBolus() else {
-            self.recommendedBolus = nil
-            return
-        }
+        let updatedRecomendedBolus = calculateValidRecommendedBolus()
         
-        guard self.recommendedBolus != updatedRecomendedBolus else {
-            return
+        if self.recommendedBolus != updatedRecomendedBolus {
+            self.recommendedBolus = updatedRecomendedBolus
         }
-        
-        self.recommendedBolus = updatedRecomendedBolus
     }
     
     private func calculateValidRecommendedBolus() -> Double? {
