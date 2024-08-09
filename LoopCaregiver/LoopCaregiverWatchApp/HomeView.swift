@@ -77,27 +77,37 @@ struct HomeView: View {
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button(action: {
-                    updateData()
-                }, label: {
-                    ZStack {
-                        switch glucoseTimelineEntry {
-                        case .success(let glucoseTimelineValue):
-                            LatestGlucoseRowView(glucoseValue: glucoseTimelineValue)
-                        case .failure:
-                            Text("")
-                        }
-                        if remoteDataSource.updating {
-                            ProgressView()
-                                .allowsHitTesting(false)
-                        }
-                    }
-                })
+                // Use separate view to avoid the entire body from updating when remoteDataSource.updating changes
+                ToolbarButtonView(remoteDataSource: remoteDataSource, glucoseTimelineEntry: glucoseTimelineEntry)
             }
         }
         .onChange(of: scenePhase, { _, _ in
             updateData()
         })
+    }
+    
+    struct ToolbarButtonView: View {
+        var remoteDataSource: RemoteDataServiceManager
+        var glucoseTimelineEntry: GlucoseTimeLineEntry
+        var body: some View {
+            Button(action: {
+                Task {
+                    await remoteDataSource.updateData()
+                }
+            }, label: {
+                ZStack {
+                    switch glucoseTimelineEntry {
+                    case .success(let glucoseTimelineValue):
+                        LatestGlucoseRowView(glucoseValue: glucoseTimelineValue)
+                    case .failure:
+                        Text("")
+                    }
+                    ProgressView()
+                        .opacity(remoteDataSource.updating ? 1.0 : 0.0)
+                        .allowsHitTesting(false)
+                }
+            })
+        }
     }
     
     func workoutImage(isActive: Bool) -> Image {
