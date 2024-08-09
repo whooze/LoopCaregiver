@@ -152,22 +152,22 @@ public struct TimelineProviderShared {
         }
         let loopers = try composer.accountServiceManager.getLoopers()
         guard let looper = loopers.first(where: { $0.id == looperID || $0.name == looperName }) else {
-            throw TimelineProviderError.looperNotFound(looperID)
+            throw TimelineProviderError.looperNotFound(looperID, looperName ?? "", loopers.count)
         }
 
         return looper
     }
     
     private enum TimelineProviderError: LocalizedError {
-        case looperNotFound(String)
+        case looperNotFound(_ looperID: String, _ looperName: String, _ availableCount: Int)
         case looperNotConfigured
         case notReady
         case missingGlucose
     
         var errorDescription: String? {
             switch self {
-            case .looperNotFound(let looperID):
-                return "The looper for this widget was not found (\(looperID)). " + configurationText()
+            case let .looperNotFound(looperID, looperName, availableCount):
+                return "The looper for this widget was not found: \(looperName), (\(looperID)) \(availableCount)." + configurationText()
             case .looperNotConfigured:
                 return "No looper is configured for this widget. " + configurationText()
             case .notReady:
