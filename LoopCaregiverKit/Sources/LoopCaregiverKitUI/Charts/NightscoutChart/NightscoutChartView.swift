@@ -13,7 +13,7 @@ import LoopKit
 import NightscoutKit
 import SwiftUI
 
-public struct NightscoutChartViewModel {
+public struct NightscoutChartViewModel: Equatable {
     let treatmentData: CaregiverTreatmentData
     let timelinePredictionEnabled: Bool
     let totalLookbackhours: Int
