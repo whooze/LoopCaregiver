@@ -64,6 +64,7 @@ struct SettingsView: View {
                 if let profileExpiration = BuildDetails.default.profileExpiration {
                     appExpirationSection(profileExpiration: profileExpiration)
                 }
+                watchSection
                 experimentalSection
             }
             .toolbar {
@@ -222,24 +223,27 @@ struct SettingsView: View {
             SectionHeader(label: "Timeline")
         }
     }
+    
+    @ViewBuilder var watchSection: some View {
+        Section {
+            Button("Setup Watch") {
+                do {
+                    try activateLoopersOnWatch()
+                } catch {
+                    print("Error activating Loopers on watch: \(error)")
+                }
+            }
+
+            Text("Setup will transfer all Loopers to Caregiver on your Apple Watch.")
+                .font(.footnote)
+            LabeledContent("Watch App Open", value: watchService.isReachable() ? "YES" : "NO")
+        } header: {
+            SectionHeader(label: "Apple Watch")
+        }
+    }
 
     @ViewBuilder var experimentalSection: some View {
         if settings.experimentalFeaturesUnlocked || settings.remoteCommands2Enabled {
-            Section {
-                Button("Setup Watch") {
-                    do {
-                        try activateLoopersOnWatch()
-                    } catch {
-                        print("Error activating Loopers on watch: \(error)")
-                    }
-                }
-
-                Text("Setup will transfer all Loopers to Caregiver on your Apple Watch.")
-                    .font(.footnote)
-                LabeledContent("Watch App Open", value: watchService.isReachable() ? "YES" : "NO")
-            } header: {
-                SectionHeader(label: "Apple Watch")
-            }
             Section {
                 Toggle("Remote Commands 2", isOn: $settings.remoteCommands2Enabled)
                 Text("Remote commands 2 requires a special Nightscout deploy and Loop version. This will enable command status and other features. See Zulip #caregiver for details")
