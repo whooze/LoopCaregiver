@@ -16,8 +16,6 @@ struct HomeView: View {
     @ObservedObject var remoteDataSource: RemoteDataServiceManager
     @ObservedObject var settings: CaregiverSettings
     @ObservedObject var looperService: LooperService
-    @State private var dataUpdating = false
-    @State private var lastUpdate: Date?
     @Environment(\.scenePhase)
     var scenePhase
     
@@ -30,7 +28,7 @@ struct HomeView: View {
     }
     
     var body: some View {
-        ZStack {
+        Group {
             switch glucoseTimelineEntry {
             case .success(let glucoseTimelineValue):
                 GeometryReader { geometryProxy in
@@ -72,39 +70,33 @@ struct HomeView: View {
                     .listRowInsets(.none)
                 }
             case .failure(let glucoseTimeLineEntryError):
-                if !dataUpdating {
+                if !remoteDataSource.updating {
                     Text(glucoseTimeLineEntryError.localizedDescription)
                 }
-            }
-            if dataUpdating {
-                ProgressView()
-                    .allowsHitTesting(false)
             }
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button(action: {
-                    Task {
-                        updateData()
-                    }
+                    updateData()
                 }, label: {
-                    switch glucoseTimelineEntry {
-                    case .success(let glucoseTimelineValue):
-                        LatestGlucoseRowView(glucoseValue: glucoseTimelineValue)
-                    case .failure:
-                        Text("")
+                    ZStack {
+                        switch glucoseTimelineEntry {
+                        case .success(let glucoseTimelineValue):
+                            LatestGlucoseRowView(glucoseValue: glucoseTimelineValue)
+                        case .failure:
+                            Text("")
+                        }
+                        if remoteDataSource.updating {
+                            ProgressView()
+                                .allowsHitTesting(false)
+                        }
                     }
                 })
             }
         }
         .onChange(of: scenePhase, { _, _ in
-            if let lastUpdate {
-                if Date().timeIntervalSince(lastUpdate) > 60 * 5 {
-                    updateData()
-                }
-            } else {
-                updateData()
-            }
+            updateData()
         })
     }
     
@@ -122,14 +114,8 @@ struct HomeView: View {
     
     @MainActor
     private func updateData() {
-        dataUpdating = true
         Task {
             await looperService.remoteDataSource.updateData()
-            reloadWidget()
-            await MainActor.run {
-                dataUpdating = false
-                lastUpdate = Date()
-            }
         }
     }
     
@@ -168,10 +154,6 @@ struct HomeView: View {
                 return "Missing glucose"
             }
         }
-    }
-    
-    private func reloadWidget() {
-        WidgetCenter.shared.reloadAllTimelines()
     }
 }
 
