@@ -89,12 +89,12 @@ public class RemoteDataServiceManager: ObservableObject {
             print("Error fetching data: \(error)")
         }
         
-        updating = false
         self.refreshCalculatedData()
+        updating = false
     }
     
     @MainActor
-    private func updateGlucoseData()async throws {
+    private func updateGlucoseData() async throws {
         let glucoseSamplesAsync = try await remoteDataProvider.fetchGlucoseSamples()
             .sorted(by: { $0.date < $1.date })
         
