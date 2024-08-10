@@ -11,7 +11,7 @@ import HealthKit
 import WidgetKit
 
 public class CaregiverSettings: NSObject, ObservableObject {
-    @Published public var glucoseDisplayUnits: HKUnit
+    @Published public var glucosePreference: GlucoseUnitPrefererence
     @Published public var timelinePredictionEnabled: Bool
     @Published public var experimentalFeaturesUnlocked: Bool
     @Published public var remoteCommands2Enabled: Bool
@@ -20,12 +20,11 @@ public class CaregiverSettings: NSObject, ObservableObject {
     @Published public var maxCarbAmount: Int
     @Published public var maxBolusAmount: Int
 
-    let userDefaults: UserDefaults
-
-    var glucosePrefObservationToken: NSObject?
-    var cancellables = [AnyCancellable]()
-
     public let appGroupsSupported: Bool
+    
+    private let userDefaults: UserDefaults
+    private var observationTokens = [NSObject]()
+    private var cancellables = [AnyCancellable]()
 
     public init(userDefaults: UserDefaults, appGroupsSupported: Bool) {
         self.userDefaults = userDefaults
@@ -37,7 +36,7 @@ public class CaregiverSettings: NSObject, ObservableObject {
         }
 
         // Defaults
-        self.glucoseDisplayUnits = userDefaults.glucosePreference.unit
+        self.glucosePreference = userDefaults.glucosePreference
         self.timelinePredictionEnabled = userDefaults.timelinePredictionEnabled
         self.remoteCommands2Enabled = userDefaults.remoteCommands2Enabled
         self.demoModeEnabled = userDefaults.demoModeEnabled
@@ -46,124 +45,57 @@ public class CaregiverSettings: NSObject, ObservableObject {
         self.maxCarbAmount = userDefaults.maxCarbAmount
         self.maxBolusAmount = userDefaults.maxBolusAmount
         super.init()
-        // Binding
-        self.bindToPublishers()
-        self.bindToUserDefaults()
+        setupBindings()
     }
-
-    func bindToPublishers() {
-        $glucoseDisplayUnits.sink { val in
-            if val != self.userDefaults.glucosePreference.unit {
-                self.userDefaults.set(val, forKey: self.userDefaults.glucoseUnitKey)
-            }
-        }.store(in: &cancellables)
+    
+    func setupBindings() {
+        bindToUserDefaults(
+            publishedProperty: $timelinePredictionEnabled,
+            userDefaultsKeyPath: \.timelinePredictionEnabled,
+            propertyWrapperKeyPath: \.timelinePredictionEnabled
+        )
         
-        // This may be how to deal with widgets not picking up when preference
-        // change in the app. Per the docs, NSNotification.didChangeNotification
-        // does not work for out-of-process updates and KVO is recommended.
-        // Consider making a custom property wrapper that can manage this.
-        glucosePrefObservationToken = self.userDefaults.observe(\.glucoseUnit) { _, _ in
-            let glucoseDisplayUnits = self.userDefaults.glucosePreference.unit
-            if self.glucoseDisplayUnits != glucoseDisplayUnits {
-                self.glucoseDisplayUnits = glucoseDisplayUnits
-            }
-            WidgetCenter.shared.reloadAllTimelines()
-        }
-
-        $timelinePredictionEnabled.sink { val in
-            if val != self.userDefaults.timelinePredictionEnabled {
-                self.userDefaults.setValue(val, forKey: self.userDefaults.timelinePredictionEnabledKey)
-            }
-        }.store(in: &cancellables)
-
-        $remoteCommands2Enabled.sink { val in
-            if val != self.userDefaults.remoteCommands2Enabled {
-                self.userDefaults.setValue(val, forKey: self.userDefaults.remoteCommands2EnabledKey)
-            }
-        }.store(in: &cancellables)
-
-        $demoModeEnabled.sink { val in
-            if val != self.userDefaults.demoModeEnabled {
-                self.userDefaults.setValue(val, forKey: self.userDefaults.demoModeEnabledKey)
-            }
-        }.store(in: &cancellables)
-
-        $experimentalFeaturesUnlocked.sink { val in
-            if val != self.userDefaults.experimentalFeaturesUnlocked {
-                self.userDefaults.setValue(val, forKey: self.userDefaults.experimentalFeaturesUnlockedKey)
-            }
-        }.store(in: &cancellables)
-
-        $disclaimerAcceptedDate.sink { val in
-            if val != self.userDefaults.disclaimerAcceptedDate {
-                self.userDefaults.setValue(val, forKey: self.userDefaults.disclaimerAcceptedDateKey)
-            }
-        }.store(in: &cancellables)
-
-        $maxCarbAmount.sink { val in
-            if val != self.userDefaults.maxCarbAmount {
-                self.userDefaults.setValue(val, forKey: self.userDefaults.maxCarbAmountKey)
-            }
-        }.store(in: &cancellables)
-
-        $maxBolusAmount.sink { val in
-            if val != self.userDefaults.maxBolusAmount {
-                self.userDefaults.setValue(val, forKey: self.userDefaults.maxBolusAmountKey)
-            }
-        }.store(in: &cancellables)
-    }
-
-    func bindToUserDefaults() {
-        NotificationCenter.default.addObserver(self, selector: #selector(defaultsChanged), name: UserDefaults.didChangeNotification, object: nil)
-    }
-
-    @objc
-    func defaultsChanged(notication: Notification) {
-        let glucoseDisplayUnits = userDefaults.glucosePreference.unit
-        if self.glucoseDisplayUnits != glucoseDisplayUnits {
-            self.glucoseDisplayUnits = glucoseDisplayUnits
-        }
-
-        if self.timelinePredictionEnabled != userDefaults.timelinePredictionEnabled {
-            self.timelinePredictionEnabled = userDefaults.timelinePredictionEnabled
-        }
-
-        if self.remoteCommands2Enabled != userDefaults.remoteCommands2Enabled {
-            self.remoteCommands2Enabled = userDefaults.remoteCommands2Enabled
-        }
-
-        if self.demoModeEnabled != userDefaults.demoModeEnabled {
-            self.demoModeEnabled = userDefaults.demoModeEnabled
-        }
-
-        if self.experimentalFeaturesUnlocked != userDefaults.experimentalFeaturesUnlocked {
-            self.experimentalFeaturesUnlocked = userDefaults.experimentalFeaturesUnlocked
-        }
-
-        if self.disclaimerAcceptedDate != userDefaults.disclaimerAcceptedDate {
-            self.disclaimerAcceptedDate = userDefaults.disclaimerAcceptedDate
-        }
-
-        if self.maxCarbAmount != userDefaults.maxCarbAmount {
-            self.maxCarbAmount = userDefaults.maxCarbAmount
-        }
-
-        if self.maxBolusAmount != userDefaults.maxBolusAmount {
-            self.maxBolusAmount = userDefaults.maxBolusAmount
-        }
-    }
-
-    func formatGlucoseQuantity(_ quantity: HKQuantity) -> Double {
-        return quantity.doubleValue(for: glucoseDisplayUnits)
-    }
-
-    // TODO: We should get rid of glucoseDisplayUnits and instead just use this.
-    public func saveGlucoseUnitPreference(_ preference: GlucoseUnitPrefererence) {
-        userDefaults.setValue(preference.rawValue, forKey: userDefaults.glucoseUnitKey)
-    }
-
-    public var glucoseUnitPreference: GlucoseUnitPrefererence {
-        return userDefaults.glucosePreference
+        bindToUserDefaults(
+            publishedProperty: $remoteCommands2Enabled,
+            userDefaultsKeyPath: \.remoteCommands2Enabled,
+            propertyWrapperKeyPath: \.remoteCommands2Enabled
+        )
+        
+        bindToUserDefaults(
+            publishedProperty: $demoModeEnabled,
+            userDefaultsKeyPath: \.demoModeEnabled,
+            propertyWrapperKeyPath: \.demoModeEnabled
+        )
+        
+        bindToUserDefaults(
+            publishedProperty: $experimentalFeaturesUnlocked,
+            userDefaultsKeyPath: \.experimentalFeaturesUnlocked,
+            propertyWrapperKeyPath: \.experimentalFeaturesUnlocked
+        )
+        
+        bindToUserDefaults(
+            publishedProperty: $disclaimerAcceptedDate,
+            userDefaultsKeyPath: \.disclaimerAcceptedDate,
+            propertyWrapperKeyPath: \.disclaimerAcceptedDate
+        )
+        
+        bindToUserDefaults(
+            publishedProperty: $maxBolusAmount,
+            userDefaultsKeyPath: \.maxBolusAmount,
+            propertyWrapperKeyPath: \.maxBolusAmount
+        )
+        
+        bindToUserDefaults(
+            publishedProperty: $maxCarbAmount,
+            userDefaultsKeyPath: \.maxCarbAmount,
+            propertyWrapperKeyPath: \.maxCarbAmount
+        )
+        
+        bindToUserDefaults(
+            publishedProperty: $glucosePreference,
+            userDefaultsKeyPath: \.glucosePreference,
+            propertyWrapperKeyPath: \.glucosePreference
+        )
     }
 
     static func migrateUserDefaultsToAppGroup(userDefaults: UserDefaults) {
@@ -181,6 +113,38 @@ public class CaregiverSettings: NSObject, ObservableObject {
         userDefaults.set(true, forKey: didMigrateToAppGroups)
         userDefaults.synchronize()
         print("Successfully migrated defaults")
+    }
+    
+    func bindToUserDefaults<T>(
+        publishedProperty: any Publisher<T, Never>,
+        userDefaultsKeyPath: ReferenceWritableKeyPath<UserDefaults, T>,
+        propertyWrapperKeyPath: ReferenceWritableKeyPath<CaregiverSettings, T>
+    ) where Published<T>.Publisher.Output == T, Published<T>.Publisher.Output: Equatable {
+        // InitialValue
+        self[keyPath: propertyWrapperKeyPath] = self.userDefaults[keyPath: userDefaultsKeyPath]
+        
+        // Write Property to user defaults
+        publishedProperty.sink { val in
+            let existingValue = self.userDefaults[keyPath: userDefaultsKeyPath]
+            if existingValue != val {
+                self.userDefaults[keyPath: userDefaultsKeyPath] = val
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+        }.store(in: &cancellables)
+        
+        // Write UserDefaults to property wrapper
+        // Using KVO allows widgets to detect when UserDefaults change in the app.
+        // Per the docs, NSNotification.didChangeNotification
+        // does not work for out-of-process updates and KVO is recommended.
+        let token = self.userDefaults.observe(userDefaultsKeyPath) { _, _ in
+            let existingPropertyValue = self[keyPath: propertyWrapperKeyPath]
+            let userDefaultsValue = self.userDefaults[keyPath: userDefaultsKeyPath]
+            if existingPropertyValue != userDefaultsValue {
+                self[keyPath: propertyWrapperKeyPath] = userDefaultsValue
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+        }
+        observationTokens.append(token)
     }
 }
 
@@ -227,45 +191,68 @@ public extension UserDefaults {
     }
 
     @objc dynamic var glucosePreference: GlucoseUnitPrefererence {
-        return GlucoseUnitPrefererence(rawValue: integer(forKey: glucoseUnitKey)) ?? .milligramsPerDeciliter
+        get {
+            return GlucoseUnitPrefererence(rawValue: integer(forKey: glucoseUnitKey)) ?? .milligramsPerDeciliter
+        }
+        set {
+            set(newValue.rawValue, forKey: glucoseUnitKey)
+        }
     }
 
     @objc dynamic var timelinePredictionEnabled: Bool {
-        return bool(forKey: timelinePredictionEnabledKey)
+        get { bool(forKey: timelinePredictionEnabledKey) }
+        set { setValue(newValue, forKey: timelinePredictionEnabledKey) }
     }
 
     @objc dynamic var remoteCommands2Enabled: Bool {
-        return bool(forKey: remoteCommands2EnabledKey)
+        get { bool(forKey: remoteCommands2EnabledKey) }
+        set { setValue(newValue, forKey: remoteCommands2EnabledKey) }
     }
 
     @objc dynamic var demoModeEnabled: Bool {
-        return UserDefaults.standard.bool(forKey: demoModeEnabledKey)
+        get { bool(forKey: demoModeEnabledKey) }
+        set { setValue(newValue, forKey: demoModeEnabledKey) }
     }
 
     @objc dynamic var experimentalFeaturesUnlocked: Bool {
-        return bool(forKey: experimentalFeaturesUnlockedKey)
+        get { bool(forKey: experimentalFeaturesUnlockedKey) }
+        set { setValue(newValue, forKey: experimentalFeaturesUnlockedKey) }
     }
 
     @objc dynamic var maxCarbAmount: Int {
-        guard let maxCarbAmount = object(forKey: maxCarbAmountKey) as? Int else {
-            return 50
+        get {
+            guard let maxCarbAmount = object(forKey: maxCarbAmountKey) as? Int else {
+                return 50
+            }
+            return maxCarbAmount
         }
-        return maxCarbAmount
+        set {
+            setValue(newValue, forKey: maxCarbAmountKey)
+        }
     }
 
     @objc dynamic var maxBolusAmount: Int {
-        guard let maxBolus = object(forKey: maxBolusAmountKey) as? Int else {
-            return 10
+        get {
+            guard let maxBolus = object(forKey: maxBolusAmountKey) as? Int else {
+                return 10
+            }
+            return maxBolus
         }
-        return maxBolus
+        set {
+            setValue(newValue, forKey: maxBolusAmountKey)
+        }
     }
 
     @objc dynamic var disclaimerAcceptedDate: Date? {
-        guard let date = object(forKey: disclaimerAcceptedDateKey) as? Date else {
-            return nil
+        get {
+            guard let date = object(forKey: disclaimerAcceptedDateKey) as? Date else {
+                return nil
+            }
+            return date
         }
-
-        return date
+        set {
+            setValue(newValue, forKey: disclaimerAcceptedDateKey)
+        }
     }
 }
 

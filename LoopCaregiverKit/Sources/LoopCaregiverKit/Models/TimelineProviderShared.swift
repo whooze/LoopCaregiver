@@ -83,7 +83,7 @@ public struct TimelineProviderShared {
             throw TimelineProviderError.missingGlucose
         }
         let treatmentData = CaregiverTreatmentData(
-            glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
+            glucoseDisplayUnits: composer.settings.glucosePreference.unit,
             glucoseSamples: sortedSamples,
             predictedGlucose: remoteServiceManager.predictedGlucose,
             bolusEntries: remoteServiceManager.bolusEntries,
@@ -110,7 +110,7 @@ public struct TimelineProviderShared {
             if context.isPreview {
                 let fakeGlucoseSample = NewGlucoseSample.previews()
                 let treatmentData = CaregiverTreatmentData(
-                    glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
+                    glucoseDisplayUnits: composer.settings.glucosePreference.unit,
                     glucoseSamples: [],
                     predictedGlucose: [],
                     bolusEntries: [],

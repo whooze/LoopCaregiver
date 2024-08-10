@@ -124,7 +124,7 @@ public struct NightscoutChartScrollView: View {
     
     var treatmentData: CaregiverTreatmentData {
         CaregiverTreatmentData(
-            glucoseDisplayUnits: settings.glucoseDisplayUnits,
+            glucoseDisplayUnits: settings.glucosePreference.unit,
             glucoseSamples: remoteDataSource.glucoseSamples,
             predictedGlucose: remoteDataSource.predictedGlucose,
             bolusEntries: remoteDataSource.bolusEntries,

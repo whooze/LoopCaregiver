@@ -150,7 +150,7 @@ struct HomeView: View {
             return GlucoseTimeLineEntry(error: WatchViewError.missingGlucose, date: Date(), looper: looperService.looper)
         }
         let treatmentData = CaregiverTreatmentData(
-            glucoseDisplayUnits: settings.glucoseDisplayUnits,
+            glucoseDisplayUnits: settings.glucosePreference.unit,
             glucoseSamples: sortedSamples,
             predictedGlucose: remoteDataSource.predictedGlucose,
             bolusEntries: remoteDataSource.bolusEntries,
