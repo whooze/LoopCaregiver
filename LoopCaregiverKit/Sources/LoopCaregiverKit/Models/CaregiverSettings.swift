@@ -115,16 +115,32 @@ public class CaregiverSettings: NSObject, ObservableObject {
         print("Successfully migrated defaults")
     }
     
+    /*
+     Creates two way binding between @Published Property and UserDefaults.
+     The two types must be the same, including optionality.
+     
+     A challenge to this pattern is the setup is still spread between:
+     
+     * Reading from defaults in initializer
+     * Create these bindings
+     * Key definitions (Strings)
+     * Dynamic UserDefault properties to support keypaths
+     
+     Some Ideas to Improve this...
+     It may be preferred to define the defaults inline in the Publisher, like @AppStorage does
+     Consider getting rid of the dynamic UserDefault and using key (Strings) directly.
+     The method below could always set the default to the property wrapper, if it is ever set to nil in UserDefaults.
+     */
     func bindToUserDefaults<T>(
         publishedProperty: any Publisher<T, Never>,
         userDefaultsKeyPath: ReferenceWritableKeyPath<UserDefaults, T>,
         propertyWrapperKeyPath: ReferenceWritableKeyPath<CaregiverSettings, T>
     ) where Published<T>.Publisher.Output == T, Published<T>.Publisher.Output: Equatable {
-        // InitialValue
         self[keyPath: propertyWrapperKeyPath] = self.userDefaults[keyPath: userDefaultsKeyPath]
         
         // Write Property to user defaults
-        publishedProperty.sink { val in
+        publishedProperty.sink { [weak self] val in
+            guard let self else { return }
             let existingValue = self.userDefaults[keyPath: userDefaultsKeyPath]
             if existingValue != val {
                 self.userDefaults[keyPath: userDefaultsKeyPath] = val
@@ -136,7 +152,8 @@ public class CaregiverSettings: NSObject, ObservableObject {
         // Using KVO allows widgets to detect when UserDefaults change in the app.
         // Per the docs, NSNotification.didChangeNotification
         // does not work for out-of-process updates and KVO is recommended.
-        let token = self.userDefaults.observe(userDefaultsKeyPath) { _, _ in
+        let token = self.userDefaults.observe(userDefaultsKeyPath) { [weak self] _, _ in
+            guard let self else { return }
             let existingPropertyValue = self[keyPath: propertyWrapperKeyPath]
             let userDefaultsValue = self.userDefaults[keyPath: userDefaultsKeyPath]
             if existingPropertyValue != userDefaultsValue {
