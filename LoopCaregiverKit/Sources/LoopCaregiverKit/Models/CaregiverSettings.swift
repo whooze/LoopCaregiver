@@ -50,51 +50,51 @@ public class CaregiverSettings: NSObject, ObservableObject {
     
     func setupBindings() {
         bindToUserDefaults(
-            publishedProperty: $timelinePredictionEnabled,
-            userDefaultsKeyPath: \.timelinePredictionEnabled,
-            propertyWrapperKeyPath: \.timelinePredictionEnabled
+            propertyPublisher: $timelinePredictionEnabled,
+            propertyKeyPath: \.timelinePredictionEnabled,
+            userDefaultsKeyPath: \.timelinePredictionEnabled
         )
         
         bindToUserDefaults(
-            publishedProperty: $remoteCommands2Enabled,
-            userDefaultsKeyPath: \.remoteCommands2Enabled,
-            propertyWrapperKeyPath: \.remoteCommands2Enabled
+            propertyPublisher: $remoteCommands2Enabled,
+            propertyKeyPath: \.remoteCommands2Enabled,
+            userDefaultsKeyPath: \.remoteCommands2Enabled
         )
         
         bindToUserDefaults(
-            publishedProperty: $demoModeEnabled,
-            userDefaultsKeyPath: \.demoModeEnabled,
-            propertyWrapperKeyPath: \.demoModeEnabled
+            propertyPublisher: $demoModeEnabled,
+            propertyKeyPath: \.demoModeEnabled,
+            userDefaultsKeyPath: \.demoModeEnabled
         )
         
         bindToUserDefaults(
-            publishedProperty: $experimentalFeaturesUnlocked,
-            userDefaultsKeyPath: \.experimentalFeaturesUnlocked,
-            propertyWrapperKeyPath: \.experimentalFeaturesUnlocked
+            propertyPublisher: $experimentalFeaturesUnlocked,
+            propertyKeyPath: \.experimentalFeaturesUnlocked,
+            userDefaultsKeyPath: \.experimentalFeaturesUnlocked
         )
         
         bindToUserDefaults(
-            publishedProperty: $disclaimerAcceptedDate,
-            userDefaultsKeyPath: \.disclaimerAcceptedDate,
-            propertyWrapperKeyPath: \.disclaimerAcceptedDate
+            propertyPublisher: $disclaimerAcceptedDate,
+            propertyKeyPath: \.disclaimerAcceptedDate,
+            userDefaultsKeyPath: \.disclaimerAcceptedDate
         )
         
         bindToUserDefaults(
-            publishedProperty: $maxBolusAmount,
-            userDefaultsKeyPath: \.maxBolusAmount,
-            propertyWrapperKeyPath: \.maxBolusAmount
+            propertyPublisher: $maxBolusAmount,
+            propertyKeyPath: \.maxBolusAmount,
+            userDefaultsKeyPath: \.maxBolusAmount
         )
         
         bindToUserDefaults(
-            publishedProperty: $maxCarbAmount,
-            userDefaultsKeyPath: \.maxCarbAmount,
-            propertyWrapperKeyPath: \.maxCarbAmount
+            propertyPublisher: $maxCarbAmount,
+            propertyKeyPath: \.maxCarbAmount,
+            userDefaultsKeyPath: \.maxCarbAmount
         )
         
         bindToUserDefaults(
-            publishedProperty: $glucosePreference,
-            userDefaultsKeyPath: \.glucosePreference,
-            propertyWrapperKeyPath: \.glucosePreference
+            propertyPublisher: $glucosePreference,
+            propertyKeyPath: \.glucosePreference,
+            userDefaultsKeyPath: \.glucosePreference
         )
     }
 
@@ -119,6 +119,13 @@ public class CaregiverSettings: NSObject, ObservableObject {
      Creates two way binding between @Published Property and UserDefaults.
      The two types must be the same, including optionality.
      
+     The KeyPaths were quite useful here for:
+     * Solving a "generic" type problem that did not work well with generic programming.
+     * Specifically it was not straightforward how to use Property wrappers as Generic parameters to methods.
+     * Keypaths allow you to get access to the property wrappers and pass them as arguments.
+     * The only limitation is it seems you need to know the class the KeyPaths "live" on so you can't use
+     * this kind of method outside this class? Need to research more.
+     
      A challenge to this pattern is the setup is still spread between:
      
      * Reading from defaults in initializer
@@ -132,14 +139,14 @@ public class CaregiverSettings: NSObject, ObservableObject {
      The method below could always set the default to the property wrapper, if it is ever set to nil in UserDefaults.
      */
     func bindToUserDefaults<T>(
-        publishedProperty: any Publisher<T, Never>,
-        userDefaultsKeyPath: ReferenceWritableKeyPath<UserDefaults, T>,
-        propertyWrapperKeyPath: ReferenceWritableKeyPath<CaregiverSettings, T>
+        propertyPublisher: any Publisher<T, Never>,
+        propertyKeyPath: ReferenceWritableKeyPath<CaregiverSettings, T>,
+        userDefaultsKeyPath: ReferenceWritableKeyPath<UserDefaults, T>
     ) where Published<T>.Publisher.Output == T, Published<T>.Publisher.Output: Equatable {
-        self[keyPath: propertyWrapperKeyPath] = self.userDefaults[keyPath: userDefaultsKeyPath]
+        self[keyPath: propertyKeyPath] = self.userDefaults[keyPath: userDefaultsKeyPath]
         
         // Write Property to user defaults
-        publishedProperty.sink { [weak self] val in
+        propertyPublisher.sink { [weak self] val in
             guard let self else { return }
             let existingValue = self.userDefaults[keyPath: userDefaultsKeyPath]
             if existingValue != val {
@@ -154,10 +161,10 @@ public class CaregiverSettings: NSObject, ObservableObject {
         // does not work for out-of-process updates and KVO is recommended.
         let token = self.userDefaults.observe(userDefaultsKeyPath) { [weak self] _, _ in
             guard let self else { return }
-            let existingPropertyValue = self[keyPath: propertyWrapperKeyPath]
+            let existingPropertyValue = self[keyPath: propertyKeyPath]
             let userDefaultsValue = self.userDefaults[keyPath: userDefaultsKeyPath]
             if existingPropertyValue != userDefaultsValue {
-                self[keyPath: propertyWrapperKeyPath] = userDefaultsValue
+                self[keyPath: propertyKeyPath] = userDefaultsValue
                 WidgetCenter.shared.reloadAllTimelines()
             }
         }
