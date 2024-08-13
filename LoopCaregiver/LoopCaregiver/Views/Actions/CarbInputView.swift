@@ -121,7 +121,7 @@ struct CarbInputView: View {
                     Button {
                         showDatePickerSheet = true
                     } label: {
-                        Text(Date.FormatStyle.FormatInput(rawValue: dateFormatter.string(from: pickerConsumedDate)) ?? pickerConsumedDate, format: Date.FormatStyle().hour().minute())
+                        Text(pickerConsumedDate, format: Date.FormatStyle().hour().minute())
                     }
                     Button {} label: {
                         Image(systemName: "plus.circle.fill")
