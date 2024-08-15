@@ -8,7 +8,7 @@
 import Foundation
 import NightscoutKit
 
-extension OverrideTreatment: Equatable {
+extension OverrideTreatment: @retroactive Equatable {
     public static func == (lhs: NightscoutKit.OverrideTreatment, rhs: NightscoutKit.OverrideTreatment) -> Bool {
         return lhs.timestamp == rhs.timestamp &&
         lhs.endDate == rhs.endDate &&

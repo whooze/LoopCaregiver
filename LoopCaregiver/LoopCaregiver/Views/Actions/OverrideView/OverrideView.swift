@@ -312,7 +312,7 @@ class OverrideViewPreviewMock: OverrideViewDelegate {
     }
 }
 
-extension TemporaryScheduleOverride: Identifiable {
+extension TemporaryScheduleOverride: @retroactive Identifiable {
     public var id: String {
         return name ?? ""
     }

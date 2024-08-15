@@ -10,7 +10,7 @@ import HealthKit
 import LoopKit
 
 // Loop Charts
-extension NewGlucoseSample: GlucoseValue {
+extension NewGlucoseSample: @retroactive GlucoseValue {
     public var startDate: Date {
         return date
     }

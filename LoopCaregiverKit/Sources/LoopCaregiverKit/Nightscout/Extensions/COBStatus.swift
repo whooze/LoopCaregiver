@@ -8,7 +8,7 @@
 import Foundation
 import NightscoutKit
 
-extension COBStatus: Equatable {
+extension COBStatus: @retroactive Equatable {
     public func formattedCOB() -> String {
         return String(format: "%.0f g", cob)
     }

@@ -8,7 +8,7 @@
 import Foundation
 import NightscoutKit
 
-extension BolusNightscoutTreatment: Equatable {
+extension BolusNightscoutTreatment: @retroactive Equatable {
     public static func == (lhs: NightscoutKit.BolusNightscoutTreatment, rhs: NightscoutKit.BolusNightscoutTreatment) -> Bool {
         return lhs.timestamp == rhs.timestamp &&
         lhs.duration == rhs.duration &&

@@ -173,7 +173,7 @@ public struct TimelineProviderShared {
             case .notReady:
                 return "The widget is not ready to display. Wait a few minutes and try again."
             case .missingGlucose:
-                return "Missing glucose"
+                return "Missing glucose. \(Date().formatted(date: .omitted, time: .shortened))"
             }
         }
         

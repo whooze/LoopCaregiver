@@ -39,7 +39,6 @@ public struct NightscoutChartScrollView: View {
     }
 
     public var body: some View {
-        let _ = Self._printChanges()
         GeometryReader { containerGeometry in
             ZoomableScrollView { zoomScrollViewProxy in
                 NightscoutChartView(viewModel: graphViewModel)
@@ -280,7 +279,7 @@ enum GraphItemState {
 }
 
 // Required to use [GraphItem] to control popover visibility
-extension [GraphItem]: Identifiable {
+extension [GraphItem]: @retroactive Identifiable {
     public var id: String {
         var combinedUUID = ""
         for item in self {

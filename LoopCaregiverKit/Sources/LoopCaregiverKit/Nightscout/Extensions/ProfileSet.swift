@@ -14,7 +14,7 @@ public extension ProfileSet {
     }
 }
 
-extension ProfileSet: Equatable {
+extension ProfileSet: @retroactive Equatable {
     public static func == (lhs: ProfileSet, rhs: ProfileSet) -> Bool {
         return lhs.startDate == rhs.startDate
     }
