@@ -8,7 +8,7 @@
 import Foundation
 import NightscoutKit
 
-extension IOBStatus: @retroactive Equatable {
+extension IOBStatus: Equatable {
     public func formattedIOB() -> String {
         guard let iob else {
             return ""

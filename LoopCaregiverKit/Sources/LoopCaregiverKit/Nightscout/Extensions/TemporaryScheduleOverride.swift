@@ -32,7 +32,7 @@ public extension OverrideStatus {
     }
 }
 
-extension TemporaryScheduleOverride: @retroactive Hashable {
+extension TemporaryScheduleOverride: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
     }

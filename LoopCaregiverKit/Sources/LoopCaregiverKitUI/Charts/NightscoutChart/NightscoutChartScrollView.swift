@@ -279,7 +279,7 @@ enum GraphItemState {
 }
 
 // Required to use [GraphItem] to control popover visibility
-extension [GraphItem]: @retroactive Identifiable {
+extension [GraphItem]: Identifiable {
     public var id: String {
         var combinedUUID = ""
         for item in self {

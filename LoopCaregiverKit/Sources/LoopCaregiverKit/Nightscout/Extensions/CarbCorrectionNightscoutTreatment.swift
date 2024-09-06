@@ -8,7 +8,7 @@
 import Foundation
 import NightscoutKit
 
-extension CarbCorrectionNightscoutTreatment: @retroactive Equatable {
+extension CarbCorrectionNightscoutTreatment: Equatable {
     public static func == (lhs: NightscoutKit.CarbCorrectionNightscoutTreatment, rhs: NightscoutKit.CarbCorrectionNightscoutTreatment) -> Bool {
         return lhs.timestamp == rhs.timestamp &&
         lhs.carbs == rhs.carbs

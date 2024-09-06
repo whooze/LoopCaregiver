@@ -32,12 +32,12 @@ public extension GlucoseEntry {
     }
 }
 
-extension GlucoseEntry: @retroactive GlucoseValue {
+extension GlucoseEntry: GlucoseValue {
     public var startDate: Date { date }
     public var quantity: HKQuantity { .init(unit: .milligramsPerDeciliter, doubleValue: glucose) }
 }
 
-extension GlucoseEntry: @retroactive GlucoseDisplayable {
+extension GlucoseEntry: GlucoseDisplayable {
     public var isStateValid: Bool {
         glucoseType == .meter || glucose >= 39
     }
