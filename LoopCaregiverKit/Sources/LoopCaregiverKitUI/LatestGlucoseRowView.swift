@@ -39,7 +39,7 @@ public struct LatestGlucoseRowView: View {
                     .bold()
             }
             if !viewModel.currentGlucoseDateText.isEmpty {
-                Text("(" + viewModel.currentGlucoseDateText + "*)")
+                Text("(" + viewModel.currentGlucoseDateText + ")")
                     .strikethrough(viewModel.isGlucoseStale)
                     .font(.footnote)
                     .bold()
