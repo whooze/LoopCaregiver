@@ -73,6 +73,19 @@ public struct GlucoseTimelineValue {
     }
     
     public func valueWithDate(_ date: Date) -> GlucoseTimelineValue {
+        let treatmentData = CaregiverTreatmentData(
+            creationDate: date,
+            glucoseDisplayUnits: treatmentData.glucoseDisplayUnits,
+            glucoseSamples: treatmentData.glucoseSamples,
+            predictedGlucose: treatmentData.predictedGlucose,
+            bolusEntries: treatmentData.bolusEntries,
+            carbEntries: treatmentData.carbEntries,
+            recentCommands: treatmentData.recentCommands,
+            overrideAndStatus: treatmentData.overrideAndStatus,
+            currentIOB: treatmentData.currentIOB,
+            currentCOB: treatmentData.currentCOB,
+            recommendedBolus: treatmentData.recommendedBolus
+        )
         return .init(
             looper: looper,
             glucoseSample: glucoseSample,
@@ -83,7 +96,7 @@ public struct GlucoseTimelineValue {
     
     public static func previewsValue() -> GlucoseTimelineValue {
         var recentSamples = [NewGlucoseSample]()
-        for index in 0..<600 {
+        for index in stride(from: 100, to: 200, by: 10) {
             recentSamples.append(
                 NewGlucoseSample(
                     date: Date().addingTimeInterval(Double(-index * 60 * 5)),
@@ -106,7 +119,10 @@ public struct GlucoseTimelineValue {
             carbEntries: [],
             recentCommands: [],
             currentProfile: nil,
-            overrideAndStatus: nil
+            overrideAndStatus: nil,
+            currentIOB: nil,
+            currentCOB: nil,
+            recommendedBolus: nil
         )
         
         return GlucoseTimelineValue(

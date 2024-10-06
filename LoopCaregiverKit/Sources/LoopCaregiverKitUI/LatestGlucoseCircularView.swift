@@ -24,6 +24,7 @@ public struct LatestGlucoseCircularView: View {
             Text(viewModel.currentGlucoseDateText)
                 .strikethrough(viewModel.isGlucoseStale)
                 .font(.footnote)
+                .minimumScaleFactor(0.8)
             Text(viewModel.currentGlucoseAndChangeText)
                 .foregroundStyle(egvColor)
                 .strikethrough(viewModel.isGlucoseStale)
@@ -37,6 +38,7 @@ public struct LatestGlucoseCircularView: View {
                     .frame(maxWidth: 15)
                     .offset(.init(width: 0.0, height: -7.0))
                     .accessibilityLabel(Text(currentTrendImageName))
+                    .minimumScaleFactor(0.8)
             }
         }
     }

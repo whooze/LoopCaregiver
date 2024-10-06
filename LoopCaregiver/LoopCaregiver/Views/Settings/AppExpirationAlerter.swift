@@ -217,9 +217,7 @@ class AppExpirationAlerter {
         let isTestFlight = isTestFlightBuild()
 
         if isTestFlight, let buildDate = buildDate() {
-            let testflightExpiration = Calendar.current.date(byAdding: .day, value: 90, to: buildDate)!
-
-            return profileExpiration < testflightExpiration ? profileExpiration : testflightExpiration
+            return Calendar.current.date(byAdding: .day, value: 90, to: buildDate)!
         } else {
             return profileExpiration
         }

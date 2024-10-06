@@ -19,9 +19,9 @@ public struct TimelineProviderShared {
     public init() {
     }
     
-    public func timeline(for looperID: String?) async -> Timeline<GlucoseTimeLineEntry> {
+    public func timeline(for looperID: String?, looperName: String?) async -> Timeline<GlucoseTimeLineEntry> {
         do {
-            let looper = try await getLooper(looperID: looperID)
+            let looper = try await getLooper(looperID: looperID, looperName: looperName)
             return await timeline(for: looper)
         } catch {
             return Timeline.createTimeline(error: error, looper: nil)
@@ -51,6 +51,11 @@ public struct TimelineProviderShared {
                 let futureValue = value.valueWithDate(nowDate.addingTimeInterval(60 * TimeInterval(index)))
                 entries.append(.success(futureValue))
             }
+            
+            // The last entry is an error entry as we don't want to show any older glucose info at that point.
+            let errorDate = nowDate.addingTimeInterval(60.0 * TimeInterval(indexCount))
+            let glucoseError = GlucoseTimeLineEntryError(error: TimelineProviderError.missingGlucose, date: errorDate, looper: looper)
+            entries.append(.failure(glucoseError))
             return Timeline(entries: entries, policy: .after(nextRequestDate))
         } catch {
             return Timeline.createTimeline(error: error, looper: looper)
@@ -78,14 +83,17 @@ public struct TimelineProviderShared {
             throw TimelineProviderError.missingGlucose
         }
         let treatmentData = CaregiverTreatmentData(
-            glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
+            glucoseDisplayUnits: composer.settings.glucosePreference.unit,
             glucoseSamples: sortedSamples,
             predictedGlucose: remoteServiceManager.predictedGlucose,
             bolusEntries: remoteServiceManager.bolusEntries,
             carbEntries: remoteServiceManager.carbEntries,
             recentCommands: remoteServiceManager.recentCommands,
             currentProfile: remoteServiceManager.currentProfile,
-            overrideAndStatus: remoteServiceManager.activeOverrideAndStatus()
+            overrideAndStatus: remoteServiceManager.activeOverrideAndStatus(),
+            currentIOB: remoteServiceManager.currentIOB,
+            currentCOB: remoteServiceManager.currentCOB,
+            recommendedBolus: remoteServiceManager.recommendedBolus
         )
         
         return GlucoseTimelineValue(
@@ -96,20 +104,23 @@ public struct TimelineProviderShared {
         )
     }
     
-    public func snapshot(for looperID: String?, context: TimelineProviderContext) async -> GlucoseTimeLineEntry {
+    public func snapshot(for looperID: String?, looperName: String?, context: TimelineProviderContext) async -> GlucoseTimeLineEntry {
         do {
-            let looper = try await getLooper(looperID: looperID)
+            let looper = try await getLooper(looperID: looperID, looperName: looperName)
             if context.isPreview {
                 let fakeGlucoseSample = NewGlucoseSample.previews()
                 let treatmentData = CaregiverTreatmentData(
-                    glucoseDisplayUnits: composer.settings.glucoseDisplayUnits,
+                    glucoseDisplayUnits: composer.settings.glucosePreference.unit,
                     glucoseSamples: [],
                     predictedGlucose: [],
                     bolusEntries: [],
                     carbEntries: [],
                     recentCommands: [],
                     currentProfile: nil,
-                    overrideAndStatus: nil
+                    overrideAndStatus: nil,
+                    currentIOB: nil,
+                    currentCOB: nil,
+                    recommendedBolus: nil
                 )
                 return GlucoseTimeLineEntry(
                     looper: looper,
@@ -135,39 +146,39 @@ public struct TimelineProviderShared {
         }
     }
     
-    private func getLooper(looperID: String?) async throws -> Looper {
+    private func getLooper(looperID: String?, looperName: String?) async throws -> Looper {
         guard let looperID else {
             throw TimelineProviderError.looperNotConfigured
         }
         let loopers = try composer.accountServiceManager.getLoopers()
-        guard let looper = loopers.first(where: { $0.id == looperID }) else {
-            throw TimelineProviderError.looperNotFound(looperID)
+        guard let looper = loopers.first(where: { $0.id == looperID || $0.name == looperName }) else {
+            throw TimelineProviderError.looperNotFound(looperID, looperName ?? "", loopers.count)
         }
 
         return looper
     }
     
     private enum TimelineProviderError: LocalizedError {
-        case looperNotFound(String)
+        case looperNotFound(_ looperID: String, _ looperName: String, _ availableCount: Int)
         case looperNotConfigured
         case notReady
         case missingGlucose
     
         var errorDescription: String? {
             switch self {
-            case .looperNotFound(let looperID):
-                return "The looper for this widget was not found (\(looperID)). " + configurationText()
+            case let .looperNotFound(looperID, looperName, availableCount):
+                return "The looper for this widget was not found: \(looperName), (\(looperID.dropLast(30))), (\(availableCount))." + configurationText()
             case .looperNotConfigured:
                 return "No looper is configured for this widget. " + configurationText()
             case .notReady:
                 return "The widget is not ready to display. Wait a few minutes and try again."
             case .missingGlucose:
-                return "Missing glucose"
+                return "Missing glucose. \(Date().formatted(date: .omitted, time: .shortened))"
             }
         }
         
         func configurationText() -> String {
-            return "Edit by pressing widget for 2 seconds, then choose your Looper."
+            return "Edit by pressing the widget for 2 seconds, then choose your Looper again."
         }
     }
 }

@@ -44,7 +44,11 @@ public class DeepLinkHandlerPhone: DeepLinkHandler {
         }
 
         if accountService.selectedLooper != looper {
-            accountService.selectedLooper = looper
+            do {
+                try accountService.updateActiveLoopUser(looper)
+            } catch {
+                print("Error setting Looper \(looper)")
+            }
         }
     }
     
@@ -96,6 +100,7 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
         case .selectLooper(let selectLooperDeepLink):
             try await handleSelectLooperDeepLink(selectLooperDeepLink)
         case .selectLooperError(let selectLooperErrorDeepLink):
+            // Throws
             try await handleSelectLooperErrorDeepLink(selectLooperErrorDeepLink)
         case .requestWatchConfigurationDeepLink:
             preconditionFailure("Should not be received from iPhone")
@@ -133,7 +138,11 @@ public class DeepLinkHandlerWatch: DeepLinkHandler {
         }
 
         if accountService.selectedLooper != looper {
-            accountService.selectedLooper = looper
+            do {
+                try accountService.updateActiveLoopUser(looper)
+            } catch {
+                print("Error selecting Looper: \(error)")
+            }
         }
     }
     

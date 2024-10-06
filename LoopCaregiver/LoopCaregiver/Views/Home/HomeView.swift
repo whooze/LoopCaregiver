@@ -7,6 +7,7 @@
 
 import Foundation
 import LoopCaregiverKit
+import LoopCaregiverKitUI
 import SwiftUI
 import WidgetKit
 
@@ -40,13 +41,6 @@ struct HomeView: View {
                 .padding([.leading, .trailing])
                 .padding([.bottom], 5.0)
                 .background(Color.cellBackgroundColor)
-            if let recommendedBolus = remoteDataSource.recommendedBolus {
-                TitleSubtitleRowView(
-                    title: "Recommended Bolus",
-                    subtitle: LocalizationUtils.presentableStringFromBolusAmount(recommendedBolus) + " U"
-                )
-                .padding([.bottom, .trailing], 5.0)
-            }
             ChartsListView(
                 looperService: looperService,
                 remoteDataSource: remoteDataSource,

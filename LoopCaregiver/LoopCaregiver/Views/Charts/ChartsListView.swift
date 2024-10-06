@@ -42,7 +42,7 @@ struct ChartsListView: View {
             }
             ChartWrapperView(
                 title: "Active Insulin",
-                subtitle: formattedIOB(),
+                subtitle: remoteDataSource.currentIOB?.formattedIOB() ?? "",
                 hideLabels: $isInteractingWithActiveInsulinChart
             ) {
             }
@@ -58,7 +58,7 @@ struct ChartsListView: View {
                 )
             }
             .frame(maxHeight: 150.0)
-            ChartWrapperView(title: "Active Carbohydrates", subtitle: formattedCOB(), hideLabels: $isInteractingWithActiveCarbsChart) {
+            ChartWrapperView(title: "Active Carbohydrates", subtitle: remoteDataSource.currentCOB?.formattedCOB() ?? "", hideLabels: $isInteractingWithActiveCarbsChart) {
                 /*
                  if remoteDataSource.glucoseSamples.count > 0, remoteDataSource.predictedGlucose.count > 0 {
                  COBChartView(remoteDataSource: remoteDataSource,
@@ -78,15 +78,20 @@ struct ChartsListView: View {
                     // Using .padding causes the chart overlay GeometryReader to
                     // have an offset that is the padding amount.
                     // Using a custom "padding" solution here with an HStack to avoid this.
-                    Spacer(minLength: 10.0)
+                    Spacer(minLength: outerPadding)
                     NightscoutChartScrollView(
                         settings: settings,
-                        remoteDataSource: remoteDataSource
+                        remoteDataSource: remoteDataSource,
+                        compactMode: false
                     )
-                    Spacer(minLength: 10.0)
+                    Spacer(minLength: outerPadding)
                 }
             }
         }
+    }
+    
+    var outerPadding: Double {
+        return 10.0
     }
     
     var loopGraphInterval: DateInterval {
@@ -103,34 +108,7 @@ struct ChartsListView: View {
             return ""
         }
         
-        return "Eventually \(eventualGlucose.presentableStringValue(displayUnits: settings.glucoseDisplayUnits, includeShortUnits: true))"
-    }
-    
-    func formattedCOB() -> String {
-        guard let cob = remoteDataSource.currentCOB?.cob else {
-            return ""
-        }
-        return String(format: "%.0f g", cob)
-    }
-    
-    func formattedIOB() -> String {
-        guard let iob = remoteDataSource.currentIOB?.iob else {
-            return ""
-        }
-        
-        var maxFractionalDigits = 0
-        if iob > 1 {
-            maxFractionalDigits = 1
-        } else {
-            maxFractionalDigits = 2
-        }
-        
-        let iobString = iob.formatted(
-            .number
-            .precision(.fractionLength(0...maxFractionalDigits))
-        )
-
-        return iobString + " U Total"
+        return "Eventually \(eventualGlucose.presentableStringValue(displayUnits: settings.glucosePreference.unit, includeShortUnits: true))"
     }
     
     func formattedInsulinDelivery() -> String {
@@ -143,6 +121,7 @@ struct ChartWrapperView<ChartContent: View>: View {
     let subtitle: String
     @Binding var hideLabels: Bool
     let chartContent: ChartContent
+    let outerPadding = 10.0
     
     init(
         title: String,
@@ -160,6 +139,7 @@ struct ChartWrapperView<ChartContent: View>: View {
         VStack {
             TitleSubtitleRowView(title: title, subtitle: subtitle)
                 .opacity(hideLabels ? 0.0 : 1.0)
+                .padding([.leading, .trailing], outerPadding)
             chartContent
         }
     }
@@ -198,26 +178,6 @@ struct TimelineWrapperView<ChartContent: View>: View {
                 }
             }
             chartContent
-        }
-    }
-}
-
-struct TitleSubtitleRowView: View {
-    let title: String
-    let subtitle: String
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .bold()
-                .font(.subheadline)
-                .padding([.leading], 10.0)
-            Spacer()
-            Text(subtitle)
-                .foregroundColor(.gray)
-                .bold()
-                .font(.subheadline)
-                .padding([.trailing], 10.0)
         }
     }
 }

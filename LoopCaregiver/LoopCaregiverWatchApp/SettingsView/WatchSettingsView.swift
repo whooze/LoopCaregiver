@@ -14,6 +14,7 @@ struct WatchSettingsView: View {
     @ObservedObject var accountService: AccountServiceManager
     @ObservedObject var settings: CaregiverSettings
     @StateObject private var settingsViewModel = SettingsViewModel()
+    @State private var selectedLooper: Looper?
     
     @AppStorage("lastPhoneDebugMessage", store: UserDefaults(suiteName: Bundle.main.appGroupSuiteName))
     var lastPhoneDebugMessage: String = ""
@@ -22,19 +23,17 @@ struct WatchSettingsView: View {
     var body: some View {
         VStack {
             Form {
+                Picker("Looper", selection: $selectedLooper) {
+                    ForEach(accountService.loopers) { looper in
+                        Text(looper.name).tag(looper as Looper?)
+                    }
+                }
                 Picker("Glucose", selection: $glucosePreference, content: {
                     ForEach(GlucoseUnitPrefererence.allCases, id: \.self, content: { item in
                         Text(item.presentableDescription).tag(item)
                     })
                 })
-                Section("Loopers") {
-                    List {
-                        ForEach(accountService.loopers, id: \.id) { looper in
-                            Text(looper.name)
-                        }
-                        .onDelete(perform: delete)
-                    }
-                }
+                Toggle("Show Prediction", isOn: $settings.timelinePredictionEnabled)
                 Section("Phone Connectivity") {
                     LabeledContent("Session Supported", value: connectivityManager.sessionsSupported() ? "YES" : "NO")
                     LabeledContent("Session Activated", value: connectivityManager.activated ? "YES" : "NO")
@@ -58,23 +57,30 @@ struct WatchSettingsView: View {
         }
         .navigationTitle("Settings")
         .onAppear {
-            self.glucosePreference = settings.glucoseUnitPreference
+            self.glucosePreference = settings.glucosePreference
         }
         .onChange(of: glucosePreference, {
-            if settings.glucoseUnitPreference != glucosePreference {
-                settings.saveGlucoseUnitPreference(glucosePreference)
+            if settings.glucosePreference != glucosePreference {
+                settings.glucosePreference = glucosePreference
                 reloadWidget()
             }
         })
-    }
-    
-    func delete(at offsets: IndexSet) {
-        for index in offsets {
-            let looper = accountService.loopers[index]
-            do {
-                try accountService.removeLooper(looper)
-            } catch {
-                print("Could not delete looper. \(looper), Error: \(error)")
+        // selectedLooper Bindings
+        .onAppear {
+            self.selectedLooper = accountService.selectedLooper
+        }
+        .onChange(of: selectedLooper) { _, newValue in
+            if let newValue, accountService.selectedLooper != newValue {
+                do {
+                    try accountService.updateActiveLoopUser(newValue)
+                } catch {
+                    print("Error updating looper: \(error)")
+                }
+            }
+        }
+        .onChange(of: accountService.selectedLooper) { _, newValue in
+            if self.selectedLooper != newValue {
+                self.selectedLooper = newValue
             }
         }
     }

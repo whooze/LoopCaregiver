@@ -14,7 +14,7 @@ public class AccountServiceManager: ObservableObject, AccountServiceDelegate, Ac
 
     // Account Service
     @Published public var loopers: [Looper] = []
-    @Published public var selectedLooper: Looper?
+    @Published public private(set) var selectedLooper: Looper?
     @Published public var selectedLooperService: LooperService?
     @Published public var settings: CaregiverSettings
     private var accountService: AccountService
@@ -92,7 +92,7 @@ public class AccountServiceManager: ObservableObject, AccountServiceDelegate, Ac
             self.selectedLooper = nil
             self.loopers = []
             self.selectedLooperService = nil
-            print("Error Fetching Keychain \(error)")
+            print("Error fetching loopers: \(error)")
         }
     }
 

@@ -64,6 +64,7 @@ struct SettingsView: View {
                 if let profileExpiration = BuildDetails.default.profileExpiration {
                     appExpirationSection(profileExpiration: profileExpiration)
                 }
+                watchSection
                 experimentalSection
             }
             .toolbar {
@@ -83,11 +84,11 @@ struct SettingsView: View {
             }
         }
         .onAppear {
-            self.glucosePreference = settings.glucoseUnitPreference
+            self.glucosePreference = settings.glucosePreference
         }
         .onChange(of: glucosePreference, perform: { _ in
-            if settings.glucoseUnitPreference != glucosePreference {
-                settings.saveGlucoseUnitPreference(glucosePreference)
+            if settings.glucosePreference != glucosePreference {
+                settings.glucosePreference = glucosePreference
             }
         })
         .confirmationDialog("Are you sure?",
@@ -222,24 +223,27 @@ struct SettingsView: View {
             SectionHeader(label: "Timeline")
         }
     }
+    
+    @ViewBuilder var watchSection: some View {
+        Section {
+            Button("Setup Watch") {
+                do {
+                    try activateLoopersOnWatch()
+                } catch {
+                    print("Error activating Loopers on watch: \(error)")
+                }
+            }
+
+            Text("Setup will transfer all Loopers to Caregiver on your Apple Watch.")
+                .font(.footnote)
+            LabeledContent("Watch App Open", value: watchService.isReachable() ? "YES" : "NO")
+        } header: {
+            SectionHeader(label: "Apple Watch")
+        }
+    }
 
     @ViewBuilder var experimentalSection: some View {
         if settings.experimentalFeaturesUnlocked || settings.remoteCommands2Enabled {
-            Section {
-                Button("Setup Watch") {
-                    do {
-                        try activateLoopersOnWatch()
-                    } catch {
-                        print("Error activating Loopers on watch: \(error)")
-                    }
-                }
-
-                Text("Setup will transfer all Loopers to Caregiver on your Apple Watch.")
-                    .font(.footnote)
-                LabeledContent("Watch App Open", value: watchService.isReachable() ? "YES" : "NO")
-            } header: {
-                SectionHeader(label: "Apple Watch")
-            }
             Section {
                 Toggle("Remote Commands 2", isOn: $settings.remoteCommands2Enabled)
                 Text("Remote commands 2 requires a special Nightscout deploy and Loop version. This will enable command status and other features. See Zulip #caregiver for details")
@@ -249,6 +253,11 @@ struct SettingsView: View {
             }
             Section {
                 LabeledContent("User ID", value: accountService.selectedLooper?.id ?? "")
+                Button(action: {
+                    WidgetCenter.shared.invalidateConfigurationRecommendations()
+                }, label: {
+                    Text("Invalidate Recommendations")
+                })
                 Button(action: {
                     WidgetCenter.shared.reloadAllTimelines()
                 }, label: {

@@ -23,8 +23,8 @@ struct LoopCaregiverWatchAppExtension: Widget {
                 switch entry {
                 case .success(let glucoseValue):
                     WidgetView(glucoseValue: glucoseValue)
-                case .failure:
-                    Text("?")
+                case .failure(let error):
+                    WidgetErrorView(error: error)
                 }
             }
             .widgetURL(entry.selectLooperDeepLink().url)
@@ -40,12 +40,33 @@ struct WidgetView: View {
     
     @ViewBuilder var body: some View {
         switch family {
-        case .accessoryRectangular:
-            LatestGlucoseRectangularView(glucoseValue: glucoseValue)
         case .accessoryInline:
             LatestGlucoseRowView(glucoseValue: glucoseValue)
+        case .accessoryCircular:
+            LatestGlucoseCircularView(glucoseValue: glucoseValue)
+        case .accessoryRectangular:
+            LatestGlucoseRectangularView(glucoseValue: glucoseValue)
         default:
             LatestGlucoseCircularView(glucoseValue: glucoseValue)
+        }
+    }
+}
+
+struct WidgetErrorView: View {
+    var error: GlucoseTimeLineEntryError
+    @Environment(\.widgetFamily)
+    var family
+    
+    @ViewBuilder var body: some View {
+        switch family {
+        case .accessoryInline:
+            Text(error.localizedDescription)
+        case .accessoryCircular:
+            Text("?")
+        case .accessoryRectangular:
+            Text(error.localizedDescription)
+        default:
+            Text(error.localizedDescription)
         }
     }
 }

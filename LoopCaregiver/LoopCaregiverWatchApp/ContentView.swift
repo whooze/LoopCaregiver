@@ -15,7 +15,9 @@ struct ContentView: View {
     var deepLinkHandler: DeepLinkHandler
     @EnvironmentObject var settings: CaregiverSettings
     @EnvironmentObject var watchService: WatchService
-
+    @Environment(\.scenePhase)
+    var scenePhase
+    
     @State private var deepLinkErrorShowing = false
     @State private var deepLinkErrorText: String = ""
 
@@ -27,18 +29,20 @@ struct ContentView: View {
                 if let looperService = accountService.selectedLooperService {
                     HomeView(connectivityManager: watchService, accountService: accountService, looperService: looperService)
                 } else {
-                     Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
-                }
-            }
-            .navigationDestination(for: String.self, destination: { _ in
-                WatchSettingsView(connectivityManager: watchService, accountService: accountService, settings: settings)
-            })
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink(value: "SettingsView") {
-                        Image(systemName: "gear")
-                            .accessibilityLabel(Text("Settings"))
-                    }
+                    Text("Open Caregiver Settings on your iPhone and tap 'Setup Watch'")
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                NavigationLink {
+                                    WatchSettingsView(
+                                        connectivityManager: watchService,
+                                        accountService: accountService,
+                                        settings: settings
+                                    )
+                                } label: {
+                                    Label("Settings", systemImage: "gear")
+                                }
+                            }
+                        }
                 }
             }
             .alert(deepLinkErrorText, isPresented: $deepLinkErrorShowing) {
@@ -64,17 +68,25 @@ struct ContentView: View {
                     print("Error handling deep link: \(error)")
                     deepLinkErrorText = error.localizedDescription
                     deepLinkErrorShowing = true
+                    WidgetCenter.shared.invalidateConfigurationRecommendations()
+                    WidgetCenter.shared.reloadAllTimelines()
                 }
             }
         })
         .onAppear {
-            // reloadWidget()
             if accountService.selectedLooper == nil {
                 do {
                     try watchService.requestWatchConfiguration()
                 } catch {
                     print(error)
                 }
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                reloadWidget()
+            } else if newPhase == .background {
+                reloadWidget()
             }
         }
     }
